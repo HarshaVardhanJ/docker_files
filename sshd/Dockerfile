@@ -1,11 +1,11 @@
 ### Dockerfile for dockerization of SSHD service on Alpine Linux. ###
-#																	#
+#                                                                   #
 #####################################################################
-#		DOCKERISED SSH SERVICE BUILT ON TOP OF ALPINE LINUX			#
+#       DOCKERISED SSH SERVICE BUILT ON TOP OF ALPINE LINUX         #
 #-------------------------------------------------------------------#
-#					Built and maintained by							#
-#						Harsha Vardhan J							#
-#				https://github.com/HarshaVardhanJ					#
+#                   Built and maintained by                         #
+#                       Harsha Vardhan J                            #
+#               https://github.com/HarshaVardhanJ                   #
 #####################################################################
 # Using a base image of Alpine Linux
 FROM alpine:latest
