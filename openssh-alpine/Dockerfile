@@ -59,7 +59,7 @@ RUN ssh-keygen -t rsa -C "RSA Host Key" -N "" -f /etc/ssh/ssh_host_rsa_key -q &&
 	ssh-keygen -t ed25519 -C "ED25519 Host Key" -N "" -f /etc/ssh/ssh_host_ed25519_key -q
 
 # Changing shell of 'root' user to '/bin/bash' and changing password of 'root'
-RUN sed -ri 's|^root(.*)/bin/ash|^root\1/bin/bash|g' && \
+RUN sed -ri 's|(.*)/bin/ash$|\1/bin/bash|g' /etc/passwd && \
 	echo "root:docker" | chpasswd
 
 # Configuration for user 'docker' SSH configuration
