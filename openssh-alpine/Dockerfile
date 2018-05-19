@@ -34,11 +34,11 @@ FROM alpine:latest
 LABEL maintainer="Harsha Vardhan J" \
 	  github.account="https://github.com/HarshaVardhanJ" \
 	  dockerfile.github.page="https://github.com/HarshaVardhanJ/docker_files\
-	  /blob/bash-with-root/openssh-alpine/Dockerfile"
+/blob/bash-with-root/openssh-alpine/Dockerfile" \
 	  description="This Dockerfile creates an OpenSSH server listening on \
-	  port 22. Only root is allowed to log in to the server. The password \
-	  of the root user has been changed to 'docker', and the shell of the \
-	  root user has been changed to '/bin/bash'."
+port 22. Only root is allowed to log in to the server. The password \
+of the root user has been changed to 'docker', and the shell of the \
+root user has been changed to '/bin/bash'." \
 	  version="0.1"
 
 # Installing the OpenSSH server and 'bash' shell
