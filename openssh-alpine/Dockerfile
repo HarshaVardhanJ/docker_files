@@ -75,7 +75,7 @@ EXPOSE 22
 
 # Entrypoint - Run SSHD server in daemon mode. Any command given to 'docker container run' will be added as an argument
 # to the ENTRYPOINT command below.
-#ENTRYPOINT ["/usr/sbin/sshd", "-D"]
+ENTRYPOINT /usr/sbin/sshd -D
 
-# Starting the OpenSSH server. Any command given to the 'docker container run' will override the CMD below. 
-CMD ["/usr/sbin/sshd", "-D"]
+# Any command given to the 'docker container run' will override the CMD below. 
+#CMD ["/bin/ash"]
