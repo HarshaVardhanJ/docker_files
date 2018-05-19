@@ -36,11 +36,11 @@ FROM alpine:latest
 LABEL maintainer="Harsha Vardhan J" \
       github.account="https://github.com/HarshaVardhanJ" \
       dockerfile.github.page="https://github.com/HarshaVardhanJ/docker_files\
-      /blob/master/openssh-alpine/Dockerfile"
+/blob/master/openssh-alpine/Dockerfile" \
       description="This Dockerfile creates an OpenSSH server listening on \
-      port 22. Only 'docker' user is allowed to log in to the server. The \
-      password of the 'docker' user has been changed to 'docker', and the \
-      shell of the 'docker' user has been changed to '/bin/ash'."
+port 22. Only 'docker' user is allowed to log in to the server. The \
+password of the 'docker' user has been changed to 'docker', and the \
+shell of the 'docker' user has been changed to '/bin/ash'." \
       version="0.1"
 
 
