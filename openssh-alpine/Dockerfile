@@ -33,17 +33,22 @@
 FROM alpine:latest
 
 # Maintainer information
-MAINTAINER Harsha Vardhan J "https://github.com/HarshaVardhanJ"
+LABEL maintainer="Harsha Vardhan J" \
+      github.account="https://github.com/HarshaVardhanJ" \
+      dockerfile.github.page="https://github.com/HarshaVardhanJ/docker_files\
+      /blob/master/openssh-alpine/Dockerfile"
+      description="This Dockerfile creates an OpenSSH server listening on \
+      port 22. Only 'docker' user is allowed to log in to the server. The \
+      password of the 'docker' user has been changed to 'docker', and the \
+      shell of the 'docker' user has been changed to '/bin/ash'."
+      version="0.1"
+
 
 # Installing the OpenSSH server
 RUN apk update ; \
-	apk add --no-cache openssh-server
-
-# Exposing port 22 on the container
-EXPOSE 22
-
+	apk add --no-cache openssh-server && \
 # Changing SSHD configuration file defaults
-RUN sed -ri 's|^#?LogLevel INFO|LogLevel VERBOSE|g' /etc/ssh/sshd_config ; \
+	sed -ri 's|^#?LogLevel INFO|LogLevel VERBOSE|g' /etc/ssh/sshd_config ; \
 	sed -ri 's|^#?PasswordAuthentication(\s+).*|PasswordAuthentication yes|g' /etc/ssh/sshd_config ; \
 	sed -ri 's|^#?PermitRootLogin(\s+).*|PermitRootLogin no|g' /etc/ssh/sshd_config ; \
 	sed -ri 's|#?PermitEmptyPasswords(\s+).*|PermitEmptyPasswords no|g' /etc/ssh/sshd_config ; \
@@ -64,6 +69,9 @@ RUN sed -ri 's|^#?LogLevel INFO|LogLevel VERBOSE|g' /etc/ssh/sshd_config ; \
 	mkdir -p /home/docker/.ssh && \
 	echo "StrictHostKeyChecking=no" > /home/docker/.ssh/config; \
 	echo "UserKnownHostsFile=/dev/null" >> /home/docker/.ssh/config
+
+# Exposing port 22 on the container
+EXPOSE 22
 
 # Entrypoint - Run SSHD server in daemon mode. Any command given to 'docker container run' will be added as an argument
 # to the ENTRYPOINT command below.
