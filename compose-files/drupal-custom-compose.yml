@@ -1,0 +1,41 @@
+# create your drupal and postgres config here, based off the last assignment
+#
+version: "3"
+
+services:
+
+    drupal-custom:
+        image: drupal-custom
+        build:
+            context: .
+            dockerfile: drupal.Dockerfile
+        ports:
+            - "8080:80"
+        volumes:
+            - drupal-modules:/var/www/html/modules
+            - drupal-profiles:/var/www/html/profiles
+            - drupal-sites:/var/www/html/sites
+            - drupal-themes:/var/www/html/themes
+        depends_on:
+            - psql
+        restart: always
+
+    psql:
+        image: postgres:9.6
+        volumes:
+            - drupal-data:/var/lib/postgresql/data
+        environment:
+            - POSTGRES_PASSWORD=password
+        restart: always
+
+volumes:
+    drupal-data:
+        driver: local
+    drupal-modules:
+        driver: local
+    drupal-profiles:
+        driver: local
+    drupal-sites:
+        driver: local
+    drupal-themes:
+        driver: local
