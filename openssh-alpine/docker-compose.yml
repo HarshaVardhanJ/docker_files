@@ -1,0 +1,19 @@
+version: "3.5"
+
+services:
+
+    openssh:
+        image: harshavardhanj/openssh-alpine
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - "2222:22"
+        deploy:
+            replicas: 3
+            update_config:
+                parallelism: 1
+                delay: 10s
+            restart_policy:
+                condition: on-failure
+                delay: 10s
