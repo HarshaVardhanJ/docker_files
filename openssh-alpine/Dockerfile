@@ -39,7 +39,7 @@ port 22. Only root is allowed to log in to the server. The password \
 of the root user has been changed to 'docker'"\
 	  version="0.1"
 
-# Installing the OpenSSH server and 'bash' shell
+# Installing the OpenSSH server
 RUN apk update ; \
 	apk add --no-cache openssh-server && \
 # Changing OpenSSH server configuration file defaults
@@ -57,9 +57,9 @@ RUN apk update ; \
 	ssh-keygen -t dsa -C "DSA Host Key" -N "" -f /etc/ssh/ssh_host_dsa_key -q && \
 	ssh-keygen -t ecdsa -C "ECDSA Host Key" -N "" -f /etc/ssh/ssh_host_ecdsa_key -q && \
 	ssh-keygen -t ed25519 -C "ED25519 Host Key" -N "" -f /etc/ssh/ssh_host_ed25519_key -q ; \
-# Changing password of 'root' to 'docker'
+# Changing password of 'root' user to 'docker'
 	echo "root:docker" | chpasswd ; \
-# Configuration for user 'docker' SSH configuration
+# Configuration for user 'root' SSH configuration
 	mkdir -p /root/.ssh ; \
 	echo "StrictHostKeyChecking=no" > /root/.ssh/config; \
 	echo "UserKnownHostsFile=/dev/null" >> /root/.ssh/config
