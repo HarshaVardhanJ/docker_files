@@ -12,7 +12,7 @@
 #                                                                   #
 #    1. Imports the latest base image of Alpine Linux.              #
 #    2. Updates the repositories via the package manager.           #
-#    3. Installs the OpenSSH server and Nano text editor.           #
+#    3. Installs the OpenSSH server.                                #
 #    4. Exposes port 22 on the container.                           #
 #    5. Sets some configuration values in '/etc/sshd_config'.       #
 #    6. Creates RSA, DSA, ECDSA, and ED25519 host keys.             #
@@ -40,16 +40,14 @@ LABEL maintainer="Harsha Vardhan J" \
       description="This Dockerfile creates an OpenSSH server listening on \
 port 22. Only 'docker' user is allowed to log in to the server. The \
 password of the 'docker' user has been changed to 'docker', and the \
-shell of the 'docker' user has been changed to '/bin/ash'. Also, the \
-Nano text editor is installed." \
+shell of the 'docker' user has been changed to '/bin/ash'." \
       version="0.1"
 
 # Defining ARG
 ARG CONFIG=/etc/ssh/sshd_config
 
-# Installing the OpenSSH server and nano text editor
+# Installing the OpenSSH server
 RUN apk update ; apk add --no-cache \
-	nano \
 	openssh-server && \
 # Changing SSHD configuration file defaults
 	sed -ri 's|^#?LogLevel INFO|LogLevel VERBOSE|g' $CONFIG ; \
