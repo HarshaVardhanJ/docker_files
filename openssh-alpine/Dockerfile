@@ -12,7 +12,7 @@
 #                                                                   #
 #    1. Imports the latest base image of Alpine Linux.              #
 #    2. Updates the repositories via the package manager.           #
-#    3. Installs the OpenSSH server.                                #
+#    3. Installs the OpenSSH server and Nano text editor.           #
 #    4. Exposes port 22 on the container.                           #
 #    5. Sets some configuration values in '/etc/sshd_config'.       #
 #    6. Creates RSA, DSA, ECDSA, and ED25519 host keys.             #
@@ -40,23 +40,27 @@ LABEL maintainer="Harsha Vardhan J" \
       description="This Dockerfile creates an OpenSSH server listening on \
 port 22. Only 'docker' user is allowed to log in to the server. The \
 password of the 'docker' user has been changed to 'docker', and the \
-shell of the 'docker' user has been changed to '/bin/ash'." \
+shell of the 'docker' user has been changed to '/bin/ash'. Also, the \
+Nano text editor is installed." \
       version="0.1"
 
+# Defining ARG
+ARG config=/etc/ssh/sshd_config
 
-# Installing the OpenSSH server
-RUN apk update ; \
-	apk add --no-cache openssh-server && \
+# Installing the OpenSSH server and nano text editor
+RUN apk update ; apk add --no-cache \
+	nano \
+	openssh-server && \
 # Changing SSHD configuration file defaults
-	sed -ri 's|^#?LogLevel INFO|LogLevel VERBOSE|g' /etc/ssh/sshd_config ; \
-	sed -ri 's|^#?PasswordAuthentication(\s+).*|PasswordAuthentication yes|g' /etc/ssh/sshd_config ; \
-	sed -ri 's|^#?PermitRootLogin(\s+).*|PermitRootLogin no|g' /etc/ssh/sshd_config ; \
-	sed -ri 's|#?PermitEmptyPasswords(\s+).*|PermitEmptyPasswords no|g' /etc/ssh/sshd_config ; \
-	sed -ri 's|^#?HostKey(\s+).*/etc/ssh/ssh_host_rsa_key|HostKey /etc/ssh/ssh_host_rsa_key|g' /etc/ssh/sshd_config ; \
-	sed -ri 's|^#?HostKey(\s+).*/etc/ssh/ssh_host_dsa_key|HostKey /etc/ssh/ssh_host_dsa_key|g' /etc/ssh/sshd_config ; \
-	sed -ri 's|^#?HostKey(\s+).*/etc/ssh/ssh_host_ecdsa_key|HostKey /etc/ssh/ssh_host_ecdsa_key|g' /etc/ssh/sshd_config ; \
-	sed -ri 's|^#?HostKey(\s+).*/etc/ssh/ssh_host_ed25519_key|HostKey /etc/ssh/ssh_host_ed25519_key|g' /etc/ssh/sshd_config ; \
-	echo "AllowUsers docker" >> /etc/ssh/sshd_config ; \
+	sed -ri 's|^#?LogLevel INFO|LogLevel VERBOSE|g' $config ; \
+	sed -ri 's|^#?PasswordAuthentication(\s+).*|PasswordAuthentication yes|g' $config ; \
+	sed -ri 's|^#?PermitRootLogin(\s+).*|PermitRootLogin no|g' $config ; \
+	sed -ri 's|#?PermitEmptyPasswords(\s+).*|PermitEmptyPasswords no|g' $config ; \
+	sed -ri 's|^#?HostKey(\s+).*/etc/ssh/ssh_host_rsa_key|HostKey /etc/ssh/ssh_host_rsa_key|g' $config ; \
+	sed -ri 's|^#?HostKey(\s+).*/etc/ssh/ssh_host_dsa_key|HostKey /etc/ssh/ssh_host_dsa_key|g' $config ; \
+	sed -ri 's|^#?HostKey(\s+).*/etc/ssh/ssh_host_ecdsa_key|HostKey /etc/ssh/ssh_host_ecdsa_key|g' $config ; \
+	sed -ri 's|^#?HostKey(\s+).*/etc/ssh/ssh_host_ed25519_key|HostKey /etc/ssh/ssh_host_ed25519_key|g' $config ; \
+	echo "AllowUsers docker" >> $config ; \
 # Creating SSH host keys
 	ssh-keygen -t rsa -C "RSA Host Key" -N "" -f /etc/ssh/ssh_host_rsa_key -q && \
 	ssh-keygen -t dsa -C "DSA Host Key" -N "" -f /etc/ssh/ssh_host_dsa_key -q && \
@@ -78,4 +82,4 @@ EXPOSE 22
 ENTRYPOINT /usr/sbin/sshd -D
 
 # Any command given to the 'docker container run' will override the CMD below. 
-#CMD ["/bin/ash"]
+#CMD ["/usr/bin/sshd", "-D"]
