@@ -45,7 +45,7 @@ Nano text editor is installed." \
       version="0.1"
 
 # Defining ARG
-ARG DIR=/etc/ssj
+ARG DIR=/etc/ssh
 ARG CONFIG=$DIR/sshd_config
 
 # Installing the OpenSSH server and nano text editor
