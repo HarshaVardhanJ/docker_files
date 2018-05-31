@@ -11,8 +11,9 @@ services:
             - "2222:22"
         deploy:
             mode: global
-            constraints:
-                - node.role == worker
+            placement:
+                constraints:
+                    - node.role == worker
             update_config:
                 parallelism: 1
                 delay: 10s
