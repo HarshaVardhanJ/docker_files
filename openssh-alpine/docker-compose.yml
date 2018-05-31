@@ -10,7 +10,9 @@ services:
         ports:
             - "2222:22"
         deploy:
-            replicas: 3
+            mode: global
+            constraints:
+                - node.role == worker
             update_config:
                 parallelism: 1
                 delay: 10s
