@@ -45,27 +45,28 @@ Nano text editor is installed." \
       version="0.1"
 
 # Defining ARG
-ARG config=/etc/ssh/sshd_config
+ARG DIR=/etc/ssj
+ARG CONFIG=$DIR/sshd_config
 
 # Installing the OpenSSH server and nano text editor
 RUN apk update ; apk add --no-cache \
 	nano \
 	openssh-server && \
 # Changing SSHD configuration file defaults
-	sed -ri 's|^#?LogLevel INFO|LogLevel VERBOSE|g' $config ; \
-	sed -ri 's|^#?PasswordAuthentication(\s+).*|PasswordAuthentication yes|g' $config ; \
-	sed -ri 's|^#?PermitRootLogin(\s+).*|PermitRootLogin no|g' $config ; \
-	sed -ri 's|#?PermitEmptyPasswords(\s+).*|PermitEmptyPasswords no|g' $config ; \
-	sed -ri 's|^#?HostKey(\s+).*/etc/ssh/ssh_host_rsa_key|HostKey /etc/ssh/ssh_host_rsa_key|g' $config ; \
-	sed -ri 's|^#?HostKey(\s+).*/etc/ssh/ssh_host_dsa_key|HostKey /etc/ssh/ssh_host_dsa_key|g' $config ; \
-	sed -ri 's|^#?HostKey(\s+).*/etc/ssh/ssh_host_ecdsa_key|HostKey /etc/ssh/ssh_host_ecdsa_key|g' $config ; \
-	sed -ri 's|^#?HostKey(\s+).*/etc/ssh/ssh_host_ed25519_key|HostKey /etc/ssh/ssh_host_ed25519_key|g' $config ; \
-	echo "AllowUsers docker" >> $config ; \
+	sed -ri 's|^#?LogLevel INFO|LogLevel VERBOSE|g' $CONFIG ; \
+	sed -ri 's|^#?PasswordAuthentication(\s+).*|PasswordAuthentication yes|g' $CONFIG ; \
+	sed -ri 's|^#?PermitRootLogin(\s+).*|PermitRootLogin no|g' $CONFIG ; \
+	sed -ri 's|#?PermitEmptyPasswords(\s+).*|PermitEmptyPasswords no|g' $CONFIG ; \
+	sed -ri 's|^#?HostKey(\s+).*$DIR/ssh_host_rsa_key|HostKey $DIR/ssh_host_rsa_key|g' $CONFIG ; \
+	sed -ri 's|^#?HostKey(\s+).*$DIR/ssh_host_dsa_key|HostKey $DIR/ssh_host_dsa_key|g' $CONFIG ; \
+	sed -ri 's|^#?HostKey(\s+).*$DIR/ssh_host_ecdsa_key|HostKey $DIR/ssh_host_ecdsa_key|g' $CONFIG ; \
+	sed -ri 's|^#?HostKey(\s+).*$DIR/ssh_host_ed25519_key|HostKey $DIR/ssh_host_ed25519_key|g' $CONFIG ; \
+	echo "AllowUsers docker" >> $CONFIG ; \
 # Creating SSH host keys
-	ssh-keygen -t rsa -C "RSA Host Key" -N "" -f /etc/ssh/ssh_host_rsa_key -q && \
-	ssh-keygen -t dsa -C "DSA Host Key" -N "" -f /etc/ssh/ssh_host_dsa_key -q && \
-	ssh-keygen -t ecdsa -C "ECDSA Host Key" -N "" -f /etc/ssh/ssh_host_ecdsa_key -q && \
-	ssh-keygen -t ed25519 -C "ED25519 Host Key" -N "" -f /etc/ssh/ssh_host_ed25519_key -q ; \
+	ssh-keygen -t rsa -C "RSA Host Key" -N "" -f $DIR/ssh_host_rsa_key -q && \
+	ssh-keygen -t dsa -C "DSA Host Key" -N "" -f $DIR/ssh_host_dsa_key -q && \
+	ssh-keygen -t ecdsa -C "ECDSA Host Key" -N "" -f $DIR/ssh_host_ecdsa_key -q && \
+	ssh-keygen -t ed25519 -C "ED25519 Host Key" -N "" -f $DIR/ssh_host_ed25519_key -q ; \
 # Creating user 'docker' and changing password to 'docker'
 	adduser -g "Docker user for SSH login" -h /home/docker -s /bin/ash -G wheel -D docker && \
 	echo "docker:docker" | chpasswd ; \
