@@ -12,7 +12,7 @@ services:
         deploy:
             mode: global
             placement:
-                constraints: 
+                constraints:
                     - node.role == worker
             update_config:
                 parallelism: 1
