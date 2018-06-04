@@ -65,11 +65,6 @@ RUN apk update ; apk add --no-cache \
 # Copying the 'entrypoint' script that will help configure the SSH server
 COPY ./entrypoint.sh /usr/local/bin/
 
-# Defining ENV variables that will be used at container run time.
-#ENV USER="${USER:-docker}" \
-#	PASSWORD="${PASSWORD:-docker}" \
-#	SSH_PUBKEY_FILE
-
 # Entrypoint - Run 'entrypoint.sh' script. Any command given to 'docker container run' will be added as an argument
 # to the ENTRYPOINT command below. The 'entrypoint.sh' script needs to receive 'ssh' as an argument in order to set up
 # the SSH server.
