@@ -1,13 +1,46 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
-if [ "$1" == "ssh" ]
+set -Eeo pipefail 
+
+# usage: file_env VAR [DEFAULT]
+#     ie: file_env 'XYZ_DB_PASSWORD' 'example'
+#     (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of
+#     "$XYZ_DB_PASSWORD" from a file, especially for Docker's secrets feature)
+# To pass files containing the needed information, you will need to do it via secrets for which
+# the machine will need to be initialized as part of a swarm. Else, pass the contents of the file as follows:
+#
+#    docker container run ...... -e USER="$(cat user.file)" -e PASSWORD="$(cat password.file)" -e SSH_PUBKEY="$(cat ssh_key.pub)" image:latest
+# The function below was taken from the 'entrypoint.sh' script that the Postgres Dockerfile refers to. 
+file_env() {
+	local var="$1"
+	local fileVar="${var}_FILE"
+	local def="${2:-}"
+	
+	if [ "${!var:-}" ] && [ "${!fileVar:-}" ]; then
+		echo >&2 "error: both $var and $fileVar are set (but are exclusive)"
+		exit 1
+	fi
+	
+	local val="$def"
+	
+	if [ "${!var:-}" ]; then
+		val="${!var}"
+	elif [ "${!fileVar:-}" ]; then
+		val="$(< "${!fileVar}")"
+	fi
+	
+	export "$var"="$val"
+	unset "$fileVar"
+}
+
+if [ "$1" = "ssh" ]
 then
-	USER="${USER:-docker}"
-	PASSWORD="${PASSWORD:-docker}"
+	file_env 'USER' 'docker'
+	file_env 'PASSWORD' 'docker'
 	USER_HOME="$( echo "/home/"${USER}"" )"
 
 	# Creating user (default - 'docker') and changing password (default -  'docker')
-	if [ "$(id -u "${USER}")" != '0' ]
+	if [ "$(id -u "${USER}")" != "0" ]
 	then
 		adduser -g "Docker user for SSH login" -h "${USER_HOME}" -s /bin/ash -G wheel -D "${USER}" && \
 		echo ""${USER}":"${PASSWORD}"" | chpasswd && \
@@ -18,15 +51,16 @@ then
 	if [ -d "${USER_HOME}" ]
 	then
 		mkdir -p "${USER_HOME}"/.ssh && \
-		echo "StrictHostKeyChecking=no" > "${USER_HOME}"/.ssh/config && \
+		echo "StrictHostKeyChecking=no" > "${USER_HOME}"/.ssh/config ; \
 		echo "UserKnownHostsFile=/dev/null" >> "${USER_HOME}"/.ssh/config
 	fi
 
-	# If temporary public key file exists, append the contents to the user's 'authorized_keys' file
-	if [ -f /home/temp_authorized_keys ]
+	# If SSH public key is provided by the user, append the contents to the user's 'authorized_keys' file
+	file_env 'SSH_PUBKEY'
+	if [ "${SSH_PUBKEY}" ]
 	then
-		cat /home/temp_authorized_keys >> "${USER_HOME}"/.ssh/authorized_keys && \
-		rm -f /home/temp_authorized_keys
+		touch "${USER_HOME}"/.ssh/authorized_keys ; \
+		echo "${SSH_PUBKEY}" >> "${USER_HOME}"/.ssh/authorized_keys
 	fi
 
 	exec /usr/sbin/sshd -D

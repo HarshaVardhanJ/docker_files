@@ -2,12 +2,10 @@
 
 if [ "$1" == "ssh" ]
 then
-	USER="${USER:-docker}"
-	PASSWORD="${PASSWORD:-docker}"
 	USER_HOME="$( echo "/home/"${USER}"" )"
 
 	# Creating user (default - 'docker') and changing password (default -  'docker')
-	if [ "$(id -u "${USER}")" != "0" ]
+	if [ "$(id -u "${USER}")" != '0' ]
 	then
 		adduser -g "Docker user for SSH login" -h "${USER_HOME}" -s /bin/ash -G wheel -D "${USER}" && \
 		echo ""${USER}":"${PASSWORD}"" | chpasswd && \
@@ -18,19 +16,21 @@ then
 	if [ -d "${USER_HOME}" ]
 	then
 		mkdir -p "${USER_HOME}"/.ssh && \
-		echo "StrictHostKeyChecking=no" > "${USER_HOME}"/.ssh/config ; \
+		echo "StrictHostKeyChecking=no" > "${USER_HOME}"/.ssh/config && \
 		echo "UserKnownHostsFile=/dev/null" >> "${USER_HOME}"/.ssh/config
 	fi
 
-	# If path to SSH public key is provided by the user, append the contents to the user's 'authorized_keys' file
-	if [ -f "${SSH_PUBKEY_PATH:-/etc/ssh/ssh_host_rsa_key.pub}" ]
+	# If temporary public key file exists, append the contents to the user's 'authorized_keys' file
+	if [ -f /home/temp_authorized_keys ]
 	then
-		touch "${USER_HOME}"/.ssh/authorized_keys
-		cat "${SHH_PUBKEY_PATH:-/etc/ssh/ssh_host_rsa_key.pub}" >> "${USER_HOME}"/.ssh/authorized_keys
+		cat /home/temp_authorized_keys >> "${USER_HOME}"/.ssh/authorized_keys && \
+		rm -f /home/temp_authorized_keys
 	fi
 
 	exec /usr/sbin/sshd -D
 fi
+
 # Executing any argument passed to this script. This is useful to run the container in interactive mode.
+exec "$@"
 
 ################## End of script

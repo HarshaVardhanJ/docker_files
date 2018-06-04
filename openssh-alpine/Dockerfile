@@ -12,18 +12,12 @@
 #                                                                   #
 #    1. Imports the latest base image of Alpine Linux.              #
 #    2. Updates the repositories via the package manager.           #
-#    3. Installs the OpenSSH server.                                #
-#    4. Exposes port 22 on the container.                           #
+#    3. Installs the OpenSSH server and 'bash' shell.               #
 #    5. Sets some configuration values in '/etc/sshd_config'.       #
 #    6. Creates RSA, DSA, ECDSA, and ED25519 host keys.             #
-#    7. Creates user 'docker', changes default shell to '/bin/ash'  #
-#       and adds to 'wheel' group, creates home directory, and      #
-#       doesn't provide initial password for login. This is so it   #
-#       can be changed next.                                        #
-#    8. Changes the password of 'docker' user to 'docker'.          #
-#    9. Creates '.ssh' directory in '/home/docker'.                 #
-#    10. Adds 'docker' user's SSH-related configuration values.     #
-#    11. Starts OpenSSH server in daemon mode.                      #
+#    7. Copies 'entrypoint.sh' script to container to be run.       #
+#    8. Runs the 'entrypoint.sh' script                             #
+#    9. Exposes port 22 on the container.                           #
 #                                                                   #
 # Note : Do not forget to expose a port on your machine if you      #
 #        wish to access the SSH server and log in to it.            #
@@ -45,12 +39,10 @@ shell of the 'docker' user has been changed to '/bin/ash'." \
 
 # Defining ARG and ENV variables
 ARG CONFIG=/etc/ssh/sshd_config
-ENV USER="${USER:-docker}" \
-	PASSWORD="${PASSWORD:-docker}" \
-	SSH_PUBKEY_FILE="${SSH_PUBKEY_FILE:-/etc/ssh/ssh_host_rsa_key.pub}"
 
-# Installing the OpenSSH server
+# Installing bash and OpenSSH server
 RUN apk update ; apk add --no-cache \
+	bash \
 	openssh-server && \
 # Changing SSHD configuration file defaults
 	sed -ri 's|^#?LogLevel INFO|LogLevel VERBOSE|g' ${CONFIG} ; \
@@ -65,12 +57,15 @@ RUN apk update ; apk add --no-cache \
 	ssh-keygen -t rsa -C "RSA Host Key" -N "" -f /etc/ssh/ssh_host_rsa_key -q && \
 	ssh-keygen -t dsa -C "DSA Host Key" -N "" -f /etc/ssh/ssh_host_dsa_key -q && \
 	ssh-keygen -t ecdsa -C "ECDSA Host Key" -N "" -f /etc/ssh/ssh_host_ecdsa_key -q && \
-	ssh-keygen -t ed25519 -C "ED25519 Host Key" -N "" -f /etc/ssh/ssh_host_ed25519_key -q ; \
-# Copying the user-defined SSH public key
-	cat ${SSH_PUBKEY_FILE} > /home/temp_authorized_keys
+	ssh-keygen -t ed25519 -C "ED25519 Host Key" -N "" -f /etc/ssh/ssh_host_ed25519_key -q
 
 # Copying the 'entrypoint' script that will help configure the SSH server
 COPY ./entrypoint.sh /usr/local/bin/
+
+# Defining ENV variables that will be used at container run time.
+#ENV USER="${USER:-docker}" \
+#	PASSWORD="${PASSWORD:-docker}" \
+#	SSH_PUBKEY_FILE
 
 # Entrypoint - Run 'entrypoint.sh' script. Any command given to 'docker container run' will be added as an argument
 # to the ENTRYPOINT command below. The 'entrypoint.sh' script needs to receive 'ssh' as an argument in order to set up
