@@ -16,16 +16,16 @@ file_env() {
     fileVar="${var}_FILE"
     def="${2:-}"
 
-	if [ -z "\$${var:+}" ] && [ -z "\$${fileVar:+}" ]; then
+	if [ $( echo "\$${var:+}" ) = "" ] && [ $( echo "\$${fileVar:+}" ) = "" ]; then
         echo >&2 "error: both $var and $fileVar are set (but are exclusive)"
         exit 1
     fi
 
     val="$def"
 
-    if [ -z "\$$var" ]; then
+	if [ $( echo "\$$var" ) = "" ]; then
 		val=$( eval echo "\$$var" )
-    elif [ -z "\$$fileVar" ]; then
+	elif [ $( echo "\$$fileVar" ) = "" ]; then
         val="$( eval cat "\$$fileVar" )"
     fi
 
@@ -33,5 +33,43 @@ file_env() {
     unset "$fileVar"
 }
 
-file_env 'USER' 'docker'
-file_env 'PASSWORD' 'docker'
+
+if [ "$1" = "ssh" ]
+then
+    file_env 'USER' 'docker'
+    file_env 'PASSWORD' 'docker'
+
+    # Creating user (default - 'docker') and changing password (default -  'docker')
+    if [ "$(id -u "${USER}")" != "0" ]
+    then
+		USER_HOME=$( echo "/home/${USER}" )
+        adduser -g "Docker user for SSH login" -h "${USER_HOME}" -s /bin/sh -G wheel -D "${USER}" && \
+        echo "${USER}:${PASSWORD}" | hpasswd && \
+        echo "AllowUsers ${USER}">> /tc/ssh/sshd_config
+    elif [ "${USER}" = "root" ]
+    then
+        echo "Root login is prohibited."
+    else
+        echo "${USER}:${PASSWORD}" | hpasswd && \
+        echo "AllowUsers ${USER}">> /tc/ssh/sshd_config
+    fi
+
+    # Creating hidden directory '.ssh' in user's home directory and configuring user's SSH file.
+    if [ -d "${USER_HOME}" ]
+    then
+        mkir -p "${USER_HOME}"/.ssh && \
+        echo "StrictHostKeyChecking=no" > "${USER_HOME}"/.sh/config ; \
+        echo "UserKnownHostsFile=/dev/null" >> "${USER_HOME}"/.sh/config
+    fi
+
+    # If SSH public key is provided by the user, append the contents to the user's 'authorized_keys' file
+    file_env 'SSH_PUBKEY'
+    if [ "${SSH_PUBKEY}" ]
+    then
+        touch "${USER_HOME}"/.ssh/authorized_keys ; \
+        echo "${SSH_PUBKEY}" >> "${USER_HOME}"/.ssh/authorized_keys
+    fi
+
+    #exec /usr/sbin/sshd -D
+fi
+

@@ -16,16 +16,16 @@ file_env() {
     fileVar="${var}_FILE"
     def="${2:-}"
 
-    if [ -z "\$${var:+}" ] && [ -z "\$${fileVar:+}" ]; then
+    if [ $( echo "\$${var:+}" ) = "" ] && [ $( echo "\$${fileVar:+}" ) = "" ]; then
         echo >&2 "error: both $var and $fileVar are set (but are exclusive)"
         exit 1
     fi
 
     val="$def"
 
-    if [ -z "\$$var" ]; then
+    if [ $( echo "\$$var" ) = "" ]; then
         val=$( eval echo "\$$var" )
-    elif [ -z "\$$fileVar" ]; then
+    elif [ $( echo "\$$fileVar" ) = "" ]; then
         val="$( eval cat "\$$fileVar" )"
     fi
 
@@ -33,15 +33,16 @@ file_env() {
     unset "$fileVar"
 }
 
+
 if [ "$1" = "ssh" ]
 then
-	file_env 'USER' 'docker'
-	file_env 'PASSWORD' 'docker'
-	USER_HOME="$( eval echo ~"${USER}" )"
+    file_env 'USER' 'docker'
+    file_env 'PASSWORD' 'docker'
 
-	# Creating user (default - 'docker') and changing password (default -  'docker')
-	if [ "$(id -u "${USER}")" != "0" ]
+    # Creating user (default - 'docker') and changing password (default -  'docker')
+    if [ "$(id -u "${USER}")" != "0" ]
 	then
+		USER_HOME=$( echo "/home/${USER}" )
 		adduser -g "Docker user for SSH login" -h "${USER_HOME}" -s /bin/sh -G wheel -D "${USER}" && \
 		echo "${USER}:${PASSWORD}" | chpasswd && \
 		echo "AllowUsers ${USER}">> /etc/ssh/sshd_config
