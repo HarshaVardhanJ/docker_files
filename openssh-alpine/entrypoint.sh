@@ -37,17 +37,18 @@ if [ "$1" = "ssh" ]
 then
 	file_env 'USER' 'docker'
 	file_env 'PASSWORD' 'docker'
-	USER_HOME="$( eval echo ~"${USER}" )"
 
 	# Creating user (default - 'docker') and changing password (default -  'docker')
 	if [ "$(id -u "${USER}")" != "0" ]
 	then
+		USER_HOME="$( eval echo ~"${USER}" )"
 		adduser -g "Docker user for SSH login" -h "${USER_HOME}" -s /bin/bash -G wheel -D "${USER}" && \
 		echo "${USER}:${PASSWORD}" | chpasswd && \
 		echo "AllowUsers ${USER}">> /etc/ssh/sshd_config
 	elif [ "${USER}" == "root" ]
 	then
-		echo "Root login is prohibited."
+		echo "Root login is prohibited." ;
+		exit 1
 	else
 		echo "${USER}:${PASSWORD}" | chpasswd && \
 		echo "AllowUsers ${USER}">> /etc/ssh/sshd_config
