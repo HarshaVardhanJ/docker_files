@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -Eeo pipefail 
+#set -Eeo pipefail 
 
 # usage: file_env VAR [DEFAULT]
 #     ie: file_env 'XYZ_DB_PASSWORD' 'example'
@@ -37,20 +37,20 @@ if [ "$1" = "ssh" ]
 then
 	file_env 'USER' 'docker'
 	file_env 'PASSWORD' 'docker'
-	USER_HOME="$( eval echo ~${USER} )"
+	USER_HOME="$( eval echo ~"${USER}" )"
 
 	# Creating user (default - 'docker') and changing password (default -  'docker')
 	if [ "$(id -u "${USER}")" != "0" ]
 	then
 		adduser -g "Docker user for SSH login" -h "${USER_HOME}" -s /bin/bash -G wheel -D "${USER}" && \
-		echo ""${USER}":"${PASSWORD}"" | chpasswd && \
-		echo "AllowUsers "${USER}"">> /etc/ssh/sshd_config
+		echo "${USER}:${PASSWORD}" | chpasswd && \
+		echo "AllowUsers ${USER}">> /etc/ssh/sshd_config
 	elif [ "${USER}" == "root" ]
 	then
 		echo "Root login is prohibited."
 	else
-		echo ""${USER}":"${PASSWORD}"" | chpasswd && \
-		echo "AllowUsers "${USER}"">> /etc/ssh/sshd_config
+		echo "${USER}:${PASSWORD}" | chpasswd && \
+		echo "AllowUsers ${USER}">> /etc/ssh/sshd_config
 	fi
 
 	# Creating hidden directory '.ssh' in user's home directory and configuring user's SSH file.
