@@ -1,7 +1,7 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
-#set -Eeo pipefail 
-
+#set -Eueo pipefail 
+set -u
 # usage: file_env VAR [DEFAULT]
 #     ie: file_env 'XYZ_DB_PASSWORD' 'example'
 #     (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of
@@ -12,25 +12,25 @@
 #    docker container run ...... -e USER="$(cat user.file)" -e PASSWORD="$(cat password.file)" -e SSH_PUBKEY="$(cat ssh_key.pub)" image:latest
 # The function below was taken from the 'entrypoint.sh' script that the Postgres Dockerfile refers to. 
 file_env() {
-	local var="$1"
-	local fileVar="${var}_FILE"
-	local def="${2:-}"
-	
-	if [ "${!var:-}" ] && [ "${!fileVar:-}" ]; then
-		echo >&2 "error: both $var and $fileVar are set (but are exclusive)"
-		exit 1
-	fi
-	
-	local val="$def"
-	
-	if [ "${!var:-}" ]; then
-		val="${!var}"
-	elif [ "${!fileVar:-}" ]; then
-		val="$(< "${!fileVar}")"
-	fi
-	
-	export "$var"="$val"
-	unset "$fileVar"
+    var="$1"
+    fileVar="${var}_FILE"
+    def="${2:-}"
+
+    if [ -z "\$${var:+}" ] && [ -z "\$${fileVar:+}" ]; then
+        echo >&2 "error: both $var and $fileVar are set (but are exclusive)"
+        exit 1
+    fi
+
+    val="$def"
+
+    if [ -z "\$$var" ]; then
+        val=$( eval echo "\$$var" )
+    elif [ -z "\$$fileVar" ]; then
+        val="$( eval cat "\$$fileVar" )"
+    fi
+
+    export "$var"="$val"
+    unset "$fileVar"
 }
 
 if [ "$1" = "ssh" ]
@@ -42,10 +42,10 @@ then
 	# Creating user (default - 'docker') and changing password (default -  'docker')
 	if [ "$(id -u "${USER}")" != "0" ]
 	then
-		adduser -g "Docker user for SSH login" -h "${USER_HOME}" -s /bin/bash -G wheel -D "${USER}" && \
+		adduser -g "Docker user for SSH login" -h "${USER_HOME}" -s /bin/sh -G wheel -D "${USER}" && \
 		echo "${USER}:${PASSWORD}" | chpasswd && \
 		echo "AllowUsers ${USER}">> /etc/ssh/sshd_config
-	elif [ "${USER}" == "root" ]
+	elif [ "${USER}" = "root" ]
 	then
 		echo "Root login is prohibited."
 	else
@@ -73,6 +73,6 @@ then
 fi
 
 # Executing any argument passed to this script. This is useful to run the container in interactive mode.
-exec "$@"
+#exec "$@"
 
 ################## End of script
