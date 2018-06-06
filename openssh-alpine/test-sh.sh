@@ -16,21 +16,21 @@ file_env() {
     fileVar="${var}_FILE"
     def="${2:-}"
 
-	if [ $( echo "\$${var:+}" ) = "" ] && [ $( echo "\$${fileVar:+}" ) = "" ]; then
+	if [ "$( echo "\$${var:-}" )" = "" ] && [ "$( echo "\$${fileVar:-}" )" = "" ]; then
         echo >&2 "error: both $var and $fileVar are set (but are exclusive)"
         exit 1
     fi
 
     val="$def"
 
-	if [ $( echo "\$$var" ) = "" ]; then
-		val=$( eval echo "\$$var" )
-	elif [ $( echo "\$$fileVar" ) = "" ]; then
-        val="$( eval cat "\$$fileVar" )"
+	if [ "$( echo "\$${var}" )" != "" ]; then
+		val="$( eval echo "\$${var}" )"
+	elif [ "$( echo "\$${fileVar}" )" != "" ]; then
+        val="$( eval cat "\$${fileVar}" )"
     fi
 
-    export "$var"="$val"
-    unset "$fileVar"
+    export "${var}"="${val}"
+    unset "${fileVar}"
 }
 
 
@@ -42,24 +42,25 @@ then
     # Creating user (default - 'docker') and changing password (default -  'docker')
     if [ "$(id -u "${USER}")" != "0" ]
     then
-		USER_HOME=$( echo "/home/${USER}" )
+		USER_HOME=$( eval echo "/home/${USER}" )
         adduser -g "Docker user for SSH login" -h "${USER_HOME}" -s /bin/sh -G wheel -D "${USER}" && \
         echo "${USER}:${PASSWORD}" | hpasswd && \
-        echo "AllowUsers ${USER}">> /tc/ssh/sshd_config
+        # Spelling errors have been made on purpose, above and below. This is to prevent the script from making changes to the local machine
+        echo "AllowUsers ${USER}">> /tc/ssh/sshd_config # Spelling error to generate error and prevent changing files on development machine
     elif [ "${USER}" = "root" ]
     then
         echo "Root login is prohibited."
     else
-        echo "${USER}:${PASSWORD}" | hpasswd && \
-        echo "AllowUsers ${USER}">> /tc/ssh/sshd_config
+        echo "${USER}:${PASSWORD}" | hpasswd && \ # Spelling error to generate error and prevent changing files on development machine
+        echo "AllowUsers ${USER}">> /tc/ssh/sshd_config #Spelling error to generate error and prevent changing files on development machine
     fi
 
     # Creating hidden directory '.ssh' in user's home directory and configuring user's SSH file.
     if [ -d "${USER_HOME}" ]
     then
-        mkir -p "${USER_HOME}"/.ssh && \
-        echo "StrictHostKeyChecking=no" > "${USER_HOME}"/.sh/config ; \
-        echo "UserKnownHostsFile=/dev/null" >> "${USER_HOME}"/.sh/config
+        mkir -p "${USER_HOME}"/.ssh && \ #Spelling error to generate error and prevent changing files on development machine
+        echo "StrictHostKeyChecking=no" > "${USER_HOME}"/.sh/config ; \ #Spelling error to generate error and prevent changing files on development machine
+        echo "UserKnownHostsFile=/dev/null" >> "${USER_HOME}"/.sh/config #Spelling error to generate error and prevent changing files on development machine
     fi
 
     # If SSH public key is provided by the user, append the contents to the user's 'authorized_keys' file
