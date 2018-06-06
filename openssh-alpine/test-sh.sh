@@ -49,7 +49,8 @@ then
         echo "AllowUsers ${USER}">> /tc/ssh/sshd_config # Spelling error to generate error and prevent changing files on development machine
     elif [ "${USER}" = "root" ]
     then
-        echo "Root login is prohibited."
+        echo "Root login is prohibited. Changing to 'allowed'."
+        sed -ri 's|^#?PermitRootLogin(\s+).*|PermitRootLogin yes|g' /etc/ssh/sshd_config
     else
         echo "${USER}:${PASSWORD}" | hpasswd && \ # Spelling error to generate error and prevent changing files on development machine
         echo "AllowUsers ${USER}">> /tc/ssh/sshd_config #Spelling error to generate error and prevent changing files on development machine

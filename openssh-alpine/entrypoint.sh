@@ -48,7 +48,8 @@ then
 		echo "AllowUsers ${USER}">> /etc/ssh/sshd_config
 	elif [ "${USER}" = "root" ]
 	then
-		echo "Root login is prohibited."
+		echo "Root login is prohibited. Changing to 'allowed'."
+		sed -ri 's|^#?PermitRootLogin(\s+).*|PermitRootLogin yes|g' /etc/ssh/sshd_config
 	else
 		echo "${USER}:${PASSWORD}" | chpasswd && \
 		echo "AllowUsers ${USER}">> /etc/ssh/sshd_config
@@ -74,6 +75,6 @@ then
 fi
 
 # Executing any argument passed to this script. This is useful to run the container in interactive mode.
-#exec "$@"
+exec "$@"
 
 ################## End of script
