@@ -50,6 +50,8 @@ then
 		USER_HOME="$( eval echo ~"${USER:-docker}" )"
 		echo "Root login is prohibited. Changing to 'allowed'."
 		sed -ri 's|^#?PermitRootLogin(\s+).*|PermitRootLogin yes|g' /etc/ssh/sshd_config
+	else
+		USER_HOME="$( eval echo ~"${USER:-docker}" )"
 	fi
 
 	echo "AllowUsers ${USER:-docker}">> /etc/ssh/sshd_config
