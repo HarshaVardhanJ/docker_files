@@ -43,16 +43,16 @@ then
 	then
 		USER_HOME="$( eval echo ~"${USER}" )"
 		adduser -g "Docker user for SSH login" -h "${USER_HOME}" -s /bin/bash -G wheel -D "${USER}" && \
-		echo "${USER}:${PASSWORD}" | chpasswd && \
-		echo "AllowUsers ${USER}">> /etc/ssh/sshd_config
 	elif [ "${USER}" == "root" ]
 	then
-		echo "Root login is prohibited." ;
-		exit 1
+		USER_HOME="$( echo "/home/${USER}" )"
+		echo "Root login is prohibited by default. Changing to 'allowed'."
 	else
-		echo "${USER}:${PASSWORD}" | chpasswd && \
-		echo "AllowUsers ${USER}">> /etc/ssh/sshd_config
+		USER_HOME="$( eval echo ~"${USER}" )"
 	fi
+
+	echo "${USER}:${PASSWORD}" | chpasswd && \
+	echo "AllowUsers ${USER}">> /etc/ssh/sshd_config
 
 	# Creating hidden directory '.ssh' in user's home directory and configuring user's SSH file.
 	if [ -d "${USER_HOME}" ]
