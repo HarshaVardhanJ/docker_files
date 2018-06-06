@@ -11,21 +11,22 @@ set -u
 #
 #    docker container run ...... -e USER="$(cat user.file)" -e PASSWORD="$(cat password.file)" -e SSH_PUBKEY="$(cat ssh_key.pub)" image:latest
 # The function below was taken from the 'entrypoint.sh' script that the Postgres Dockerfile refers to. 
+
 file_env() {
     var="$1"
     fileVar="${var}_FILE"
     def="${2:-}"
 
 	if [ "$( echo "\$${var:-}" )" = "" ] && [ "$( echo "\$${fileVar:-}" )" = "" ]; then
-        echo >&2 "error: both $var and $fileVar are set (but are exclusive)"
+        echo >&2 "error: both ${var} and ${fileVar} are set (but are exclusive)"
         exit 1
     fi
 
     val="$def"
 
-    if [ "$( echo "\$${var}" )" != "" ]; then
+	if [  "$( echo "\$${var}" )" != "" ]; then
         val="$( eval echo "\$${var}" )"
-    elif [ "$( echo "\$${fileVar}" )" != "" ]; then
+	elif [ "$( echo "\$${fileVar}" )" != "" ]; then
         val="$( eval cat "\$${fileVar}" )"
     fi
 
@@ -36,24 +37,23 @@ file_env() {
 
 if [ "$1" = "ssh" ]
 then
-    file_env 'USER' 'docker'
-    file_env 'PASSWORD' 'docker'
+    file_env 'USER'
+    file_env 'PASSWORD'
 
     # Creating user (default - 'docker') and changing password (default -  'docker')
     if [ "$(id -u "${USER}")" != "0" ]
 	then
 		USER_HOME="$( eval echo "/home/${USER}" )"
-		adduser -g "Docker user for SSH login" -h "${USER_HOME}" -s /bin/sh -G wheel -D "${USER}" && \
-		echo "${USER}:${PASSWORD}" | chpasswd && \
-		echo "AllowUsers ${USER}">> /etc/ssh/sshd_config
+		adduser -g "Docker user for SSH login" -h "${USER_HOME}" -s /bin/ash -G wheel -D "${USER}"
 	elif [ "${USER}" = "root" ]
 	then
+		USER_HOME="$( eval echo ~"${USER}" )"
 		echo "Root login is prohibited. Changing to 'allowed'."
 		sed -ri 's|^#?PermitRootLogin(\s+).*|PermitRootLogin yes|g' /etc/ssh/sshd_config
-	else
-		echo "${USER}:${PASSWORD}" | chpasswd && \
-		echo "AllowUsers ${USER}">> /etc/ssh/sshd_config
 	fi
+
+	echo "AllowUsers ${USER}">> /etc/ssh/sshd_config
+	echo "${USER}:${PASSWORD}" | chpasswd
 
 	# Creating hidden directory '.ssh' in user's home directory and configuring user's SSH file.
 	if [ -d "${USER_HOME}" ]

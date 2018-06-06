@@ -25,7 +25,7 @@ file_env() {
 
 	if [ "$( echo "\$${var}" )" != "" ]; then
 		val="$( eval echo "\$${var}" )"
-	elif [ "$( echo "\$${fileVar}" )" != "" ]; then
+	elif [ "$( echo "\$$fileVar" )" != "" ]; then
         val="$( eval cat "\$${fileVar}" )"
     fi
 
