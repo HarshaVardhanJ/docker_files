@@ -47,6 +47,10 @@ then
 	then
 		USER_HOME="$( echo "/home/${USER}" )"
 		echo "Root login is prohibited by default. Changing to 'allowed'."
+		echo "It is recommended that you use SSH keys to login as 'root'."
+        echo "To use SSH keys, use the SSH_PUBKEY="$(cat testkey.pub)" option as an environment variable."
+        sed -ri 's|^#?PermitRootLogin(\s+).*|PermitRootLogin yes|g' /etc/ssh/sshd_config
+
 	else
 		USER_HOME="$( eval echo ~"${USER}" )"
 	fi
