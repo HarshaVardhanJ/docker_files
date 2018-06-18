@@ -45,7 +45,7 @@ then
 	then
 		USER_HOME="$( eval echo "/home/${USER:-docker}" )"
 		adduser -g "Docker user for SSH login" -h "${USER_HOME}" -s /bin/ash -G wheel -D "${USER:-docker}"
-	elif [ "${USER:-docker}" = "root" ]
+	elif [ "$(id -u "${USER:-docker}")" = "0" ]
 	then
 		USER_HOME="$( eval echo ~"${USER:-docker}" )"
 		echo "Root login is prohibited. Changing to 'allowed'."
