@@ -42,16 +42,14 @@ then
 	if [ "$(id -u "${USER}")" != "0" ]
 	then
 		USER_HOME="$( eval echo ~"${USER}" )"
-		adduser -g "Docker user for SSH login" -h "${USER_HOME}" -s /bin/bash -G wheel -D "${USER}" && \
+		adduser -g "Docker user for SSH login" -h "${USER_HOME}" -s /bin/bash -G wheel -D "${USER}"
 	elif [ "$(id -u "${USER}")" == "0" ]
 	then
-#		USER_HOME="$( echo "/home/${USER}" )"
 		USER_HOME="$( eval echo ~"${USER}" )"
 		echo "Root login is prohibited by default. Changing to 'allowed'."
 		echo "It is recommended that you use SSH keys to login as 'root'."
         echo "To use SSH keys, use the SSH_PUBKEY="$(cat testkey.pub)" option as an environment variable."
         sed -ri 's|^#?PermitRootLogin(\s+).*|PermitRootLogin yes|g' /etc/ssh/sshd_config
-
 	else
 		USER_HOME="$( eval echo ~"${USER}" )"
 	fi
