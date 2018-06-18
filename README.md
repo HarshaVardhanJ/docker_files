@@ -81,7 +81,7 @@ Example `stack.yml` for `openssh`:
 
 ```yaml
 # Use OpenSSH example user/password credentials
-version: '3.1'
+version: '3.4'
 
 services:
 	ssh:
@@ -90,18 +90,23 @@ services:
 			- "2222:22"
 		restart: always
 		environment:
-			- USER: example
-			- PASSWORD: example
+			- USER=example
+			- PASSWORD=example
 ```  
   
 
 [![Try in 'Play With
 Docker'](https://github.com/play-with-docker/stacks/raw/cff22438cb4195ace27f9b15784bbb497047afa7/assets/images/button.png)](http://play-with-docker.com?stack=https://raw.githubusercontent.com/HarshaVardhanJ/docker_files/with-sh/openssh-alpine/docker-compose.yml)
 
-Run `docker stack deploy -c stack.yml harshavardhanj/openssh` (or
-`docker-compose -f stack.yml up`), wait for it to initialize completely, and try
-to connect using `ssh example@swarm-ip -p 2222`, `ssh example@localhost -p
-2222`, or `ssh example@host-ip -p 2222` (as appropriate).  
+
+To use in a swarm, run `docker stack deploy -c stack.yml harshavardhanj/openssh`
+from the manager node in your swarm, wait for it to initialize completely, and
+try to connect using `ssh example@swarm-ip -p 2222`.  
+
+To use on a local development machine, use `docker-compose -f stack.yml up` from
+your local machine, wait for it to initialize completely, and try to connect
+using `ssh example@localhost -p 2222`, or `ssh example@host-ip -p 2222` (as
+appropriate).  
 
 ## Environment Variables
 
