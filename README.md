@@ -1,5 +1,3 @@
-## Repository for Dockerfiles and other allied configuration files related to Docker
-
 # Supported tags and respective `Dockerfile` links
 
 - 	[`with-sh`, `latest`, (*OpenSSH/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/with-sh/openssh-alpine/Dockerfile)
