@@ -6,14 +6,9 @@ services:
         image: harshavardhanj/openssh
         ports:
             - "2222:22"
-        secrets:
-            - ssh_user
-            - ssh_password
-            - ssh_pubkey
         environment:
-            - USER_FILE=ssh_user
-            - PASSWORD_FILE=ssh_password
-            - SSH_PUBKEY_FILE=ssh_pubkey
+            - USER=ssh_user
+            - PASSWORD=ssh_password
         deploy:
             mode: replicated
             replicas: 3
@@ -27,10 +22,3 @@ services:
                 condition: on-failure
                 delay: 10s
 
-secrets:
-    ssh_user:
-        external: true
-    ssh_password:
-        external: true
-    ssh_pubkey:
-        external: true
