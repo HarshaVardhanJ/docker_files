@@ -1,9 +1,9 @@
-version: "3.5"
+version: "3.4"
 
 services:
 
     openssh:
-        image: harshavardhanj/openssh:with-sh
+        image: harshavardhanj/openssh:without-bash
         ports:
             - "2222:22"
         environment:
