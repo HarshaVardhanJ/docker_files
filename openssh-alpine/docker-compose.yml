@@ -7,18 +7,5 @@ services:
         ports:
             - "2222:22"
         environment:
-            - USER=ssh_user
-            - PASSWORD=ssh_password
-        deploy:
-            mode: replicated
-            replicas: 3
-            placement:
-                constraints:
-                    - node.role == worker
-            update_config:
-                parallelism: 1
-                delay: 10s
-            restart_policy:
-                condition: on-failure
-                delay: 10s
-
+            - USER=example
+            - PASSWORD=example
