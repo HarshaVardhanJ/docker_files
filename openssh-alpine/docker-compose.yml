@@ -3,7 +3,7 @@ version: "3.5"
 services:
 
     openssh:
-        image: harshavardhanj/openssh
+        image: harshavardhanj/openssh:with-sh
         ports:
             - "2222:22"
         environment:
