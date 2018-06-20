@@ -1,4 +1,4 @@
-### Dockerfile for dockerization of SSHD service on Ubuntu.       ###
+###    Dockerfile for dockerization of SSHD service on Ubuntu.    ###
 #                                                                   #
 #####################################################################
 #       DOCKERISED SSH SERVICE BUILT ON TOP OF UBUNTU               #
