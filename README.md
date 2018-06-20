@@ -2,6 +2,7 @@
 
 - 	[`alpine-bash`, `latest`, (*OpenSSH/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/master/openssh-alpine/Dockerfile)
 -	[`alpine`, (*OpenSSH/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/with-sh/openssh-alpine/Dockerfile)
+-	[`jessie`, (*OpenSSH/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/master/openssh-debian/Dockerfile)
 -	[`ubuntu`, (*OpenSSH/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/master/openssh-ubuntu/Dockerfile)
 
 # Quick reference
@@ -16,7 +17,7 @@
 # Software Packages installed
 
 * OpenSSH Server (latest version)
-* Bash (Bourne Again Shell), only if using the `alpine-bash` and `ubuntu` image
+* Bash (Bourne Again Shell), only if using the `alpine-bash`, `ubuntu`, and `jessie` image
 
 # Description of tags
 
@@ -61,6 +62,22 @@ As Bash is not installed, this image is slightly smaller in size than the
 ```console
 $ docker container run -d --name ssh -p "2222:22/tcp" \
 harshavardhanj/openssh:alpine
+```  
+
+## `jessie`
+
+The image with this tag contains the following software packages installed on
+top of the base [`debian:jessie-slim`](https://github.com/debuerreotype/docker-debian-artifacts/blob/b024a792c752a5c6ccc422152ab0fd7197ae8860/jessie/slim/Dockerfile)
+image, which is the base image of Debian Jessie Slim.
+
+* OpenSSH Server (latest version)
+* Bash (latest version)
+
+To use this image, use the `jessie` tag as follows  
+
+```console
+$ docker container run -d --name ssh -p "2222:22/tcp" \
+harshavardhanj/openssh:jessie
 ```  
 
 ## `ubuntu`
@@ -187,22 +204,20 @@ The `openssh` image comes in two variants(and three tags) currently.
 
 -	`openssh:alpine-bash` (based on Alpine Linux, with Bash installed)
 -	`openssh:alpine` (based on Alpine Linux, without Bash installed)
+-	`openssh:jessie` (based on Debian Jessie Slim)
 -	`openssh:ubuntu` (based on
 	[`phusion/baseimage`](https://hub.docker.com/r/phusion/baseimage/) which is
 	built on Ubuntu)
 
-One is based on Alpine Linux and the other is built on top of `phusion/baseimage` image
-which is modified version of Ubuntu suitable for containerisation purposes. For
-more information, please take a look at `phusion/baseimage`'s repository on
+For more information on the image that is built on top of `phusion/baseimage` image
+which is modified version of Ubuntu suitable for containerisation purposes, please take a look at `phusion/baseimage`'s repository on
 [GitHub](https://github.com/phusion/baseimage-docker) and [DockerHub](https://hub.docker.com/r/phusion/baseimage/).
 
 
 ## `openssh:<version>`
 
 This is the defacto image. If you are unsure about what your needs are, you
-probably want to use this one. It is designed to be used both as a throw away
-container (mount your source code and start the container to start your app), as
-well as the base to build other images off of.
+probably want to use this one.
 
 
 ## `openssh:alpine`
@@ -228,7 +243,17 @@ To minimize image size, it's uncommon for additional related tools (such as
 `git` or `bash`) to be included in Alpine-based images. Using this image as a
 base, add the things you need in your own Dockerfile (see the [`alpine` image
 description](https://hub.docker.com/_/alpine/) for examples of how to install
-packages if you are unfamiliar).
+packages if you are unfamiliar).  
+
+## `openssh:jessie`  
+
+This image is based on the Debian Jessie Slim distribution.  
+
+## `openssh:ubuntu`  
+
+This image is based on the `phusion:baseimage` image which, as described
+previously, is based on Ubuntu with improvements.  
+
 
 # License
 
