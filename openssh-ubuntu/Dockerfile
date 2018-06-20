@@ -44,7 +44,7 @@ public-key authentication." \
 ARG CONFIG=/etc/ssh/sshd_config
 
 # Installing bash and OpenSSH server and cleanup
-RUN apt-get update ; apt-get install -y --no-install-recommends --no-cache \
+RUN apt-get update ; apt-get install -y --no-install-recommends \
 	bash \
 	openssh-server && \
 	apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
