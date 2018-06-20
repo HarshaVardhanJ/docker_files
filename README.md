@@ -1,7 +1,7 @@
 # Supported tags and respective `Dockerfile` links
 
-- 	[`with-bash`, `latest`, (*OpenSSH/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/master/openssh-alpine/Dockerfile)
--	[`without-bash`, (*OpenSSH/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/with-sh/openssh-alpine/Dockerfile)
+- 	[`alpine-bash`, `latest`, (*OpenSSH/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/master/openssh-alpine/Dockerfile)
+-	[`alpine`, (*OpenSSH/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/with-sh/openssh-alpine/Dockerfile)
 -	[`ubuntu`, (*OpenSSH/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/master/openssh-ubuntu/Dockerfile)
 
 # Quick reference
@@ -16,11 +16,11 @@
 # Software Packages installed
 
 * OpenSSH Server (latest version)
-* Bash (Bourne Again Shell), only if using the `with-bash` and `ubuntu` image
+* Bash (Bourne Again Shell), only if using the `alpine-bash` and `ubuntu` image
 
 # Description of tags
 
-## `with-bash`, `latest`
+## `alpine-bash`, `latest`
 
 The image with this tag contains the following software packages installed on
 top of the base Alpine Linux image.
@@ -33,7 +33,7 @@ Due to Bash being installed, this image is slightly larger in size than the
 
 ```console
 $ docker container run -d --name ssh -p "2222:22/tcp" \
-harshavardhanj/openssh:with-bash
+harshavardhanj/openssh:alpine-bash
 ```  
 or
 ```console
@@ -48,7 +48,7 @@ harshavardhanj/openssh
 
 Any of the above commands will pull the image with the `with-bash` tag.
 
-## `without-bash`
+## `alpine`
 
 The image with this tag contains the following software packages installed on
 top of the base Alpine Linux image.
@@ -60,7 +60,7 @@ As Bash is not installed, this image is slightly smaller in size than the
 
 ```console
 $ docker container run -d --name ssh -p "2222:22/tcp" \
-harshavardhanj/openssh:without-bash
+harshavardhanj/openssh:alpine
 ```  
 
 ## `ubuntu`
@@ -185,9 +185,11 @@ $ docker container run --name ssh -p "2222:22/tcp" \
 
 The `openssh` image comes in two variants(and three tags) currently.
 
--	`openssh:with-bash` (based on Alpine Linux, with Bash installed)
--	`openssh:without-bash` (based on Alpine Linux, without Bash installed)
--	`openssh:ubuntu` (based on `phusion/baseimage` which is built on Ubuntu)
+-	`openssh:alpine-bash` (based on Alpine Linux, with Bash installed)
+-	`openssh:alpine` (based on Alpine Linux, without Bash installed)
+-	`openssh:ubuntu` (based on
+	[`phusion/baseimage`](https://hub.docker.com/r/phusion/baseimage/) which is
+	built on Ubuntu)
 
 One is based on Alpine Linux and the other is built on top of `phusion/baseimage` image
 which is modified version of Ubuntu suitable for containerisation purposes. For
