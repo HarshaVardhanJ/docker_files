@@ -79,7 +79,7 @@ To use this image, use the `ubuntu` tag as follows
 ```console
 $ docker container run -d --name ssh -p "2222:22/tcp" \
 harshavardhanj/openssh:ubuntu
-```
+```  
 
 # How to use this image
 
@@ -194,8 +194,7 @@ The `openssh` image comes in two variants(and three tags) currently.
 One is based on Alpine Linux and the other is built on top of `phusion/baseimage` image
 which is modified version of Ubuntu suitable for containerisation purposes. For
 more information, please take a look at `phusion/baseimage`'s repository on
-[GitHub](https://github.com/phusion/baseimage-docker) and
-[DockerHub](https://hub.docker.com/r/phusion/baseimage/).
+[GitHub](https://github.com/phusion/baseimage-docker) and [DockerHub](https://hub.docker.com/r/phusion/baseimage/).
 
 
 ## `openssh:<version>`
