@@ -2,6 +2,7 @@
 
 - 	[`with-bash`, `latest`, (*OpenSSH/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/master/openssh-alpine/Dockerfile)
 -	[`without-bash`, (*OpenSSH/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/with-sh/openssh-alpine/Dockerfile)
+-	[`ubuntu`, (*OpenSSH/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/master/openssh-ubuntu/Dockerfile)
 
 # Quick reference
 
@@ -15,7 +16,7 @@
 # Software Packages installed
 
 * OpenSSH Server (latest version)
-* Bash (Bourne Again Shell), only if using the `with-bash` image
+* Bash (Bourne Again Shell), only if using the `with-bash` and `ubuntu` image
 
 # Description of tags
 
@@ -61,6 +62,24 @@ As Bash is not installed, this image is slightly smaller in size than the
 $ docker container run -d --name ssh -p "2222:22/tcp" \
 harshavardhanj/openssh:without-bash
 ```  
+
+## `ubuntu`
+
+The image with this tag contains the followings software packages installed on
+top of the base
+[`phusion/baseimage`](https://github.com/phusion/baseimage-docker) image, which
+is the base image of Ubuntu 
+that has been modified to fit well with containerisation tools like Docker.
+
+* OpenSSH Server (latest version)
+* Bash (latest version)
+
+To use this image, use the `ubuntu` tag as follows
+
+```console
+$ docker container run -d --name ssh -p "2222:22/tcp" \
+harshavardhanj/openssh:ubuntu
+```
 
 # How to use this image
 
@@ -164,8 +183,17 @@ $ docker container run --name ssh -p "2222:22/tcp" \
 
 # Image Variants
 
-The `openssh` image comes in one flavour currently. In the future, more variants
-will be added.
+The `openssh` image comes in two variants(and three tags) currently.
+
+-	`openssh:with-bash` (based on Alpine Linux, with Bash installed)
+-	`openssh:without-bash` (based on Alpine Linux, without Bash installed)
+-	`openssh:ubuntu` (based on `phusion/baseimage` which is built on Ubuntu)
+
+One is based on Alpine Linux and the other is built on top of `phusion/baseimage` image
+which is modified version of Ubuntu suitable for containerisation purposes. For
+more information, please take a look at `phusion/baseimage`'s repository on
+[GitHub](https://github.com/phusion/baseimage-docker) and
+[DockerHub](https://hub.docker.com/r/phusion/baseimage/).
 
 
 ## `openssh:<version>`
