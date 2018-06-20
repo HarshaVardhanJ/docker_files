@@ -8,7 +8,7 @@
 # Quick reference
 
 -	**Maintained by**:
-	[Harsha Vardhan J](https://github.com/HarshaVardhanJ/docker_files/master/openssh-alpine)
+	[Harsha Vardhan J](https://github.com/HarshaVardhanJ/docker_files)
 
 -	**Source of this description**:
 	[README in `docker_files` repository](https://github.com/HarshaVardhanJ/docker_files/blob/master/README.md)
@@ -111,7 +111,7 @@ This image includes `EXPOSE 22` (the standard SSH port), so standard container
 linking will make it automatically available to linked containers. The default
 user that you can login as is created in the entrypoint script.
 
-## ... via [`docker stack deploy`](https://docs.docker.com/engine/reference/commandline/stack_deploy/) or [`docker-compose`](https://github.com/docker/compose)
+## ... via [`docker stack deploy`](https://docs.docker.com/engine/reference/commandline/stack_deploy/) or [`docker-compose`](https://docs.docker.com/compose/overview/)
 
 Example `stack.yml` for `openssh`:
 
@@ -202,12 +202,10 @@ $ docker container run --name ssh -p "2222:22/tcp" \
 
 The `openssh` image comes in two variants(and three tags) currently.
 
--	`openssh:alpine-bash` (based on Alpine Linux, with Bash installed)
--	`openssh:alpine` (based on Alpine Linux, without Bash installed)
--	`openssh:jessie` (based on Debian Jessie Slim)
--	`openssh:ubuntu` (based on
-	[`phusion/baseimage`](https://hub.docker.com/r/phusion/baseimage/) which is
-	built on Ubuntu)
+-	`openssh:alpine-bash` (based on [Alpine Linux](https://hub.docker.com/_/alpine/), with Bash installed)
+-	`openssh:alpine` (based on [Alpine Linux](https://hub.docker.com/_/alpine/), without Bash installed)
+-	`openssh:jessie` (based on [Debian Jessie Slim](https://hub.docker.com/_/debian/))
+-	`openssh:ubuntu` (based on [`phusion/baseimage`](https://hub.docker.com/r/phusion/baseimage/) which is built on Ubuntu)
 
 For more information on the image that is built on top of `phusion/baseimage` image
 which is modified version of Ubuntu suitable for containerisation purposes, please take a look at `phusion/baseimage`'s repository on
