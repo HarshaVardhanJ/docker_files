@@ -12,7 +12,7 @@
 #                                                                   #
 #    1. Imports the latest base image of Debian Jessie.             #
 #    2. Updates the repositories via the package manager.           #
-#    3. Installs the OpenSSH server and 'bash' shell.               #
+#    3. Installs the OpenSSH server.                                #
 #    5. Sets some configuration values in '/etc/sshd_config'.       #
 #    6. Create /var/run/sshd directory. This needs to be done       #
 #       due to a bug in OpenSSH package in Debian Jessie.           #
@@ -49,9 +49,8 @@ ARG CONFIG=/etc/ssh/sshd_config
 
 # Installing bash and OpenSSH server and cleanup
 RUN apt-get update ; apt-get install -y --no-install-recommends \
-	bash \
 	openssh-server && \
-	apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+	apt-get -y clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
 # Changing SSHD configuration file defaults
 	sed -ri 's|^#?LogLevel INFO|LogLevel VERBOSE|g' ${CONFIG} ; \
 	sed -ri 's|^#?PasswordAuthentication(\s+).*|PasswordAuthentication yes|g' ${CONFIG} ; \
