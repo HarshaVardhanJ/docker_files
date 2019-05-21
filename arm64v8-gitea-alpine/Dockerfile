@@ -1,18 +1,18 @@
 # Dockerfile for creating a container that runs Gitea
 
-FROM alpine:latest as arm-builder
+#FROM alpine:latest as arm-builder
 
-RUN apk update \
-	&& apk add --no-cache curl tar \
-	&& curl -L https://github.com/balena-io/qemu/releases/download/v3.0.0%2Bresin/qemu-3.0.0+resin-arm.tar.gz \
-	| tar zxvf - -C . && mv qemu-3.0.0+resin-arm/qemu-arm-static .
-
-WORKDIR /
-
+#RUN apk update \
+#	&& apk add --no-cache curl tar \
+#	&& curl -L https://github.com/balena-io/qemu/releases/download/v3.0.0%2Bresin/qemu-3.0.0+resin-arm.tar.gz \
+#	| tar zxvf - -C . && mv qemu-3.0.0+resin-arm/qemu-arm-static .
+#
+#WORKDIR /
+#
 FROM arm64v8/golang:1.11.4-alpine3.8 as gitea-build
 
 # Copy across the qemu binary that was downloaded in the previous build step
-COPY --from=arm-builder /qemu-arm-static /usr/bin
+#COPY --from=arm-builder /qemu-arm-static /usr/bin
 
 MAINTAINER "Harsha Vardhan J <vardhanharshaj@gmail.com>"
 
