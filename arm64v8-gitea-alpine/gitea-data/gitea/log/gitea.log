@@ -1,0 +1,29 @@
+2019/05/08 08:00:11 [I] Log Mode: File(Info)
+2019/05/08 08:00:11 [I] XORM Log Mode: File(Info)
+2019/05/08 08:00:11 [I] Cache Service Enabled
+2019/05/08 08:00:11 [I] Session Service Enabled
+2019/05/08 08:00:12 [I] Git Version: 2.18.1
+2019/05/08 08:00:12 [I] Git config user.name set to Gitea
+2019/05/08 08:00:12 [I] Git config user.email set to gitea@fake.local
+2019/05/08 08:00:12 [I] SQLite3 Supported
+2019/05/08 08:00:12 [I] Run Mode: Production
+2019/05/08 08:00:12 [I] First-time run install finished!
+2019/05/08 08:00:12 [I] New random avatar created: 1
+2019/05/08 08:11:10 [I] Log Mode: File(Info)
+2019/05/08 08:11:10 [I] XORM Log Mode: File(Info)
+2019/05/08 08:11:10 [I] Cache Service Enabled
+2019/05/08 08:11:10 [I] Session Service Enabled
+2019/05/08 08:11:11 [I] Git Version: 2.18.1
+2019/05/08 08:11:11 [I] SQLite3 Supported
+2019/05/08 08:11:11 [I] Run Mode: Production
+2019/05/08 08:11:12 [I] Listen: http://0.0.0.0:3000
+2019/05/08 08:11:12 [I] LFS server enabled
+2019/05/08 08:13:11 [I] Log Mode: File(Info)
+2019/05/08 08:13:11 [I] XORM Log Mode: File(Info)
+2019/05/08 08:13:11 [I] Cache Service Enabled
+2019/05/08 08:13:11 [I] Session Service Enabled
+2019/05/08 08:13:15 [I] Git Version: 2.18.1
+2019/05/08 08:13:16 [I] SQLite3 Supported
+2019/05/08 08:13:16 [I] Run Mode: Production
+2019/05/08 08:13:21 [I] Listen: http://0.0.0.0:3000
+2019/05/08 08:13:21 [I] LFS server enabled

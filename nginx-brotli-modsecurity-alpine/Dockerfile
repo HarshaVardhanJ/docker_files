@@ -32,7 +32,8 @@
 #                                                                   #
 #####################################################################
 # Using a base image of Alpine Linux
-FROM arm64v8/alpine:latest
+#FROM arm64v8/alpine:latest
+FROM alpine:latest
 
 # Maintainer information
 LABEL maintainer="Harsha Vardhan J" \
@@ -115,6 +116,12 @@ RUN CONFIG="\
 		libxslt-dev \
 		gd-dev \
 		geoip-dev \
+		perl-dev \
+	&& apk add --no-cache --virtual .modsec-deps \
+		libxml2-dev \
+		flex \
+		bison \
+		yajl-dev
 	&& apk add --no-cache --virtual .brotli-deps \
 		autoconf \
 		libtool \
@@ -122,6 +129,15 @@ RUN CONFIG="\
 		git \
 		g++ \
 		cmake \
+	&& apk add --no-cache \
+		doxygen \
+		geoip \
+		geoip-dev \
+		yajl \
+		libstdc++ \
+		git \
+		sed \
+		libmaxminddb-dev \
 	&& mkdir -p /usr/src \
 	&& cd /usr/src \
 	####################### Download and extract Nginx

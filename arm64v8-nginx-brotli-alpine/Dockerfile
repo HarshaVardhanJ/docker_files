@@ -21,7 +21,7 @@
 #    6. Complies Nginx with OpenSSL and Brotli modules.             #
 #    7. Copies 'nginx.conf' configuration file to container         #
 #       to be run.                                                  #
-#    8. Exposes port 80 and 443 on the container.                   #
+#    8. Exposes port 22 on the container.                           #
 #    9. Starts Nginx.                                               #
 #                                                                   #
 # Note : Do not forget to expose a port on your machine if you      #
@@ -29,20 +29,22 @@
 #                                                                   #
 #####################################################################
 # Using a base image of Alpine Linux
-FROM alpine:latest
+#FROM alpine:latest
+FROM arm64v8/alpine:latest
 
 # Maintainer information
 LABEL maintainer="Harsha Vardhan J" \
       github.account="https://github.com/HarshaVardhanJ" \
       dockerfile.github.page="https://github.com/HarshaVardhanJ/docker_files\
-/blob/master/nginx-brotli-alpine/Dockerfile" \
-      description="This Dockerfile creates an Nginx webserver listening on port 80 and 443 \
-      by default. The webserver is configured with support for Brotli compression" \
+/blob/master/nginx-brotli-pagespeed-alpine/Dockerfile" \
+      description="This Dockerfile creates an Nginx webserver listening on port 80 \
+      by default. This can be changed by passing environment variables during container \
+      run time." \
       version="0.1"
 
-# Environment variables to store version numbers of Nginx and OpenSSL
 ENV NGINX_VERSION 1.14.2
 ENV OPENSSL_VERSION 1.1.1a
+
 
 RUN CONFIG="\
 		--prefix=/etc/nginx \
