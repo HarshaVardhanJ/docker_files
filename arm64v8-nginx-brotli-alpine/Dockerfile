@@ -21,23 +21,39 @@
 #    6. Complies Nginx with OpenSSL and Brotli modules.             #
 #    7. Copies 'nginx.conf' configuration file to container         #
 #       to be run.                                                  #
-#    8. Exposes port 22 on the container.                           #
+#    8. Exposes port 80 and 443 on the container.                   #
 #    9. Starts Nginx.                                               #
 #                                                                   #
-# Note : Do not forget to expose a port on your machine if you      #
+# Note : Do not forget to expose the ports on your machine if you   #
 #        wish to access the Nginx web server.                       #
 #                                                                   #
 #####################################################################
+
+# Prebuilder steps (needed only while building on Docker Hub)
+#
+FROM alpine:latest as armDownloader
+
+# Changing working directory to `/`
+WORKDIR /
+
+# Downloading and extracting the `qemu-arm-static` binary file
+RUN wget -O qemu-arm.tar.gz https://github.com/balena-io/qemu/releases/download/v3.0.0%2Bresin/qemu-3.0.0+resin-arm.tar.gz \
+    | tar zxvf - -C . && mv qemu-3.0.0+resin-arm/qemu-arm-static .
+
+
 # Using a base image of Alpine Linux
-#FROM alpine:latest
 FROM arm64v8/alpine:latest
+
+# Copying the `qemu-arm-static` binary to the container to help
+# Docker Hub build the image
+COPY --from=armDownloader /qemu-arm-static /usr/bin
 
 # Maintainer information
 LABEL maintainer="Harsha Vardhan J" \
       github.account="https://github.com/HarshaVardhanJ" \
       dockerfile.github.page="https://github.com/HarshaVardhanJ/docker_files\
 /blob/master/nginx-brotli-pagespeed-alpine/Dockerfile" \
-      description="This Dockerfile creates an Nginx webserver listening on port 80 \
+      description="This Dockerfile creates an Nginx webserver listening on port 80 and 443 \
       by default. This can be changed by passing environment variables during container \
       run time." \
       version="0.1"
