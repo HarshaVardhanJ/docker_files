@@ -138,8 +138,9 @@ RUN CONFIG="\
 	&& mkdir -p /usr/src \
 	&& cd /usr/src \
 	####################### Download and extract Nginx
-	&& wget http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -O nginx.tar.gz \
-	&& tar -xvzf nginx.tar.gz -C /usr/src \
+	#&& wget -c http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -O nginx.tar.gz \
+	&& wget -qc -O- http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz \
+	| tar xvz - -C /usr/src \
 	&& mv /usr/src/nginx-$NGINX_VERSION /usr/src/nginx \
 	####################### Download and extract OpenSSL
 	&& wget https://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz -O openssl.tar.gz \
