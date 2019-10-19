@@ -31,14 +31,14 @@
 
 # Prebuilder steps (needed only while building on Docker Hub)
 #
-FROM alpine:latest as armDownloader
+FROM alpine:latest AS armDownloader
 
 # Changing working directory to `/`
 WORKDIR /
 
 # Downloading and extracting the `qemu-arm-static` binary file
 RUN wget -O qemu-arm.tar.gz https://github.com/balena-io/qemu/releases/download/v3.0.0%2Bresin/qemu-3.0.0+resin-arm.tar.gz \
-    && tar zxvf qemu-arm.tar.gz -C . && mv qemu-3.0.0+resin-arm/qemu-arm-static .
+    && tar zxvf qemu-arm.tar.gz -C / && mv qemu-3.0.0+resin-arm/qemu-arm-static /
 
 
 # Using a base image of Alpine Linux
