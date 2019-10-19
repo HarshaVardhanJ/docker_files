@@ -63,7 +63,7 @@ ENV NGINX_VERSION 1.14.2
 ENV OPENSSL_VERSION 1.1.1a
 
 
-RUN CONFIG="\
+RUN qemu-arm-static CONFIG="\
 		--prefix=/etc/nginx \
 		--sbin-path=/usr/sbin/nginx \
 		--modules-path=/usr/lib/nginx/modules \
