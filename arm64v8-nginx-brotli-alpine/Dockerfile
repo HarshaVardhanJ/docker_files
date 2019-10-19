@@ -31,14 +31,14 @@
 
 # Prebuilder steps (needed only while building on Docker Hub)
 #
-#FROM alpine:latest AS armDownloader
+FROM alpine:latest AS armDownloader
 #
 ## Changing working directory to `/`
-#WORKDIR /
+WORKDIR /
 #
 ## Downloading and extracting the `qemu-arm-static` binary file
-#RUN wget -O qemu-arm.tar.gz https://github.com/balena-io/qemu/releases/download/v3.0.0%2Bresin/qemu-3.0.0+resin-arm.tar.gz \
-#    && tar zxvf qemu-arm.tar.gz -C / && cp qemu-3.0.0+resin-arm/qemu-arm-static /
+RUN wget -O qemu-arm.tar.gz https://github.com/balena-io/qemu/releases/download/v3.0.0%2Bresin/qemu-3.0.0+resin-arm.tar.gz \
+    && tar zxvf qemu-arm.tar.gz -C / && cp qemu-3.0.0+resin-arm/qemu-arm-static /
 #
 #
 # Using a base image of Alpine Linux
@@ -46,8 +46,8 @@ FROM arm64v8/alpine:latest
 
 # Copying the `qemu-arm-static` binary to the container to help
 # Docker Hub build the image
-#COPY --from=armDownloader /qemu-arm-static /usr/bin/qemu-arm-static
-COPY --from=hypriot/rpi-alpine /usr/bin/qemu-arm-static /usr/bin/qemu-arm-static
+COPY --from=armDownloader /qemu-arm-static /usr/bin/qemu-arm-static
+#COPY --from=hypriot/rpi-alpine /usr/bin/qemu-arm-static /usr/bin/qemu-arm-static
 
 # Maintainer information
 LABEL maintainer="Harsha Vardhan J" \
@@ -63,7 +63,7 @@ ENV NGINX_VERSION 1.14.2
 ENV OPENSSL_VERSION 1.1.1a
 
 
-RUN qemu-arm-static CONFIG="\
+RUN CONFIG="\
 		--prefix=/etc/nginx \
 		--sbin-path=/usr/sbin/nginx \
 		--modules-path=/usr/lib/nginx/modules \
