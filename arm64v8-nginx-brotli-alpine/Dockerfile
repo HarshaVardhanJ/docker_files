@@ -109,7 +109,7 @@ RUN CONFIG="\
 		--with-file-aio \
 		--with-http_v2_module \
 		--add-module=../ngx_brotli \
-	"\
+	" \
 	####################### Add user and group 'nginx'
 	#
 	&& addgroup -S nginx \
@@ -118,6 +118,7 @@ RUN CONFIG="\
 	# 
 	&& apk add --no-cache --virtual .build-deps \
 		gcc \
+		curl \
 		libc-dev \
 		make \
 		pcre-dev \
@@ -138,11 +139,11 @@ RUN CONFIG="\
 	&& mkdir -p /usr/src \
 	&& cd /usr/src \
 	####################### Download and extract Nginx
-	&& wget -c http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -O nginx.tar.gz \
+	&& curl -sSL http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \
 	&& tar -zxC /usr/src -f nginx.tar.gz \
 	&& mv /usr/src/nginx-$NGINX_VERSION /usr/src/nginx \
 	####################### Download and extract OpenSSL
-	&& wget https://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz -O openssl.tar.gz \
+	&& curl -sSL https://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz -o openssl.tar.gz \
 	&& tar -zxC /usr/src -f openssl.tar.gz \
 	&& mv /usr/src/openssl-$OPENSSL_VERSION /usr/src/openssl \
 	####################### Download and extract Nginx-Brotli
