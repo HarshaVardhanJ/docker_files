@@ -44,9 +44,10 @@ public-key authentication." \
 ARG CONFIG=/etc/ssh/sshd_config
 
 # Installing bash and OpenSSH server
-RUN apk update ; apk add --no-cache \
+RUN apk update ; apk add --no-cache --virtual .entrypoint-deps \
 	bash \
-	openssh-server && \
+	&& apk add --no-cache --virtual openssh-server \
+	&& \
 # Changing SSHD configuration file defaults
 	sed -ri 's|^#?LogLevel INFO|LogLevel VERBOSE|g' ${CONFIG} ; \
 	sed -ri 's|^#?PasswordAuthentication(\s+).*|PasswordAuthentication yes|g' ${CONFIG} ; \
