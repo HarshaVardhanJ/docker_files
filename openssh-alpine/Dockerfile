@@ -46,8 +46,7 @@ ARG CONFIG=/etc/ssh/sshd_config
 # Installing bash and OpenSSH server
 RUN apk update && apk add --no-cache --virtual .entrypoint-deps \
 	bash \
-	&& apk add --no-cache --virtual openssh-server \
-	&& \
+	&& apk add --no-cache openssh-server && \
 # Changing SSHD configuration file defaults
 	sed -ri 's|^#?LogLevel INFO|LogLevel VERBOSE|g' ${CONFIG} ; \
 	sed -ri 's|^#?PasswordAuthentication(\s+).*|PasswordAuthentication yes|g' ${CONFIG} ; \
