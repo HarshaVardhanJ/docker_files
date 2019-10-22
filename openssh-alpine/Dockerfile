@@ -44,7 +44,7 @@ public-key authentication." \
 ARG CONFIG=/etc/ssh/sshd_config
 
 # Installing bash and OpenSSH server
-RUN apk update ; apk add --no-cache --virtual .entrypoint-deps \
+RUN apk update && apk add --no-cache --virtual .entrypoint-deps \
 	bash \
 	&& apk add --no-cache --virtual openssh-server \
 	&& \
