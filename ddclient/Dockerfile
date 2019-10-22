@@ -55,7 +55,7 @@ RUN apk update \
     && mv ddclient*/ddclient /usr/bin \
     # Clean up after installation
     && rm -rf ddclient* \
-    && apk del --purge .removable \
+    && apk del --no-cache --purge .removable \
     # Create directories for `ddclient` and creating config file
     && mkdir -p /etc/ddclient /var/cache/ddclient \
     && touch /etc/ddclient/ddclient.conf /var/run/ddclient.pid \
