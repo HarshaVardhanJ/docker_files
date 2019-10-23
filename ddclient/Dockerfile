@@ -26,8 +26,8 @@
 #                                                                   #
 #####################################################################
 
-# Use arm64v8 version of Alpine Linux
-FROM arm64v8/alpine:latest
+# Use latest image of Alpine Linux as base
+FROM alpine:latest
 
 # Setting the working directory to '/'
 WORKDIR /
@@ -49,7 +49,7 @@ RUN apk update \
     && cpan install Test::Requires \
     && cpan Data::Validate::IP \
     # Download the latest version of `ddclient`
-    && wget -c https://sourceforge.net/projects/ddclient/files/latest/download -O ddclient.zip \
+    && wget -qc https://sourceforge.net/projects/ddclient/files/latest/download -O ddclient.zip \
     && unzip ddclient.zip \
     # Move the binary to the appropriate directory
     && mv ddclient*/ddclient /usr/bin \

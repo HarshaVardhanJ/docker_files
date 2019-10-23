@@ -24,30 +24,23 @@
 #    8. Exposes port 80 and 443 on the container.                   #
 #    9. Starts Nginx.                                               #
 #                                                                   #
-# Note : Do not forget to expose the ports on your machine if you   #
+# Note : Do not forget to expose a port on your machine if you      #
 #        wish to access the Nginx web server.                       #
 #                                                                   #
 #####################################################################
-
-# Using a base image of rpi-alpine from Hypriot
-# because it contains the qemu-arm-static binary
-FROM hypriot/rpi-alpine
-
-# Copying the `qemu-arm-static` binary to the container to help
-# Docker Hub build the image
-#COPY --from=armDownloader /qemu-arm-static /usr/bin/qemu-arm-static
-#COPY --from=hypriot/rpi-alpine /usr/bin/qemu-arm-static /usr/bin/qemu-arm-static
+# Using a base image of Alpine Linux
+FROM alpine:latest
 
 # Maintainer information
 LABEL maintainer="Harsha Vardhan J" \
       github.account="https://github.com/HarshaVardhanJ" \
       dockerfile.github.page="https://github.com/HarshaVardhanJ/docker_files\
-/blob/master/nginx-brotli-pagespeed-alpine/Dockerfile" \
+/blob/master/nginx-brotli-alpine/Dockerfile" \
       description="This Dockerfile creates an Nginx webserver listening on port 80 and 443 \
-      by default. This can be changed by passing environment variables during container \
-      run time." \
+      by default. The webserver is configured with support for Brotli compression" \
       version="0.1"
 
+# Environment variables to store version numbers of Nginx and OpenSSL
 ENV NGINX_VERSION 1.14.2
 ENV OPENSSL_VERSION 1.1.1a
 
@@ -106,13 +99,11 @@ RUN CONFIG="\
 	# 
 	&& apk add --no-cache --virtual .build-deps \
 		gcc \
-		curl \
 		libc-dev \
 		make \
 		pcre-dev \
 		zlib-dev \
 		linux-headers \
-		curl \
 		gnupg1 \
 		libxslt-dev \
 		gd-dev \
@@ -127,11 +118,11 @@ RUN CONFIG="\
 	&& mkdir -p /usr/src \
 	&& cd /usr/src \
 	####################### Download and extract Nginx
-	&& curl -sSL http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \
+	&& wget -qc http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -O nginx.tar.gz \
 	&& tar -zxC /usr/src -f nginx.tar.gz \
 	&& mv /usr/src/nginx-$NGINX_VERSION /usr/src/nginx \
 	####################### Download and extract OpenSSL
-	&& curl -sSL https://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz -o openssl.tar.gz \
+	&& wget -qc https://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz -O openssl.tar.gz \
 	&& tar -zxC /usr/src -f openssl.tar.gz \
 	&& mv /usr/src/openssl-$OPENSSL_VERSION /usr/src/openssl \
 	####################### Download and extract Nginx-Brotli
@@ -183,7 +174,6 @@ RUN CONFIG="\
 	&& apk del .brotli-deps \
 	&& apk del .gettext \
 	&& mv /tmp/envsubst /usr/local/bin/ \
-	\
 	# Bring in tzdata so users could set the timezones through the environment
 	# variables
 	&& apk add --no-cache tzdata \
@@ -192,10 +182,11 @@ RUN CONFIG="\
 	&& ln -sf /dev/stdout /var/log/nginx/access.log \
 	&& ln -sf /dev/stderr /var/log/nginx/error.log
 
+USER nginx
+
 # Expose ports 80 and 443
 EXPOSE 80 443
 
 STOPSIGNAL SIGTERM
 
 CMD ["nginx", "-g", "daemon off;"]
-

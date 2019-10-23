@@ -15,35 +15,41 @@
 #    1. Imports the latest base image of Alpine Linux.              #
 #    2. Updates the repositories via the package manager.           #
 #    3. Installs packages needed for building Nginx with            #
-#       Brotli support from source.                                 #
-#    5. Downloads Nginx, OpenSSL, and Brotli files for              #
-#       compilation                                                 #
-#    6. Complies Nginx with OpenSSL and Brotli modules.             #
+#       Brotli and ModSecurity support from source.                 #
+#    5. Downloads Nginx, OpenSSL, Brotli, ModSecurity files         #
+#       for compilation.                                            #
+#    6. Complies Nginx with OpenSSL, Brotli, and ModSecurity        #
+#       modules.                                                    #
 #    7. Copies 'nginx.conf' configuration file to container         #
 #       to be run.                                                  #
-#    8. Exposes port 80 and 443 on the container.                   #
-#    9. Starts Nginx.                                               #
+#    8. Copies the modsecurity.conf configuration file to           #
+#       container to be run.                                        #
+#    9. Exposes port 22 on the container.                           #
+#    10. Starts Nginx.                                              #
 #                                                                   #
 # Note : Do not forget to expose a port on your machine if you      #
 #        wish to access the Nginx web server.                       #
 #                                                                   #
 #####################################################################
 # Using a base image of Alpine Linux
+#FROM arm64v8/alpine:latest
 FROM alpine:latest
 
 # Maintainer information
 LABEL maintainer="Harsha Vardhan J" \
       github.account="https://github.com/HarshaVardhanJ" \
       dockerfile.github.page="https://github.com/HarshaVardhanJ/docker_files\
-/blob/master/nginx-brotli-alpine/Dockerfile" \
-      description="This Dockerfile creates an Nginx webserver listening on port 80 and 443 \
-      by default. The webserver is configured with support for Brotli compression" \
+/blob/master/nginx-brotli-pagespeed-alpine/Dockerfile" \
+      description="This Dockerfile creates an Nginx webserver listening on port 80 \
+      by default. This can be changed by passing environment variables during container \
+      run time." \
       version="0.1"
 
-# Environment variables to store version numbers of Nginx and OpenSSL
+# Environment variables to store version numbers
 ENV NGINX_VERSION 1.14.2
 ENV OPENSSL_VERSION 1.1.1a
 
+# Arguments to be added while configuring Nginx
 RUN CONFIG="\
 		--prefix=/etc/nginx \
 		--sbin-path=/usr/sbin/nginx \
@@ -90,6 +96,7 @@ RUN CONFIG="\
 		--with-file-aio \
 		--with-http_v2_module \
 		--add-module=../ngx_brotli \
+		--add-dynamic-module=../ModSecurity-nginx \
 	" \
 	####################### Add user and group 'nginx'
 	#
@@ -104,11 +111,16 @@ RUN CONFIG="\
 		pcre-dev \
 		zlib-dev \
 		linux-headers \
-		curl \
 		gnupg1 \
 		libxslt-dev \
 		gd-dev \
 		geoip-dev \
+		perl-dev \
+	&& apk add --no-cache --virtual .modsec-deps \
+		libxml2-dev \
+		flex \
+		bison \
+		yajl-dev
 	&& apk add --no-cache --virtual .brotli-deps \
 		autoconf \
 		libtool \
@@ -116,22 +128,48 @@ RUN CONFIG="\
 		git \
 		g++ \
 		cmake \
+	&& apk add --no-cache \
+		doxygen \
+		geoip \
+		geoip-dev \
+		yajl \
+		libstdc++ \
+		git \
+		sed \
+		libmaxminddb-dev \
 	&& mkdir -p /usr/src \
 	&& cd /usr/src \
 	####################### Download and extract Nginx
-	&& wget http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -O nginx.tar.gz \
+	# Download nginx, brotli, and page-speed sources files
+	&& wget -qc http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -O nginx.tar.gz \
 	&& tar -zxC /usr/src -f nginx.tar.gz \
 	&& mv /usr/src/nginx-$NGINX_VERSION /usr/src/nginx \
 	####################### Download and extract OpenSSL
-	&& wget https://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz -O openssl.tar.gz \
+	&& wget -qc https://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz -O openssl.tar.gz \
 	&& tar -zxC /usr/src -f openssl.tar.gz \
 	&& mv /usr/src/openssl-$OPENSSL_VERSION /usr/src/openssl \
 	####################### Download and extract Nginx-Brotli
 	&& git clone --recursive https://github.com/eustas/ngx_brotli.git \
 	&& cd ngx_brotli \
 	&& git submodule update --init \
-	&& cd /usr/src/nginx \
+	####################### Add ModSecurity module
+	&& cd /usr/src \
+	&& git clone --depth 1 -b v3/master --single-branch https://github.com/SpiderLabs/ModSecurity \
+	&& cd ModSecurity \
+	&& git submodule init \
+	&& git submodule update \
+	&& ./build.sh \
+	&& ./configure \
+	&& make \
+	&& make install \
+	&& cd /usr/src \
+	&& git clone --depth 1 https://github.com/SpiderLabs/ModSecurity-nginx.git \
+	&& mkdir -p /etc/nginx/modsec \
+	&& wget -qc -P /etc/nginx/modsec/ https://raw.githubusercontent.com/SpiderLabs/ModSecurity/v3/master/modsecurity.conf-recommended \
+	&& mv /etc/nginx/modsec/modsecurity.conf-recommended /etc/nginx/modsec/modsecurity.conf \
+	&& sed -i 's/SecRuleEngine DetectionOnly/SecRuleEngine On/' /etc/nginx/modsec/modsecurity.conf \
 	# Compile Nginx
+	&& cd /usr/src/nginx \
 	&& ./configure $CONFIG --with-debug \
 	&& make -j$(getconf _NPROCESSORS_ONLN) \
 	&& mv objs/nginx objs/nginx-debug \
@@ -139,7 +177,9 @@ RUN CONFIG="\
 	&& mv objs/ngx_http_image_filter_module.so objs/ngx_http_image_filter_module-debug.so \
 	&& mv objs/ngx_http_geoip_module.so objs/ngx_http_geoip_module-debug.so \
 	&& mv objs/ngx_stream_geoip_module.so objs/ngx_stream_geoip_module-debug.so \
-	&& ./configure $CONFIG \
+	&& ./configure $CONFIG --with-compat \
+	&& make modules \
+	&& mv objs/ngx_http_modsecurity_module.so /etc/nginx/modules \
 	&& make -j$(getconf _NPROCESSORS_ONLN) \
 	&& make install \
 	&& rm -rf /etc/nginx/html/ \
@@ -152,7 +192,8 @@ RUN CONFIG="\
 	&& install -m755 objs/ngx_http_image_filter_module-debug.so /usr/lib/nginx/modules/ngx_http_image_filter_module-debug.so \
 	&& install -m755 objs/ngx_http_geoip_module-debug.so /usr/lib/nginx/modules/ngx_http_geoip_module-debug.so \
 	&& install -m755 objs/ngx_stream_geoip_module-debug.so /usr/lib/nginx/modules/ngx_stream_geoip_module-debug.so \
-	&& ln -s ../../usr/lib/nginx/modules /etc/nginx/modules \
+	&& install -m755 objs/ngx_http_modsecurity_module.so /usr/lib/nginx/modules/ngx_http_modsecurity_module.so ; \
+	ln -s ../../usr/lib/nginx/modules /etc/nginx/modules \
 	&& strip /usr/sbin/nginx* \
 	&& strip /usr/lib/nginx/modules/*.so \
 	&& cd /usr/src \
@@ -175,6 +216,7 @@ RUN CONFIG="\
 	&& apk del .brotli-deps \
 	&& apk del .gettext \
 	&& mv /tmp/envsubst /usr/local/bin/ \
+	\
 	# Bring in tzdata so users could set the timezones through the environment
 	# variables
 	&& apk add --no-cache tzdata \
@@ -183,9 +225,13 @@ RUN CONFIG="\
 	&& ln -sf /dev/stdout /var/log/nginx/access.log \
 	&& ln -sf /dev/stderr /var/log/nginx/error.log
 
+# Run as user nginx
+USER nginx
+
 # Expose ports 80 and 443
 EXPOSE 80 443
 
 STOPSIGNAL SIGTERM
 
+# Running nginx in foreground
 CMD ["nginx", "-g", "daemon off;"]
