@@ -27,7 +27,7 @@
 #####################################################################
 
 # Using the rpi-alpine image to obtain the 'qemu-arm-static' binary
-FROM rpi-alpine:latest AS builder
+FROM hypriot/rpi-alpine:latest AS builder
 
 # Use arm64v8 version of Alpine Linux
 FROM arm64v8/alpine:latest
