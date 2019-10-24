@@ -77,6 +77,14 @@ base, add the things you need in your own Dockerfile (see the [`alpine` image
 description](https://hub.docker.com/_/alpine/) for examples of how to install
 packages if you are unfamiliar).  
 
+
+## `openssh:alpine-bash`  
+
+This image is slightly larger than the default `alpine` image as it has `bash` installed
+in the image. For most cases, you will not need to use this image unless you need something
+that requires the presence of `bash`. In the future, this image will be removed.  
+
+
 ## `openssh:debian`  
 
 This image is based on the Debian Stable Slim distribution. This image is considerably
