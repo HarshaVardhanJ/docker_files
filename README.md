@@ -1,7 +1,8 @@
 # Supported tags and respective `Dockerfile` links
 
-- 	[`with-bash`, `latest`, (*OpenSSH/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/master/openssh-alpine/Dockerfile)
--	[`without-bash`, (*OpenSSH/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/with-sh/openssh-alpine/Dockerfile)
+- [`alpine-bash` (*OpenSSH/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/master/openssh/openssh-alpine/Dockerfile)
+-	[`alpine`, `latest` (*OpenSSH/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/with-sh/openssh/openssh-alpine/Dockerfile)
+-	[`debian` (*OpenSSH/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/master/openssh/openssh-debian/Dockerfile)
 
 # Quick reference
 
@@ -15,11 +16,11 @@
 # Software Packages installed
 
 * OpenSSH Server (latest version)
-* Bash (Bourne Again Shell), only if using the `with-bash` image
+* Bash (Bourne Again Shell), only if using the `alpine-bash` image
 
 # Description of tags
 
-## `with-bash`, `latest`
+## `alpine-bash`, `latest`
 
 The image with this tag contains the following software packages installed on
 top of the base Alpine Linux image.
@@ -28,11 +29,27 @@ top of the base Alpine Linux image.
 * Bash (Bourne Again Shell)
 
 Due to Bash being installed, this image is slightly larger in size than the
-`without-bash` image. To use this image, use the `with-bash` tag as follows
+`alpine` image. To use this image, use the `alpine-bash` tag as follows
 
 ```console
 $ docker container run -d --name ssh -p "2222:22/tcp" \
-harshavardhanj/openssh:with-bash
+harshavardhanj/openssh:alpine-bash
+```  
+
+
+## `alpine`
+
+The image with this tag contains the following software packages installed on
+top of the base Alpine Linux image.
+
+* OpenSSH Server (latest version)
+
+As Bash is not installed, this image is slightly smaller in size than the
+`with-bash` image. To use this image, use the `without-bash` tag as follows
+
+```console
+$ docker container run -d --name ssh -p "2222:22/tcp" \
+harshavardhanj/openssh:alpine
 ```  
 or
 ```console
@@ -45,22 +62,8 @@ $ docker container run -d --name ssh -p "2222:22/tcp" \
 harshavardhanj/openssh
 ```  
 
-Any of the above commands will pull the image with the `with-bash` tag.
+Any of the above commands will pull the image with the `alpine` tag.  
 
-## `without-bash`
-
-The image with this tag contains the following software packages installed on
-top of the base Alpine Linux image.
-
-* OpenSSH Server (latest version)
-
-As Bash is not installed, this image is slightly smaller in size than the
-`with-bash` image. To use this image, use the `without-bash` tag as follows
-
-```console
-$ docker container run -d --name ssh -p "2222:22/tcp" \
-harshavardhanj/openssh:without-bash
-```  
 
 # How to use this image
 
@@ -96,7 +99,7 @@ services:
   
 
 [![Try in 'Play With
-Docker'](https://github.com/play-with-docker/stacks/raw/cff22438cb4195ace27f9b15784bbb497047afa7/assets/images/button.png)](http://play-with-docker.com?stack=https://raw.githubusercontent.com/HarshaVardhanJ/docker_files/with-sh/openssh-alpine/docker-compose.yml)
+Docker'](https://github.com/play-with-docker/stacks/raw/cff22438cb4195ace27f9b15784bbb497047afa7/assets/images/button.png)](http://play-with-docker.com?stack=https://raw.githubusercontent.com/HarshaVardhanJ/docker_files/with-sh/openssh/openssh-alpine/docker-compose.yml)
 
 
 To use in a swarm, run `docker stack deploy -c stack.yml harshavardhanj/openssh`
