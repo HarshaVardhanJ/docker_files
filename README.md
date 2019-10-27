@@ -18,10 +18,14 @@
 * [ddclient](https://sourceforge.net/p/ddclient/wiki/Home/)
 
 
-# Built for  
+# Supported Architectures  
 
-* x86 platform (`amd64`)
-* ARM platform (`arm64`)  
+* `amd64`
+* `arm64`
+* `arm32v7`
+* `arm32v6`
+* `i386`
+* `s390x`  
 
 
 ## Note about image size  
@@ -32,9 +36,8 @@ To that end, almost every image begins either with the Alpine Linux base image o
 
 ## Note about autobuilds on DockerHub  
 
-DockerHub does not currently support autobuilding images for the `arm` architecture. Therefore, autobuilds
-will not be present on the `arm` versions of the images. The images will be built elsewhere(probably on GCP
-using Cloud Build) and pushed to DockerHub.
+DockerHub currently supports autobuilding images for the x86 architecture only. Therefore, autobuilds
+will not be used. The images will be built elsewhere and pushed to DockerHub.
 
 
 # Image Variants  
@@ -46,7 +49,7 @@ The `openssh` image comes in two variants(and three tags) currently.
 
 -	`openssh:alpine` (based on [Alpine Linux](https://hub.docker.com/_/alpine/))
 -	`openssh:alpine-bash` (based on [Alpine Linux](https://hub.docker.com/_/alpine/), with `bash` installed)
--	`openssh:debian` (based on [Debian Stable](https://hub.docker.com/_/debian/))  
+-	`openssh:debian` (based on [Debian Stretch](https://hub.docker.com/_/debian/))  
 
 
 ## `openssh:alpine`
@@ -87,7 +90,7 @@ that requires the presence of `bash`. In the future, this image will be removed.
 
 ## `openssh:debian`  
 
-This image is based on the Debian Stable Slim distribution. This image is considerably
+This image is based on the Debian Stretch Slim distribution. This image is considerably
 larger than the Alpine Linux image.  
 
 

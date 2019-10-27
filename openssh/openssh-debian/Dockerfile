@@ -10,7 +10,7 @@
 #                                                                   #
 # This Dockerfile does the following:                               #
 #                                                                   #
-#    1. Imports the latest base image of Debian Jessie.             #
+#    1. Imports the latest base image of Debian Stretch.             #
 #    2. Updates the repositories via the package manager.           #
 #    3. Installs the OpenSSH server.                                #
 #    5. Sets some configuration values in '/etc/sshd_config'.       #
@@ -27,8 +27,8 @@
 #        wish to access the SSH server and log in to it.            #
 #                                                                   #
 #####################################################################
-# Using a base image of debian:jessie-slim
-FROM debian:jessie-slim
+# Using a base image of debian:stretch-slim
+FROM debian:stretch-slim
 
 # Maintainer information
 LABEL maintainer="Harsha Vardhan J" \
