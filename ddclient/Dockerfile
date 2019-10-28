@@ -32,25 +32,26 @@ FROM alpine:latest
 # Setting the working directory to '/'
 WORKDIR /
 
+ARG ddclientVersion=v3.9.0
+
 # Install dependencies for `ddclient`
 RUN apk update \
 		&& apk add --no-cache --virtual .removable \
-		make \
-		unzip \
+      make \
     && apk add --no-cache --virtual .ddclient-deps \
-    perl \
-    perl-utils \
-    perl-test-taint \
-    perl-netaddr-ip \
-    perl-net-ip \
-    perl-yaml \
-    perl-log-log4perl \
-    perl-io-socket-ssl \
+      perl \
+      perl-utils \
+      perl-test-taint \
+      perl-netaddr-ip \
+      perl-net-ip \
+      perl-yaml \
+      perl-log-log4perl \
+      perl-io-socket-ssl \
     && cpan install Test::Requires \
     && cpan Data::Validate::IP \
     # Download the latest version of `ddclient`
-    && wget -qc https://sourceforge.net/projects/ddclient/files/latest/download -O ddclient.zip \
-    && unzip ddclient.zip \
+    && wget -qc https://github.com/ddclient/ddclient/archive/$ddclientVersion.tar.gz -O ddclient.tar.gz \
+    && tar -xvzf ddclient.tar.gz \
     # Move the binary to the appropriate directory
     && mv ddclient*/ddclient /usr/bin \
     # Clean up after installation
