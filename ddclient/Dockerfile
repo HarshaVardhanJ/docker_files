@@ -75,6 +75,7 @@ CMD ["/usr/bin/ddclient", "-verbose", "-file", "/etc/ddclient/ddclient.conf", "-
 # Maintainer information
 LABEL maintainer="Harsha Vardhan J" \
       github.account="https://github.com/HarshaVardhanJ" \
+      github.repository="https://github.com/HarshaVardhanJ/docker_files/tree/master/ddclient"
       description="This Dockerfile creates an image containing \
       the utility `ddclient`, which is used for updating Dynamic DNS \
       records." \
