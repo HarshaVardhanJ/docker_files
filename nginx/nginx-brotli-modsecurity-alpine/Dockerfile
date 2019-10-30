@@ -24,26 +24,16 @@
 #       to be run.                                                  #
 #    8. Copies the modsecurity.conf configuration file to           #
 #       container to be run.                                        #
-#    9. Exposes port 22 on the container.                           #
+#    9. Exposes port 80 and 443 on the container.                   #
 #    10. Starts Nginx.                                              #
 #                                                                   #
-# Note : Do not forget to expose a port on your machine if you      #
+# Note : Do not forget to expose ports on your machine if you       #
 #        wish to access the Nginx web server.                       #
 #                                                                   #
 #####################################################################
-# Using a base image of Alpine Linux
-#FROM arm64v8/alpine:latest
-FROM alpine:latest
 
-# Maintainer information
-LABEL maintainer="Harsha Vardhan J" \
-      github.account="https://github.com/HarshaVardhanJ" \
-      dockerfile.github.page="https://github.com/HarshaVardhanJ/docker_files\
-/blob/master/nginx-brotli-pagespeed-alpine/Dockerfile" \
-      description="This Dockerfile creates an Nginx webserver listening on port 80 \
-      by default. This can be changed by passing environment variables during container \
-      run time." \
-      version="0.1"
+# Using a base image of Alpine Linux
+FROM alpine:latest
 
 # Environment variables to store version numbers
 ENV NGINX_VERSION 1.14.2
@@ -140,19 +130,22 @@ RUN CONFIG="\
 	&& mkdir -p /usr/src \
 	&& cd /usr/src \
 	####################### Download and extract Nginx
-	# Download nginx, brotli, and page-speed sources files
+	#
 	&& wget -qc http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -O nginx.tar.gz \
 	&& tar -zxC /usr/src -f nginx.tar.gz \
 	&& mv /usr/src/nginx-$NGINX_VERSION /usr/src/nginx \
 	####################### Download and extract OpenSSL
+	#
 	&& wget -qc https://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz -O openssl.tar.gz \
 	&& tar -zxC /usr/src -f openssl.tar.gz \
 	&& mv /usr/src/openssl-$OPENSSL_VERSION /usr/src/openssl \
 	####################### Download and extract Nginx-Brotli
+	#
 	&& git clone --recursive https://github.com/eustas/ngx_brotli.git \
 	&& cd ngx_brotli \
 	&& git submodule update --init \
 	####################### Add ModSecurity module
+	#
 	&& cd /usr/src \
 	&& git clone --depth 1 -b v3/master --single-branch https://github.com/SpiderLabs/ModSecurity \
 	&& cd ModSecurity \
@@ -169,6 +162,7 @@ RUN CONFIG="\
 	&& mv /etc/nginx/modsec/modsecurity.conf-recommended /etc/nginx/modsec/modsecurity.conf \
 	&& sed -i 's/SecRuleEngine DetectionOnly/SecRuleEngine On/' /etc/nginx/modsec/modsecurity.conf \
 	# Compile Nginx
+	#
 	&& cd /usr/src/nginx \
 	&& ./configure $CONFIG --with-debug \
 	&& make -j$(getconf _NPROCESSORS_ONLN) \
@@ -214,6 +208,7 @@ RUN CONFIG="\
 	&& apk add --no-cache --virtual .nginx-rundeps $runDeps \
 	&& apk del .build-deps \
 	&& apk del .brotli-deps \
+	&& apk del .modsec-deps \
 	&& apk del .gettext \
 	&& mv /tmp/envsubst /usr/local/bin/ \
 	\
@@ -231,7 +226,18 @@ USER nginx
 # Expose ports 80 and 443
 EXPOSE 80 443
 
+# System call signal that will be sent to the container to exit
 STOPSIGNAL SIGTERM
 
 # Running nginx in foreground
 CMD ["nginx", "-g", "daemon off;"]
+
+# Maintainer information
+LABEL maintainer="Harsha Vardhan J" \
+      github.account="https://github.com/HarshaVardhanJ" \
+      dockerfile.github.page="https://github.com/HarshaVardhanJ/docker_files\
+/blob/master/nginx/nginx-brotli-modsecurity-alpine/Dockerfile" \
+      description="This Dockerfile creates an Nginx webserver listening on port 80 \
+      and 443. Nginx has been compiled with support for Brotli compressions and \
+      ModSecurity." \
+      version="0.1"
