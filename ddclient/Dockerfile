@@ -32,6 +32,7 @@ FROM alpine:latest
 # Setting the working directory to '/'
 WORKDIR /
 
+# Setting the version for `ddclient`
 ARG ddclientVersion=v3.9.0
 
 # Install dependencies for `ddclient`
@@ -47,27 +48,39 @@ RUN apk update \
       perl-yaml \
       perl-log-log4perl \
       perl-io-socket-ssl \
+    # Configuring Perl for `ddclient`
+    #
     && cpan install Test::Requires \
     && cpan Data::Validate::IP \
     # Download the latest version of `ddclient`
+    #
     && wget -qc https://github.com/ddclient/ddclient/archive/$ddclientVersion.tar.gz -O ddclient.tar.gz \
     && tar -xvzf ddclient.tar.gz \
     # Move the binary to the appropriate directory
+    #
     && mv ddclient*/ddclient /usr/bin \
     # Clean up after installation
+    #
     && rm -rf ddclient* \
     && apk del --no-cache --purge .removable \
     # Create directories for `ddclient` and creating config file
+    #
     && mkdir -p /etc/ddclient /var/cache/ddclient \
     && touch /etc/ddclient/ddclient.conf /var/run/ddclient.pid \
-    # Creating ddclient user and group and changing ownership of files
+    # Creating ddclient user and group
+    #
     && addgroup -S -g 1000 ddclient \
     && adduser -H -g "User account for ddclient" -s /bin/nologin -G ddclient -u 1000 -S -D ddclient \
+    # Changing ownership of files that `ddclient` will need to access
+    #
     && chown ddclient:ddclient -R /etc/ddclient /var/cache/ddclient /var/run/ddclient.pid \
     && chmod 600 /etc/ddclient/ddclient.conf
 
 # Run as user ddclient
 USER ddclient
+
+# System call signal that will be sent to the container to exit
+STOPSIGNAL SIGTERM
 
 # The CMD which can be overriden by any command provided during `docker run`
 CMD ["/usr/bin/ddclient", "-verbose", "-file", "/etc/ddclient/ddclient.conf", "-foreground", "-pid", "/var/run/ddclient.pid", "&"]
@@ -75,7 +88,7 @@ CMD ["/usr/bin/ddclient", "-verbose", "-file", "/etc/ddclient/ddclient.conf", "-
 # Maintainer information
 LABEL maintainer="Harsha Vardhan J" \
       github.account="https://github.com/HarshaVardhanJ" \
-      github.repository="https://github.com/HarshaVardhanJ/docker_files/tree/master/ddclient"
+      dockerfile.github.page="https://github.com/HarshaVardhanJ/docker_files/blob/master/ddclient/Dockerfile"
       description="This Dockerfile creates an image containing \
       the utility `ddclient`, which is used for updating Dynamic DNS \
       records." \

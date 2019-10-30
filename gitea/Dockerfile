@@ -3,15 +3,12 @@
 # Start with golang image as builder step
 FROM golang:alpine as gitea-build
 
-# Maintainer information
-MAINTAINER "Harsha Vardhan J <vardhanharshaj@gmail.com>"
-
 # Install dependencies for go
 RUN apk add --no-cache --virtual .go-deps \
-	gcc \
-	git \
-	make \
-	musl-dev
+      gcc \
+      git \
+      make \
+      musl-dev
 
 # Environment variables
 ENV GOPATH="/go"
@@ -35,14 +32,15 @@ FROM alpine:latest
 # Copy the Gitea binary from the builder step
 COPY --from=gitea-build /go/src/code.gitea.io/gitea/gitea /usr/local/bin/gitea
 
-# Install dependencies for Gitea, create git user, change root and git passwords
+# Install dependencies for Gitea
 RUN apk add --no-cache --virtual .gitea-deps \
-	linux-pam \
-	bash \
-	git \
-	sqlite \
-	su-exec \
-	tzdata \
+	    linux-pam \
+	    bash \
+	    git \
+	    sqlite \
+	    su-exec \
+	    tzdata \
+	# Create git user, change root and git passwords
 	&& addgroup -S -g 1000 git \
 	&& adduser \
 		-S \
@@ -56,7 +54,7 @@ RUN apk add --no-cache --virtual .gitea-deps \
 		git \
 	&& set -euo pipefail ; \
 	echo "root:$(head -c 32 /dev/urandom | base64)" | chpasswd ; \
-    echo "git:$(head -c 32 /dev/urandom | base64)" | chpasswd
+  echo "git:$(head -c 32 /dev/urandom | base64)" | chpasswd
 
 # Setting environment variables for Gitea
 ENV USER=git
@@ -72,5 +70,16 @@ EXPOSE 22 3000
 # Set the volume
 VOLUME ["/data"]
 
+# System call signal that will be sent to the container to exit
+STOPSIGNAL SIGTERM
+
 # Command used to start Gitea
 ENTRYPOINT ["gitea", "web"]
+
+# Maintainer information
+LABEL maintainer="Harsha Vardhan J" \
+      github.account="https://github.com/HarshaVardhanJ" \
+      dockerfile.github.page="https://github.com/HarshaVardhanJ/docker_files/blob/master/gitea/Dockerfile" \
+      description="This Dockerfile creates an image containing Gitea, which is a light-weight self-hosted \
+      Git repository." \
+      version="1.0"

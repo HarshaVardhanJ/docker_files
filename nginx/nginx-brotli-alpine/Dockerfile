@@ -38,7 +38,7 @@ LABEL maintainer="Harsha Vardhan J" \
 /blob/master/nginx-brotli-alpine/Dockerfile" \
       description="This Dockerfile creates an Nginx webserver listening on port 80 and 443 \
       by default. The webserver is configured with support for Brotli compression" \
-      version="0.1"
+      version="1.0"
 
 # Environment variables to store version numbers of Nginx and OpenSSL
 ENV NGINX_VERSION 1.14.2
@@ -118,19 +118,23 @@ RUN CONFIG="\
 	&& mkdir -p /usr/src \
 	&& cd /usr/src \
 	####################### Download and extract Nginx
+	#
 	&& wget -qc http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -O nginx.tar.gz \
 	&& tar -zxC /usr/src -f nginx.tar.gz \
 	&& mv /usr/src/nginx-$NGINX_VERSION /usr/src/nginx \
 	####################### Download and extract OpenSSL
+	#
 	&& wget -qc https://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz -O openssl.tar.gz \
 	&& tar -zxC /usr/src -f openssl.tar.gz \
 	&& mv /usr/src/openssl-$OPENSSL_VERSION /usr/src/openssl \
 	####################### Download and extract Nginx-Brotli
+	#
 	&& git clone --recursive https://github.com/eustas/ngx_brotli.git \
 	&& cd ngx_brotli \
 	&& git submodule update --init \
 	&& cd /usr/src/nginx \
 	# Compile Nginx
+	#
 	&& ./configure $CONFIG --with-debug \
 	&& make -j$(getconf _NPROCESSORS_ONLN) \
 	&& mv objs/nginx objs/nginx-debug \
@@ -182,11 +186,14 @@ RUN CONFIG="\
 	&& ln -sf /dev/stdout /var/log/nginx/access.log \
 	&& ln -sf /dev/stderr /var/log/nginx/error.log
 
+# Running as user 'nginx'
 USER nginx
 
 # Expose ports 80 and 443
 EXPOSE 80 443
 
+# System call signal that will be sent to the container to exit
 STOPSIGNAL SIGTERM
 
+# Run nginx in foreground
 CMD ["nginx", "-g", "daemon off;"]

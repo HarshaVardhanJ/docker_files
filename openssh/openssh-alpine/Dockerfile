@@ -30,7 +30,7 @@ FROM alpine:latest
 LABEL maintainer="Harsha Vardhan J" \
       github.account="https://github.com/HarshaVardhanJ" \
       dockerfile.github.page="https://github.com/HarshaVardhanJ/docker_files\
-/blob/master/openssh-alpine/Dockerfile" \
+/blob/master/openssh/openssh-alpine/Dockerfile" \
       description="This Dockerfile creates an OpenSSH server listening on \
 port 22. By default, the user created is 'docker' with the same password. \
 This can be changed by passing environment variables during container run \
@@ -38,7 +38,7 @@ time. USER can be passed for changing the default user, PASSWORD can be \
 passed for setting the password of the user. Also, an SSH public key can be \
 added via the SSH_PUBKEY variable which will enable the user to log in using \
 public-key authentication." \
-      version="0.1"
+      version="1.0"
 
 # Defining ARG and ENV variables
 ARG CONFIG=/etc/ssh/sshd_config
