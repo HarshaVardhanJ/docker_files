@@ -15,11 +15,22 @@ RUN apk update --no-cache && apk add --no-cache \
       #
       && make
 
-# Start from scratch
-FROM scratch
+# Start with base image of Busybox
+FROM busybox:latest
 
 # Copy the executable from the intermediate builder stage
 COPY --from=intermediate /endlessh /
+
+# Creating new user and group for running endlessh
+RUN addgroup -S -g 1000 endlessh \
+    && adduser -H -g "User account for running the endlessh executable" -s /bin/nologin -G endlessh -u 1000 -S -D endlessh \
+    # Changing permissions on the endlessh executable
+    #
+    && chown endlessh:endlessh /endlessh \
+    && chmod 100 /endlessh
+
+# Run as user endlessh
+USER endlessh
 
 # Expose port 2222 on which the executable listens
 EXPOSE 2222/tcp
