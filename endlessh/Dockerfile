@@ -1,5 +1,5 @@
 # Start with Alpine Linux as intermediate builder image
-FROM alpine as intermediate
+FROM alpine:latest as intermediate
 
 # Copy the C file and Makefile from the host
 ADD endlessh.c Makefile /
@@ -12,10 +12,11 @@ RUN apk update --no-cache && apk add --no-cache \
       libstdc++ \
       make \
       # Compile the code
+      #
       && make
 
-# Start with base image of Alpine Linux
-FROM alpine
+# Start with base image of Busybox
+FROM busybox:latest
 
 # Copy the executable from the intermediate builder stage
 COPY --from=intermediate /endlessh /
@@ -51,5 +52,5 @@ LABEL maintainer="Harsha Vardhan J" \
       that very slowly sends an endless, random SSH banner. It keeps SSH clients locked up for hours or even days \
       at a time. The purpose is to put your real SSH server on another port and then let the script kiddies get \
       stuck in this tarpit instead of bothering a real server." \
-      sofware.github.page="https://github.com/skeeto/endlessh" \
+      sofware.author.github.page="https://github.com/skeeto/endlessh" \
       version="1.0"

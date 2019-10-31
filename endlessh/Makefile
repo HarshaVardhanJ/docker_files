@@ -1,6 +1,6 @@
 .POSIX:
-CC      = cc
-CFLAGS  = -std=c99 -Wall -Wextra -Wno-missing-field-initializers -Os
+CC      = gcc
+CFLAGS  = -static -std=c99 -Wall -Wextra -Wno-missing-field-initializers -Os
 LDFLAGS = -ggdb3
 LDLIBS  =
 PREFIX  = /usr/local
