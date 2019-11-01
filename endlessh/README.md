@@ -100,6 +100,10 @@ services:
 
 
 
+After opening the above *Play With Docker* link, you should see a terminal. To check the SSH tarpit, type `ssh -v root@localhost -p 2222`. You should see a verbose output of what the SSH tarpit is returning. It takes about 10 seconds for each response to come through. The tarpit sends a random gibberish text during the connection establisment phase thereby keeping the client locked.
+
+
+
 To use in a swarm, run `docker stack deploy -c stack.yaml harshavardhanj/endlessh` from the manager node in your swarm, wait for it initialise completely, and check if the tarpit is running by trying to connect to it by running `ssh -v root@swarm-ip -p 2222`. 
 
 
