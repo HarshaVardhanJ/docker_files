@@ -1,19 +1,31 @@
 # Start with Alpine Linux as intermediate builder image
 FROM alpine:latest as intermediate
 
-# Copy the C file and Makefile from the host
-ADD endlessh.c Makefile /
+# Setting version number for `endlessh` download
+ARG version=1.0
 
-# Install the packages needed to compile C code
-RUN apk update --no-cache && apk add --no-cache \
-      gcc \
-      libc-dev \
-      libgcc \
-      libstdc++ \
-      make \
+# Download the source code and extract it
+RUN wget -qc https://github.com/skeeto/endlessh/archive/$version.tar.gz -O endlessh.tar.gz \
+    && tar -xzf endlessh.tar.gz \
+    && cd endlessh* \
+    # Add the '-static' option to the 'CFLAGS' line 
+    # (Used to compile as a statically-linked executable)
+    #
+    && sed -i 's/-std=c99/-static\ -std=c99/g' ./Makefile \
+    # Install the packages needed to compile C code
+    #
+    && apk update --no-cache && apk add --no-cache \
+        gcc \
+        libc-dev \
+        libgcc \
+        libstdc++ \
+        make \
       # Compile the code
       #
-      && make
+      && make \
+      # Move the executable to the root directory
+      #
+      && mv endlessh ../
 
 # Start with base image of Busybox
 FROM busybox:latest
