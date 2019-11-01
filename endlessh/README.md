@@ -8,7 +8,8 @@
 # Quick Reference
 
 - **Maintained by** : [HarshaVardhanJ](https://github.com/HarshaVardhanJ/docker_files/)
-- **Source of this description** : [README in `docker_files` repository]()
+- **Source of this description** : [README in `docker_files` repository](https://github.com/HarshaVardhanJ/docker_files/blob/master/endlessh/README.md)
+- **Original author of `endlessh`** : [Christopher Wellons](https://github.com/skeeto/endlessh)
 
 
 
