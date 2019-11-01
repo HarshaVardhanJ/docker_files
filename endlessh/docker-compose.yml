@@ -6,3 +6,4 @@ services:
     image: harshavardhanj/endlessh
     ports:
       - "2222:2222"
+    restart: always
