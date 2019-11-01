@@ -11,11 +11,11 @@
 
 # Software  
 
-* [OpenSSH](https://www.openssh.com/)
-* [Gitea](https://gitea.io/en-us)
-* [Nginx](https://nginx.org/en/)
-* [MinIO](https://min.io/)
-* [ddclient](https://sourceforge.net/p/ddclient/wiki/Home/)
+* [OpenSSH](https://www.openssh.com/) - A secure shell server
+* [Gitea](https://gitea.io/en-us) - A self-hosted Git repository
+* [Nginx](https://nginx.org/en/) - A high-performance web server
+* [ddclient](https://ddclient.net/) - A client used for updating dynamic DNS records
+* [endlessh](https://github.com/skeeto/endlessh) - An SSH tarpit
 
 
 # Supported Architectures  

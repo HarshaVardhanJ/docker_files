@@ -7,7 +7,7 @@
 # Quick reference
 
 -	**Maintained by**:
-	[Harsha Vardhan J](https://github.com/HarshaVardhanJ/docker_files/master/openssh/openssh-alpine)
+	[Harsha Vardhan J](https://github.com/HarshaVardhanJ/docker_files/)
 
 -	**Source of this description**:
 	[README in `docker_files` repository](https://github.com/HarshaVardhanJ/docker_files/blob/master/openssh/README.md)
@@ -87,8 +87,8 @@ harshavardhanj/openssh:debian
 ## Start an OpenSSH instance
 
 ```console
-$ docker container run --name ssh-server --publish "2222:22/tcp" \
--e USER='test_user' -e PASSWORD='test_password' -d harshavardhanj/openssh
+$ docker container run -d --name ssh-server --publish "2222:22/tcp" \
+-e USER='test_user' -e PASSWORD='test_password' harshavardhanj/openssh
 ```
 
 This image includes `EXPOSE 22` (the standard SSH port), so standard container
