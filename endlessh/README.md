@@ -35,7 +35,7 @@ The `busybox` image comes with the usual set of tools that are present in a `bus
 
 ## `latest`
 
-The image with this tag contains no software packages installed except for the `endlessh` executable(which is statically-linked) which is copied to the `scratch` base image. This image is the smallest in size when compared to the `busybox` or `alpine` image. To use this image,  use  the`latest` tag, or no tag at all as follows
+The image with this tag contains no software packages installed except for the `endlessh` executable(which is statically-linked) which is copied to the `scratch` base image. This image is the smallest in size when compared to the `busybox` or `alpine` image. To use this image,  use  the `latest` tag, or no tag at all as follows
 
 ```shell
 $ docker container run -d --name endlessh -p 2222:2222 \
@@ -112,7 +112,7 @@ services:
 
 
 
-After opening the above *Play With Docker* link, you should see a terminal. To check the SSH tarpit, type `ssh -v root@localhost -p 2222`. You should see a verbose output of what the SSH tarpit is returning. It takes about 10 seconds for each response to come through. The tarpit sends a random gibberish text during the connection establisment phase thereby keeping the client locked.
+After opening the above *Play With Docker* link, you should see a terminal. To check the SSH tarpit, type `ssh -v root@localhost -p 2222`. You should see a verbose output of what the SSH tarpit is returning. It takes about 10 seconds for each response to come through. The tarpit sends a random gibberish text during the connection establishment phase thereby keeping the client locked.
 
 
 
@@ -198,7 +198,7 @@ It was necessary to compile the executable to be statically-linked so as to make
 
 # License
 
-As with all Docker images, these likely alos contain other software which may be under other license (such as `bash`, etc from the base distribution, along with any direct or indirect dependencies of the primary software being contained.)
+As with all Docker images, these likely also contain other software which may be under other license (such as `bash`, etc from the base distribution, along with any direct or indirect dependencies of the primary software being contained.)
 
 As for any pre-built image usage, it is the image user’s responsibility to ensure that any use of this image complies with any relevant licenses for all software container within.
 
