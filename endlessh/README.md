@@ -1,112 +1,136 @@
-# Endlessh: an SSH tarpit
+# Supported tags and respective `Dockerfile` links
 
-Endlessh is an SSH tarpit [that *very* slowly sends an endless, random
-SSH banner][np]. It keeps SSH clients locked up for hours or even days
-at a time. The purpose is to put your real SSH server on another port
-and then let the script kiddies get stuck in this tarpit instead of
-bothering a real server.
-
-Since the tarpit is in the banner before any cryptographic exchange
-occurs, this program doesn't depend on any cryptographic libraries. It's
-a simple, single-threaded, standalone C program. It uses `poll()` to
-trap multiple clients at a time.
+- [`latest`(*Endlessh/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/master/endlessh/Dockerfile)
+- [`busybox`(*Endlessh/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/master/endlessh/busybox/Dockerfile)
 
 
 
-## Usage
+# Quick Reference
 
-Usage information is printed with `-h`.
+- **Maintained by** : [HarshaVardhanJ](https://github.com/HarshaVardhanJ/docker_files/)
+- **Source of this description** : [README in `docker_files` repository]()
 
-```
-Usage: endlessh [-vh] [-d MS] [-f CONFIG] [-l LEN] [-m LIMIT] [-p PORT]
-  -4        Bind to IPv4 only
-  -6        Bind to IPv6 only
-  -d INT    Message millisecond delay [10000]
-  -f        Set and load config file [/etc/endlessh/config]
-  -h        Print this help message and exit
-  -l INT    Maximum banner line length (3-255) [32]
-  -m INT    Maximum number of clients [4096]
-  -p INT    Listening port [2222]
-  -v        Print diagnostics to standard output (repeatable)
-```
 
-Argument order matters. The configuration file is loaded when the `-f`
-argument is processed, so only the options that follow will override the
-configuration file.
 
-By default no log messages are produced. The first `-v` enables basic
-logging and a second `-v` enables debugging logging (noisy). All log
-messages are sent to standard output.
+# Software Packages Installed
 
-    endlessh -v >endlessh.log 2>endlessh.err
+* `endlessh`
 
-A SIGTERM signal will gracefully shut down the daemon, allowing it to
-write a complete, consistent log.
+There are images with two tags currently - `latest`, and `busybox`. The `latest` image is built on top of the `scratch` base image and therefore it comes with no installed software. The `endlessh` executable is the only software on the `latest` image.
 
-A SIGHUP signal requests a reload of the configuration file (`-f`).
+The `busybox` image comes with the usual set of tools that are present in a `busybox` image. 
 
-A SIGUSR1 signal will print connections stats to the log.
+# Supported Architectures
 
-## Sample Configuration File
+* `amd64`
+* `arm64`
+* `arm32v7`
+* `arm32v6`
+* `i386`
+* `s390x`
 
-The configuration file has similar syntax to OpenSSH.
+# Description of Tags
 
-```
-# The port on which to listen for new SSH connections.
-Port 2222
+## `latest`
 
-# The endless banner is sent one line at a time. This is the delay
-# in milliseconds between individual lines.
-Delay 10000
+The image with this tag contains no software packages installed except for the `endlessh` executable(which is statically-linked) which is copied to the `scratch` base image. This image is the smallest in size when compared to the `busybox` or `alpine` image. To use this image,  use  the`latest` tag, or no tag at all as follows
 
-# The length of each line is randomized. This controls the maximum
-# length of each line. Shorter lines may keep clients on for longer if
-# they give up after a certain number of bytes.
-MaxLineLength 32
-
-# Maximum number of connections to accept at a time. Connections beyond
-# this are not immediately rejected, but will wait in the queue.
-MaxClients 4096
-
-# Set the detail level for the log.
-#   0 = Quiet
-#   1 = Standard, useful log messages
-#   2 = Very noisy debugging information
-LogLevel 0
-
-# Set the family of the listening socket
-#   0 = Use IPv4 Mapped IPv6 (Both v4 and v6, default)
-#   4 = Use IPv4 only
-#   6 = Use IPv6 only
-BindFamily 0
+```shell
+$ docker container run -d --name endlessh -p 2222:2222 \
+harshavardhanj/endlessh:latest
 ```
 
-## Build issues
+or
 
-Some more esoteric systems require extra configuration when building.
+```shell
+$ docker container run -d --name endlessh -p 2222:2222 \
+harshavardhanj/endlessh
+```
 
-### RHEL 6 / CentOS 6
-
-This system uses a version of glibc older than 2.17 (December 2012), and
-`clock_gettime(2)` is still in librt. For these systems you will need to
-link against librt:
-
-    make LDLIBS=-lrt
-
-### Solaris / illumos
-
-These systems don't include all the necessary functionality in libc and
-the linker requires some extra libraries:
-
-    make CC=gcc LDLIBS='-lnsl -lrt -lsocket'
-
-If you're not using GCC or Clang, also override `CFLAGS` and `LDFLAGS`
-to remove GCC-specific options. For example, on Solaris:
-
-    make CFLAGS=-fast LDFLAGS= LDLIBS='-lnsl -lrt -lsocket'
-
-The feature test macros on these systems isn't reliable, so you may also
-need to use `-D__EXTENSIONS__` in `CFLAGS`.
+Any of the above image tags will pull the image with the `scratch` tag. If you need to just run `endlessh` on a random port, the `scratch` image will suffice.
 
 
-[np]: https://nullprogram.com/blog/2019/03/22/
+
+## `busybox`
+
+The image with this tag is built on top of the `busybox` base image. It contains no extra software installed on it except for the tools that come pre-installed on `busybox`. The `endlessh` executable(which is statically-linked) is copied to the `busybox` base image. To use this image, use the `busybox` tag as follows
+
+```shell
+$ docker container run -d --name endlessh -p 2222:2222 \
+harshavardhanj/endlessh:busybox
+```
+
+As the image is built on top of `busybox`, its size will be significantly larger than the `scratch` image which is less than `0.5 MB` is size. You can use this image if you need some of the additional functionality that comes with the `busybox` image.
+
+
+
+# How to use this image
+
+## Start an `endlessh` instance
+
+```shell
+$ docker container run -d --name endlessh -p 2222:2222 \
+harshavardhanj/endlessh
+```
+
+This image exposes port `2222` by default, so standard container linking will make it automatically available to linked containers.
+
+
+
+## … via [`docker stack deploy`](https://docs.docker.com/engine/reference/commandline/stack_deploy/) or [`docker-compose`](https://github.com/docker/compose)
+
+Example `stack.yaml`/`docker-compose.yaml` for `endlessh`:
+
+
+
+```yaml
+version: "3.4"
+services:
+	endlessh:
+		image: harshavardhanj/endlessh:latest
+		ports:
+		- "2222:2222"
+		restart: always
+```
+
+
+
+[![Try in ‘Play With Docker’](https://github.com/play-with-docker/stacks/raw/cff22438cb4195ace27f9b15784bbb497047afa7/assets/images/button.png)](https://labs.play-with-docker.com?stack=https://raw.githubusercontent.com/HarshaVardhanJ/docker_files/master/endlessh/docker-compose.yml)
+
+
+
+To use in a swarm, run `docker stack deploy -c stack.yaml harshavardhanj/endlessh` from the manager node in your swarm, wait for it initialise completely, and check if the tarpit is running by trying to connect to it by running `ssh -v root@swarm-ip -p 2222`. 
+
+
+
+To use on a local development machine, use `docker-compose -f stack.yaml up` from your local machine, wait for it initialise completely, and check if the tarpit is running by trying to connect to it by running `ssh -v root@swarm-ip -p 2222`. 
+
+
+
+In both cases, you should see a very delayed response from the server and some random gibberish banner text that is visible when the connection is attempted in verbose mode (`ssh -v`)
+
+
+
+# Image Variants
+
+The `endlessh` image comes in two falvours currently. One is based on the `scratch` base image and the other on `busybox`.
+
+
+
+## `endlessh:latest`, `endlessh`
+
+The images with these tags are built on top of the `scratch` base image which is a blank slate. The only utility/software on this image is the `endlessh` executable. Therefore, this image is the smallest in size of the two. This variant is highly recommended as it contains nothing more than the required executable. For more information about the `scratch` image, check the [`scratch` Docker Hub page](https://hub.docker.com/_/scratch).
+
+
+
+## `endlessh:busybox`
+
+The image with this tag is built on top of the `busybox` base image. It comes with the standard utilities and tools common to a `busybox` base image. Unless you need access to some of those utilities, the `scratch` image should suit your needs. For more information about the `busybox` image, check the [`busybox` Docker Hub page](https://hub.docker.com/_/busybox).
+
+
+
+# License
+
+As with all Docker images, these likely alos contain other software which may be under other license (such as `bash`, etc from the base distribution, along with any direct or indirect dependencies of the primary software being contained.)
+
+As for any pre-built image usage, it is the image user’s responsibility to ensure that any use of this image complies with any relevant licenses for all software container within.
