@@ -41,17 +41,17 @@ then
 	# Creating user (default - 'docker') and changing password (default -  'docker')
 	if [ "$(id -u "${USER:-docker}")" != "0" ]
 	then
-		USER_HOME="$( eval echo "/home/""${USER:-docker}" )"
+		USER_HOME="$( eval echo "/home/${USER:-docker}" )"
 		adduser -g "Docker user for SSH login" -h "${USER_HOME}" -s /bin/bash -G wheel -D "${USER:-docker}"
 	elif [ "$(id -u "${USER:-docker}")" == "0" ]
 	then
-		USER_HOME="$( eval echo ~"${USER:-docker}" )"
+		USER_HOME="$( eval echo "/home/${USER:-docker}" )"
 		echo "Root login is prohibited by default. Changing to 'allowed'."
 		echo "It is recommended that you use SSH keys to login as 'root'."
         echo "To use SSH keys, use the SSH_PUBKEY="$(cat testkey.pub)" option as an environment variable."
         sed -ri 's|^#?PermitRootLogin(\s+).*|PermitRootLogin yes|g' /etc/ssh/sshd_config
 	else
-		USER_HOME="$( eval echo ~"${USER:-docker}" )"
+		USER_HOME="$( eval echo "/home/${USER:-docker}" )"
 	fi
 
 	echo "${USER:-docker}:${PASSWORD:-docker}" | chpasswd && \
