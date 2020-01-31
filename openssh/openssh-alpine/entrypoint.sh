@@ -35,13 +35,13 @@ file_env() {
 
 if [ "$1" = "ssh" ]
 then
-	file_env 'USER' 'docker'
-	file_env 'PASSWORD' 'docker'
+	file_env 'USER'
+	file_env 'PASSWORD'
 
 	# Creating user (default - 'docker') and changing password (default -  'docker')
 	if [ "$(id -u "${USER:-docker}")" != "0" ]
 	then
-		USER_HOME="$( eval echo ~"${USER:-docker}" )"
+		USER_HOME="$( eval echo "/home/""${USER:-docker}" )"
 		adduser -g "Docker user for SSH login" -h "${USER_HOME}" -s /bin/bash -G wheel -D "${USER:-docker}"
 	elif [ "$(id -u "${USER:-docker}")" == "0" ]
 	then
