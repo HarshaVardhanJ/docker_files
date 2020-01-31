@@ -44,7 +44,9 @@ public-key authentication." \
 ARG CONFIG=/etc/ssh/sshd_config
 
 # Installing bash and OpenSSH server
-RUN apk update --no-cache && apk add --no-cache \
+RUN apk update --no-cache \
+  && apk upgrade -U \
+  && apk add --no-cache \
 	openssh-server && \
 # Changing SSHD configuration file defaults
 	sed -ri 's|^#?LogLevel INFO|LogLevel VERBOSE|g' ${CONFIG} ; \
