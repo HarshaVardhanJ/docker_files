@@ -13,40 +13,39 @@ set -u
 # The function below was taken from the 'entrypoint.sh' script that the Postgres Dockerfile refers to. 
 
 file_env() {
-    var="$1"
-    fileVar="${var}_FILE"
-    def="${2:-}"
+  variableName="$1"
+  fileVariable="${variableName}_FILE"
+  def="${2:-}"
 
-	if [ "$( echo "\$${var:-}" )" = "" ] && [ "$( echo "\$${fileVar:-}" )" = "" ]; then
-        echo >&2 "error: both ${var} and ${fileVar} are set (but are exclusive)"
+	if [ "$( echo "\$${variableName:-}" )" = "" ] && [ "$( echo "\$${fileVariable:-}" )" = "" ] ; then
+        echo >&2 "error: both ${variableName} and ${fileVariable} are set (but are exclusive)"
         exit 1
-    fi
+  fi
 
-    val="$def"
+  val="$def"
 
-	if [  "$( echo "\$${var:-}" )" != "" ]; then
-        val="$( eval echo "\$${var:-}" )"
-	elif [ "$( echo "\$${fileVar}" )" != "" ]; then
-        val="$( eval cat "\$${fileVar}" )"
-    fi
+	if [  "$( echo "\$${variableName:-}" )" != "" ] ; then
+        val="$( eval echo "\$${variableName:-}" )"
+	elif [ "$( echo "\$${fileVariable}" )" != "" ] ; then
+        val="$( eval cat "\$${fileVariable}" )"
+  fi
 
-    export "${var}"="${val}"
-    unset "${fileVar}"
+  export "${variableName}"="${val}"
+  unset "${fileVariable}"
+
+  echo "${variableName}"
 }
 
 
-if [ "$1" = "ssh" ]
-then
-    file_env 'USER'
-    file_env 'PASSWORD'
+if [ "$1" = "ssh" ] ; then
+  file_env 'USER'
+  file_env 'PASSWORD'
 
-    # Creating user (default - 'docker') and changing password (default -  'docker')
-    if [ "$(id -u "${USER:-docker}")" != "0" ]
-	then
+  # Creating user (default - 'docker') and changing password (default -  'docker')
+  if [ "$(id -u "${USER:-docker}")" != "0" ] ; then
 		USER_HOME="$( eval echo "/home/${USER:-docker}" )"
 		adduser -g "Docker user for SSH login" -h "${USER_HOME}" -s /bin/ash -G wheel -D "${USER:-docker}"
-	elif [ "$(id -u "${USER:-docker}")" = "0" ]
-	then
+	elif [ "$(id -u "${USER:-docker}")" = "0" ] ; then
 		USER_HOME="$( eval echo ~"${USER:-docker}" )"
 		echo "Root login is prohibited. Changing to 'allowed'."
 		echo "It is recommended that you use SSH keys to login as 'root'."
@@ -60,8 +59,7 @@ then
 	echo "${USER:-docker}:${PASSWORD:-docker}" | chpasswd
 
 	# Creating hidden directory '.ssh' in user's home directory and configuring user's SSH file.
-	if [ -d "${USER_HOME}" ]
-	then
+	if [ -d "${USER_HOME}" ] ; then
 		mkdir -p "${USER_HOME}"/.ssh && \
 		echo "StrictHostKeyChecking=no" > "${USER_HOME}"/.ssh/config ; \
 		echo "UserKnownHostsFile=/dev/null" >> "${USER_HOME}"/.ssh/config
@@ -69,8 +67,7 @@ then
 
 	# If SSH public key is provided by the user, append the contents to the user's 'authorized_keys' file
 	file_env 'SSH_PUBKEY'
-	if [ "${SSH_PUBKEY}" ]
-	then
+	if [ "${SSH_PUBKEY}" ] ; then
 		touch "${USER_HOME}"/.ssh/authorized_keys ; \
 		echo "${SSH_PUBKEY}" >> "${USER_HOME}"/.ssh/authorized_keys
 	fi
