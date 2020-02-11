@@ -1,3 +1,2 @@
 steps:
   - name: 'gcr.io/trans-proposal-206815/github.com/harshavardhanj/docker_files:ad3c1be'
-    args: ['build', '-t', 'endlessh-test', '--platform', '=', 'linux/arm,linux/arm64,linux/amd64', '.']
