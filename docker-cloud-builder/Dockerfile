@@ -26,15 +26,15 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >> /etc/
     && wget https://github.com/docker/buildx/releases/download/v0.3.1/buildx-v0.3.1.linux-amd64 \
     && mv buildx-v0.3.1.linux-amd64 docker-buildx \
     # Setting execute permission on the `buildx` executable
-    && chmod a+x docker-buildx \
+    && chmod a+x docker-buildx
     # Checking if `docker buildx` command works
-    && ./docker-buildx ls \
-    # Creating a new builder
-    && ./docker-buildx create --name multiarch-builder \
-    # Bootstrapping the builder
-    && ./docker-buildx inspect --bootstrap \
-    # Switching to the new builder
-    && ./docker-buildx use multiarch-builder
+#    && ./docker-buildx ls \
+#    # Creating a new builder
+#    && ./docker-buildx create --name multiarch-builder \
+#    # Bootstrapping the builder
+#    && ./docker-buildx inspect --bootstrap \
+#    # Switching to the new builder
+#    && ./docker-buildx use multiarch-builder
 
 # Run as user
 # (run as root for now. Once the image works as intended, create a new user and switch to that)
