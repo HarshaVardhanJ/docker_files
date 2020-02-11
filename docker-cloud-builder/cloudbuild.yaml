@@ -1,7 +1,7 @@
 steps:
-- name: 'gcr.io/cloud-builders/docker'
-  args:
-  - 'run'
-  - 'busybox'
-  - 'echo'
-  - 'Hello, world!'
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'run'
+      - 'busybox'
+      - 'echo'
+      - 'Hello'
