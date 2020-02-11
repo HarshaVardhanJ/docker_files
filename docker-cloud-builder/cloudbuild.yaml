@@ -1,2 +1,3 @@
 steps:
-  - name: 'gcr.io/trans-proposal-206815/github.com/harshavardhanj/docker_files@sha256:a7fb4ee07e51031c75337c64c4ebf14dfcba5868833199a375d0bfdf20277542'
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['version']
