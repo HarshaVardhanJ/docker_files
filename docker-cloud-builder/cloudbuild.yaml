@@ -1,7 +1,2 @@
 steps:
-  - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - 'run'
-      - 'busybox'
-      - 'echo'
-      - 'Hello'
+  - name: 'gcr.io/trans-proposal-206815/github.com/harshavardhanj/docker_files@sha256:0dc77f76eed314d55131c9858c86231fc9a2e6bea0ba45d700388e9ce289b274'
