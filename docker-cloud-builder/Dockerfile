@@ -24,9 +24,9 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >> /etc/
     && export DOCKER_CLI_EXPERIMENTAL=1 \
     # Downloading `buildx` binary release
     && wget https://github.com/docker/buildx/releases/download/v0.3.1/buildx-v0.3.1.linux-amd64 \
-    && mv buildx-v0.3.1.linux-amd64 docker-buildx \
+    && mv buildx-v0.3.1.linux-amd64 /usr/bin/docker-buildx \
     # Setting execute permission on the `buildx` executable
-    && chmod a+x docker-buildx
+    && chmod a+x /usr/bin/docker-buildx
     # Checking if `docker buildx` command works
 #    && ./docker-buildx ls \
 #    # Creating a new builder
@@ -43,10 +43,10 @@ USER root
 # Run the `docker build` command
 #ENTRYPOINT ["./docker-buildx"]
 #ENTRYPOINT ["./docker-buildx create --name multiarch-builder", "&&", "./docker-buildx inspect --bootstrap", "&&", "./docker-buildx use multiarch-builder", "&&", "./docker-buildx"]
-ENTRYPOINT ["./docker-buildx create --name multiarch-builder", "&&", "./docker-buildx inspect --bootstrap", "&&", "./docker-buildx use multiarch-builder"]
+ENTRYPOINT ["docker-buildx create --name multiarch-builder", "&&", "docker-buildx inspect --bootstrap", "&&", "docker-buildx use multiarch-builder"]
 
 # Print out the builder being used
-CMD ["./docker-buildx", "ls"]
+CMD ["docker-buildx", "ls"]
 
 # Maintainer information
 LABEL maintainer="Harsha Vardhan J" \
