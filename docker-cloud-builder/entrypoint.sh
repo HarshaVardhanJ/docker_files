@@ -28,17 +28,8 @@ buildxInitialise() {
   fi
 }
 
-# Main function which calls the buildx initialisation function
-main() {
-
-  # Calling the buildx initialiser function AND passing all arguments
-  # to the `buildx` executable
-  buildxInitialise \
-    && "${buildxCommand}" "$@"
-
-}
-
-# Calling the main function and passing all arguments to it
-main "$@"
+# Calling the initialisation function and passing all arguments to buildx
+buildxInitialise \
+  && ${buildxCommand} $@
 
 # End of script

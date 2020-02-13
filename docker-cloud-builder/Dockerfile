@@ -27,14 +27,6 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >> /etc/
     && mv buildx-v0.3.1.linux-amd64 /usr/bin/docker-buildx \
     # Setting execute permission on the `buildx` executable
     && chmod a+x /usr/bin/docker-buildx
-    # Checking if `docker buildx` command works
-#    && ./docker-buildx ls \
-#    # Creating a new builder
-#    && ./docker-buildx create --name multiarch-builder \
-#    # Bootstrapping the builder
-#    && ./docker-buildx inspect --bootstrap \
-#    # Switching to the new builder
-#    && ./docker-buildx use multiarch-builder
 
 # Run as user
 # (run as root for now. Once the image works as intended, create a new user and switch to that)
@@ -45,13 +37,7 @@ COPY ./entrypoint.sh /usr/bin/
 
 # Run the `docker build` command
 #ENTRYPOINT ["sh", "-c", "docker-buildx create --use --name multiarch-builder"]
-#ENTRYPOINT ["docker-buildx create --name multiarch-builder", "&&", "docker-buildx inspect --bootstrap", "&&", "docker-buildx use multiarch-builder", "&&", "docker-buildx"]
-#ENTRYPOINT ["docker-buildx create --name multiarch-builder", "&&", "docker-buildx inspect --bootstrap", "&&", "docker-buildx use multiarch-builder"]
-#ENTRYPOINT ["sh", "-c", "docker-buildx create --use --name multiarch-builder && docker-buildx"]
 ENTRYPOINT ["entrypoint.sh"]
-
-# Print out the builder being used
-#CMD ["docker-buildx", "ls"]
 
 # Maintainer information
 LABEL maintainer="Harsha Vardhan J" \
