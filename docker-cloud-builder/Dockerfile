@@ -42,11 +42,11 @@ USER root
 
 # Run the `docker build` command
 ENTRYPOINT ["docker-buildx"]
-#ENTRYPOINT ["docker-buildx create --name multiarch-builder", "&&", "./docker-buildx inspect --bootstrap", "&&", "./docker-buildx use multiarch-builder", "&&", "./docker-buildx"]
+#ENTRYPOINT ["docker-buildx create --name multiarch-builder", "&&", "docker-buildx inspect --bootstrap", "&&", "docker-buildx use multiarch-builder", "&&", "docker-buildx"]
 #ENTRYPOINT ["docker-buildx create --name multiarch-builder", "&&", "docker-buildx inspect --bootstrap", "&&", "docker-buildx use multiarch-builder"]
 
 # Print out the builder being used
-CMD ["create"]
+CMD ["create", "--name", "multiarch-builder"]
 
 # Maintainer information
 LABEL maintainer="Harsha Vardhan J" \
