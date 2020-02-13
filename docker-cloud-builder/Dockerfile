@@ -44,7 +44,7 @@ USER root
 #ENTRYPOINT ["sh", "-c", "docker-buildx create --use --name multiarch-builder"]
 #ENTRYPOINT ["docker-buildx create --name multiarch-builder", "&&", "docker-buildx inspect --bootstrap", "&&", "docker-buildx use multiarch-builder", "&&", "docker-buildx"]
 #ENTRYPOINT ["docker-buildx create --name multiarch-builder", "&&", "docker-buildx inspect --bootstrap", "&&", "docker-buildx use multiarch-builder"]
-ENTRYPOINT ["sh", "-c", "docker-buildx create --use --name multiarch-builder && docker-buildx]
+ENTRYPOINT ["sh", "-c", "docker-buildx create --use --name multiarch-builder && docker-buildx"]
 
 # Print out the builder being used
 #CMD ["docker-buildx", "ls"]
