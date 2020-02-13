@@ -21,7 +21,7 @@ buildxInitialise() {
   # If the `buildx` executable is in PATH
   if [ $(which "${buildxCommand}") ] ; then
     # Initialise a builder and switch to it
-    buildxCommand create --use --name multiarch-builder
+    "${buildxCommand}" create --use --name multiarch-builder
   else
     printf '%s\n' "The ${buildxCommand} could not be found in the PATH." \
       && exit 1
@@ -34,7 +34,7 @@ main() {
   # Calling the buildx initialiser function AND passing all arguments
   # to the `buildx` executable
   buildxInitialise \
-    && buildxCommand "$@"
+    && "${buildxCommand}" "$@"
 
 }
 
