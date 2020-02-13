@@ -40,11 +40,15 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >> /etc/
 # (run as root for now. Once the image works as intended, create a new user and switch to that)
 USER root
 
+# Copying the 'entrypoint' script that will help configure 'docker-buildx'
+COPY ./entrypoint.sh /usr/bin/
+
 # Run the `docker build` command
 #ENTRYPOINT ["sh", "-c", "docker-buildx create --use --name multiarch-builder"]
 #ENTRYPOINT ["docker-buildx create --name multiarch-builder", "&&", "docker-buildx inspect --bootstrap", "&&", "docker-buildx use multiarch-builder", "&&", "docker-buildx"]
 #ENTRYPOINT ["docker-buildx create --name multiarch-builder", "&&", "docker-buildx inspect --bootstrap", "&&", "docker-buildx use multiarch-builder"]
-ENTRYPOINT ["sh", "-c", "docker-buildx create --use --name multiarch-builder && docker-buildx"]
+#ENTRYPOINT ["sh", "-c", "docker-buildx create --use --name multiarch-builder && docker-buildx"]
+ENTRYPOINT ["entrypoint.sh"]
 
 # Print out the builder being used
 #CMD ["docker-buildx", "ls"]
