@@ -1,7 +1,6 @@
 steps:
-  - name: 'gcr.io/trans-proposal-206815/github.com/harshavardhanj/docker_files:e15a133'
+  - name: 'gcr.io/trans-proposal-206815/github.com/harshavardhanj/docker_files:c2839af'
     args:
-      - 'docker-buildx'
       - 'build'
       - '-t'
       - 'gcr.io/trans-proposal-206815/github.com/harshavardhanj/endlessh'
