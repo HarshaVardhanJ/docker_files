@@ -1,2 +1,2 @@
 steps:
-  - name: 'gcr.io/trans-proposal-206815/github.com/harshavardhanj/docker_files:1c409d8'
+  - name: 'gcr.io/trans-proposal-206815/github.com/harshavardhanj/docker_files:0412e08'
