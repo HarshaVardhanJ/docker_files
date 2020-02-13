@@ -6,4 +6,5 @@ steps:
       - 'linux/amd64,linux/arm64'
       - '-f'
       - 'endlessh-Dockerfile'
+      - '--load'
       - '.'
