@@ -41,8 +41,8 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >> /etc/
 USER root
 
 # Run the `docker build` command
-ENTRYPOINT ["./docker-buildx"]
-#ENTRYPOINT ["./docker-buildx create --name multiarch-builder", "&&", "./docker-buildx inspect --bootstrap", "&&", "./docker-buildx use multiarch-builder", "&&", "./docker-buildx"]
+ENTRYPOINT ["docker-buildx"]
+#ENTRYPOINT ["docker-buildx create --name multiarch-builder", "&&", "./docker-buildx inspect --bootstrap", "&&", "./docker-buildx use multiarch-builder", "&&", "./docker-buildx"]
 #ENTRYPOINT ["docker-buildx create --name multiarch-builder", "&&", "docker-buildx inspect --bootstrap", "&&", "docker-buildx use multiarch-builder"]
 
 # Print out the builder being used
