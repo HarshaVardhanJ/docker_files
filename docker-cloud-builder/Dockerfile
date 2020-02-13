@@ -46,7 +46,7 @@ ENTRYPOINT ["docker-buildx"]
 #ENTRYPOINT ["docker-buildx create --name multiarch-builder", "&&", "docker-buildx inspect --bootstrap", "&&", "docker-buildx use multiarch-builder"]
 
 # Print out the builder being used
-CMD ["create", "--name", "multiarch-builder"]
+CMD ["create", "--name", "multiarch-builder", ";", "docker-buildx", "inspect", "--bootstrap"]
 
 # Maintainer information
 LABEL maintainer="Harsha Vardhan J" \
