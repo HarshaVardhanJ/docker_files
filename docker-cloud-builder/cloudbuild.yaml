@@ -5,6 +5,6 @@ steps:
       - '--platform'
       - 'linux/amd64,linux/arm64'
       - '-f'
-      - 'endlessh-Dockerfile'
+      - './endlessh-Dockerfile'
       - '--load'
       - '.'
