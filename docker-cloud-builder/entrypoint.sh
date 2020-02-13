@@ -3,14 +3,12 @@
 #: Title        : entrypoint.sh 
 #: Date         :	13-Feb-2020
 #: Author       :	"Harsha Vardhan J" <vardhanharshaj@gmail.com>
-#: Version      : 
-#: Description  : Used to initialise a Docker image
-#                 
-#                 
-#                 
-#                 
-#: Options      : 
-#: Usage        :	
+#: Version      : 0.1
+#: Description  : Used to initialise a Docker image with support
+#                 for `buildx` added.
+#: Options      : None
+#: Usage        :	The script will be added the container image
+#                 and run as the ENTRYPOINT command.
 ################
 
 # Variable that contains name of `buildx` executable
@@ -21,7 +19,9 @@ buildxInitialise() {
   # If the `buildx` executable is in PATH
   if [ $(which "${buildxCommand}") ] ; then
     # Initialise a builder and switch to it
-    "${buildxCommand}" create --use --name multiarch-builder
+    "${buildxCommand}" create --name multiarch-builder \
+      && "${buildxCommand}" use multiarch-builder \
+      && "${buildxCommand}" inspect --bootstrap
   else
     printf '%s\n' "The ${buildxCommand} could not be found in the PATH." \
       && exit 1

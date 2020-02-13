@@ -5,6 +5,9 @@
 # Starting with the base image of the latest version of Alpine Linux
 FROM alpine:latest
 
+# Version number of `docker buildx`
+ARG buildxVersion=0.3.1
+
 # Setting working directory to '/'
 WORKDIR /
 
@@ -23,8 +26,8 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >> /etc/
     # Setting environment variable for enabling experimental features in Docker
     && export DOCKER_CLI_EXPERIMENTAL=1 \
     # Downloading `buildx` binary release
-    && wget https://github.com/docker/buildx/releases/download/v0.3.1/buildx-v0.3.1.linux-amd64 \
-    && mv buildx-v0.3.1.linux-amd64 /usr/bin/docker-buildx \
+    && wget https://github.com/docker/buildx/releases/download/v${buildxVersion}/buildx-v${buildxVersion}.linux-amd64 \
+    && mv buildx-v${buildxVersion}.linux-amd64 /usr/bin/docker-buildx \
     # Setting execute permission on the `buildx` executable
     && chmod a+x /usr/bin/docker-buildx
 
@@ -36,7 +39,6 @@ USER root
 COPY ./entrypoint.sh /usr/bin/
 
 # Run the `docker build` command
-#ENTRYPOINT ["sh", "-c", "docker-buildx create --use --name multiarch-builder"]
 ENTRYPOINT ["entrypoint.sh"]
 
 # Maintainer information
