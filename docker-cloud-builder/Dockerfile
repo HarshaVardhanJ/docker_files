@@ -21,25 +21,6 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >> /etc/
     && apk update \
     # Upgrading packages
     && apk upgrade -U \
-#    && apk add --no-cache --virtual .qemu \
-#      qemu \
-#      qemu-arm \
-#      qemu-img \
-#      qemu-i386 \
-#      qemu-modules \
-#      qemu-s390x \
-#      qemu-system-arm \
-#      qemu-system-aarch64 \
-#      qemu-system-i386 \
-#      qemu-system-ppc \
-#      qemu-system-sparc \
-#    # Downloading files for binfmt
-#    && wget https://github.com/computermouth/qemu-static-conf/archive/master.zip \
-#    # Extracting zip file
-#    && unzip *.zip \
-#    && mkdir -p /lib/binfmt.d \
-#    # Copy files to created directory
-#    && cp qemu-static-conf-master/*.conf /lib/binfmt.d/ \
     # Installing Docker
     && apk add --no-cache docker \
     # Setting environment variable for enabling experimental features in Docker
@@ -63,5 +44,15 @@ ENTRYPOINT ["entrypoint.sh"]
 # Maintainer information
 LABEL maintainer="Harsha Vardhan J" \
       github.account="https://github.com/HarshaVardhanJ" \
+      dockerfile.github.page="https://github.com/HarshaVardhanJ/docker_files\
+/blob/master/docker-cloud-builder/Dockerfile"
+      description="This Dockerfile creates an image of Docker with support for \
+`buildx` added. This way, images can be built for multiple architectures. The \
+suggested way to use this image is with GCP Cloud Build via a `cloudbuild.yaml` \
+file in which this image will need to be invoked as a Cloud Builder. The \
+arguments to the Cloud Builder will the same as the argument to the `buildx` \
+executable. Start the arguments with 'build -f [DOCKERFILE] [BUILD-CONTEXT]. \
+Check the sample `cloudbuild.yaml` file in this directory for an example of \
+how this image is to be used in a `cloudbuild.yaml` file."
       version="1.0"
 
