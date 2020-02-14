@@ -1,8 +1,9 @@
 steps:
-  - name: 'gcr.io/trans-proposal-206815/github.com/harshavardhanj/docker_files:18e2c9b'
+  - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/github.com/docker_files/docker-buildx:$SHORT_SHA'
       - '-f'
-      - './docker-cloud-builder/endlessh-Dockerfile'
-      - '--load'
-      - './docker-cloud-builder/.'
+      - './docker-cloud-builder/Dockerfile'
+images: ['gcr.io/$PROJECT_ID/github.com/docker_files/docker-buildx:$SHORT_SHA']

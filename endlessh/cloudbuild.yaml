@@ -2,9 +2,9 @@ steps:
   - name: 'gcr.io/trans-proposal-206815/github.com/harshavardhanj/docker_files:18e2c9b'
     args:
       - 'build'
+      - '--platform'
+      - 'linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6'
       - '-f'
       - './endlessh/Dockerfile'
-      - '--platform'
-      - 'linux/amd64,linux/arm64'
       - '--load'
       - './endlessh/.'

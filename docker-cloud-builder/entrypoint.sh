@@ -13,12 +13,13 @@
 
 # Variable that contains name of `buildx` executable
 buildxCommand="docker-buildx"
+binfmtVersion="0.7"
 
 # Function which initialises `buildx`
 buildxInitialise() {
   # Running the below command adds support for multi-arch
   # builds by setting up QEMU
-  docker run --privileged linuxkit/binfmt:v0.7 || exit 1
+  docker run --privileged linuxkit/binfmt:v${binfmtVersion} || exit 1
 
   # If the `buildx` executable is in PATH
   if [ $(which "${buildxCommand}") ] ; then
