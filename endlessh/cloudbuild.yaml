@@ -3,8 +3,8 @@ steps:
     args:
       - 'build'
       - '-f'
-      - './Dockerfile'
+      - './endlessh/Dockerfile'
       - '--platform'
       - 'linux/amd64,linux/arm64'
       - '--load'
-      - '.'
+      - './endlessh/.'
