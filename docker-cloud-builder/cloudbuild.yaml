@@ -3,6 +3,6 @@ steps:
     args:
       - 'build'
       - '-f'
-      - './endlessh-Dockerfile'
+      - './docker-cloud-builder/endlessh-Dockerfile'
       - '--load'
-      - '.'
+      - './docker-cloud-builder/.'
