@@ -16,6 +16,9 @@ buildxCommand="docker-buildx"
 
 # Function which initialises `buildx`
 buildxInitialise() {
+  # Trying the below command
+  docker run --privileged linuxkit/binfmt:v0.7
+
   # If the `buildx` executable is in PATH
   if [ $(which "${buildxCommand}") ] ; then
     # Initialise a builder and switch to it

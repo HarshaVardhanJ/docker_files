@@ -21,6 +21,25 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >> /etc/
     && apk update \
     # Upgrading packages
     && apk upgrade -U \
+    && apk add --no-cache --virtual .qemu \
+      qemu \
+      qemu-arm \
+      qemu-img \
+      qemu-i386 \
+      qemu-modules \
+      qemu-s390x \
+      qemu-system-arm \
+      qemu-system-aarch64 \
+      qemu-system-i386 \
+      qemu-system-ppc \
+      qemu-system-sparc \
+    # Downloading files for binfmt
+    && wget https://github.com/computermouth/qemu-static-conf/archive/master.zip \
+    # Extracting zip file
+    && unzip *.zip \
+    && mkdir -p /lib/binfmt.d \
+    # Copy files to created directory
+    && cp qemu-static-conf-master/*.conf /lib/binfmt.d/ \
     # Installing Docker
     && apk add --no-cache docker \
     # Setting environment variable for enabling experimental features in Docker
