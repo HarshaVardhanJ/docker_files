@@ -1,5 +1,5 @@
 steps:
-  - name: 'gcr.io/trans-proposal-206815/github.com/harshavardhanj/docker_files:4faf89c'
+  - name: 'gcr.io/trans-proposal-206815/github.com/harshavardhanj/docker_files:909fe87'
     args:
       - 'build'
       - '-f'
