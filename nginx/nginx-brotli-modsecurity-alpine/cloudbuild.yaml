@@ -5,6 +5,6 @@ steps:
       - '--platform'
       - 'linux/amd64,linux/arm64,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6'
       - '-f'
-      - './endlessh/Dockerfile'
+      - './nginx/nginx-brotli-modsecurity-alpine/Dockerfile'
       - '--load'
-      - './endlessh/.'
+      - './nginx/nginx-brotli-modsecurity-alpine/.'
