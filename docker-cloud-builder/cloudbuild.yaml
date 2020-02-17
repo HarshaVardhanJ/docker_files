@@ -30,4 +30,3 @@ steps:
       - './docker-cloud-builder/Dockerfile'
       - '--push'
       - './docker-cloud-builder/.'
-images: ["harshavardhanj/docker-buildx:latest"]
