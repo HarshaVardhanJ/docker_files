@@ -10,14 +10,14 @@ steps:
     args: ["-c", "docker login --username=$(cat ./UserID) --password=$(cat ./AccessToken)"]
 
   # Build the container image using `buildx` and push it to Docker Hub
-  - name: 'gcr.io/cloud-builder/docker'
-    args:
-      - 'build'
-      - '-t'
-      - 'harshavardhanj/docker-buildx:latest'
-      - '-f'
-      - './docker-cloud-builder/Dockerfile'
-      - './docker-cloud-builder/.'
+  #  - name: 'gcr.io/cloud-builder/docker'
+  #    args:
+  #      - 'build'
+  #      - '-t'
+  #      - 'harshavardhanj/docker-buildx:latest'
+  #      - '-f'
+  #      - './docker-cloud-builder/Dockerfile'
+  #      - './docker-cloud-builder/.'
   # Pull buildx image from Docker Hub and build 'buildx' image with multi-arch support
   - name: 'harshavardhanj/docker-buildx:latest'
     args:
@@ -30,4 +30,4 @@ steps:
       - './docker-cloud-builder/Dockerfile'
       - '--push'
       - './docker-cloud-builder/.'
-images: ["harshavardhanj/docker-buildx:latest"]
+        #images: ["harshavardhanj/docker-buildx:latest"]
