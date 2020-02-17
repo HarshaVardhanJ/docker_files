@@ -63,7 +63,7 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >> /etc/
     # Moving `buildx` binary to a directory which is under $PATH
     && mv buildx-v${buildxVersion}.linux-amd64 /usr/bin/docker-buildx \
     # Setting execute permission on the `buildx` executable
-    && chmod a+x /usr/bin/docker-buildx \
+    && chmod a+x /usr/bin/docker-buildx
     # Creating 'docker' user ('docker' group already exists)
 #    && adduser -H -g "User account for Docker" -s /bin/sh -G docker -u 1000 -S -D docker
 
