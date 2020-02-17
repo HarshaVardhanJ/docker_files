@@ -14,7 +14,7 @@
 # Wrapper function around the gcloud command used to access secrets
 getCreds() {
 
-  if [ $# -eq 2 && -n "${2}" ] ; then
+  if [[ $# -eq 2 && -n ${2} ]] ; then
     gcloud beta secrets versions access ${1} --secret="${2}"
   else
     exit 1
