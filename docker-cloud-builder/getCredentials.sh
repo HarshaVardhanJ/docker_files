@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 #
 #: Title        : getCredentials.sh
 #: Date         :	17-Feb-2020
@@ -12,9 +12,9 @@
 
 
 # Wrapper function around the gcloud command used to access secrets
-func getCreds() {
+getCreds() {
 
-  if [[ $# -eq 2 && -n "${2}" ]] ; then
+  if [ $# -eq 2 && -n "${2}" ] ; then
     gcloud beta secrets versions access ${1} --secret="${2}"
   else
     exit 1
