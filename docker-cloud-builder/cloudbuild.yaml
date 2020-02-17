@@ -11,7 +11,7 @@ steps:
 
   # Log in to Docker Hub using the credentials obtained in the previous steps
   - name: 'gcr.io/cloud-builders/docker'
-    args: ["login", "-u=$(cat ./UserID)", "-p=$(cat ./AccessToken)"]
+    args: ["login", "-u", "$(cat ./UserID)", "-p", "$(cat ./AccessToken)"]
 
   # Build the container image using `buildx` and push it to Docker Hub
   - name: 'gcr.io/cloud-builders/docker'
@@ -25,4 +25,5 @@ steps:
       - './docker-cloud-builder/Dockerfile'
       - '--push'
       - './docker-cloud-builder/.'
+
 images: ['harshavardhanj/docker-buildx:latest']
