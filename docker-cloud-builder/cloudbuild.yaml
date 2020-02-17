@@ -1,13 +1,14 @@
 steps:
   # Get the Docker Hub user ID from Secrets Manager and save it to a file
   - name: 'gcr.io/cloud-builders/gcloud'
-    #    entrypoint: "bash"
-    args: ["beta", "secrets", "versions", "access", "1", "--secret=DockerHubUserID", ">", "./UserID"]
+    entrypoint: "bash"
+    args: ["./getCredentials.sh"]
+    #args: ["gcloud", "beta", "secrets", "versions", "access", "1", "--secret=DockerHubUserID", ">", "./UserID"]
 
   # Get the Docker Hub access token from Secrets Manager and save it to a file
-  - name: 'gcr.io/cloud-builders/gcloud'
-    #entrypoint: "bash"
-    args: ["beta", "secrets", "versions", "access", "1", "--secret=DockerHubAccessToken", ">", "./AccessToken"]
+  #  - name: 'gcr.io/cloud-builders/gcloud'
+  #    entrypoint: "bash"
+  #    args: ["gcloud", "beta", "secrets", "versions", "access", "1", "--secret=DockerHubAccessToken", ">", "./AccessToken"]
 
   # Log in to Docker Hub using the credentials obtained in the previous steps
   - name: 'gcr.io/cloud-builders/docker'
