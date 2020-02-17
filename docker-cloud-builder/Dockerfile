@@ -19,7 +19,7 @@
 #    6. Downloads a specific version of the 'buildx' binary from    #
 #       GitHub, extracts it, moves it to a directory in $PATH,      #
 #       and sets the execute bit on it.                             #
-#    7. Creates a new system user which is used to run Docker.      #
+#    7. Sets the 'run as' user as root.                             #
 #    8. Copies the 'entrypoint.sh' script to a directory in $PATH.  #
 #    9. Runs the 'entrypoint.sh' script, which takes care of        #
 #       setting up 'buildx'.                                        #
@@ -64,8 +64,6 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >> /etc/
     && mv buildx-v${buildxVersion}.linux-amd64 /usr/bin/docker-buildx \
     # Setting execute permission on the `buildx` executable
     && chmod a+x /usr/bin/docker-buildx
-    # Creating 'docker' user ('docker' group already exists)
-#    && adduser -H -g "User account for Docker" -s /bin/sh -G docker -u 1000 -S -D docker
 
 # Run as user 'root'
 USER root
