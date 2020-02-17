@@ -65,10 +65,10 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >> /etc/
     # Setting execute permission on the `buildx` executable
     && chmod a+x /usr/bin/docker-buildx \
     # Creating 'docker' user ('docker' group already exists)
-    && adduser -H -g "User account for Docker" -s /bin/sh -G docker -u 1000 -S -D docker
+#    && adduser -H -g "User account for Docker" -s /bin/sh -G docker -u 1000 -S -D docker
 
-# Run as user 'docker'
-USER docker
+# Run as user 'root'
+USER root
 
 # Copying the 'entrypoint' script, which will help configure 'docker-buildx', to a directory
 # which is under $PATH
