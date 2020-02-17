@@ -21,4 +21,3 @@ steps:
       - './endlessh/alpine/Dockerfile'
       - '--push'
       - './endlessh/alpine/.'
-images: ['harshavardhanj/endlessh:alpine']
