@@ -2,7 +2,7 @@ steps:
   # Get the Docker Hub user ID from Secrets Manager and save it to a file
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: "bash"
-    args: ["../docker-cloud-builder/getCredentials.sh"]
+    args: ["./endlessh/getCredentials.sh"]
 
   # Log in to Docker Hub using the credentials obtained in the previous steps
   - name: 'gcr.io/cloud-builders/docker'
