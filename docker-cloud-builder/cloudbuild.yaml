@@ -1,12 +1,12 @@
 steps:
   # Get the Docker Hub user ID from Secrets Manager and save it to a file
   - name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: ["bash"]
+    entrypoint: "bash"
     args: ["-c", "gcloud", "beta", "secrets", "versions", "access", "1", "--secret=DockerHubUserID", ">", "./UserID"]
 
   # Get the Docker Hub access token from Secrets Manager and save it to a file
   - name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: ["bash"]
+    entrypoint: "bash"
     args: ["-c", "gcloud", "beta", "secrets", "versions", "access", "1", "--secret=DockerHubAccessToken", ">", "./AccessToken"]
 
   # Log in to Docker Hub using the credentials obtained in the previous steps
@@ -25,5 +25,3 @@ steps:
       - './docker-cloud-builder/Dockerfile'
       - '--push'
       - './docker-cloud-builder/.'
-
-images: ['harshavardhanj/docker-buildx:latest']
