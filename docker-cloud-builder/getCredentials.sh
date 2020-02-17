@@ -11,22 +11,19 @@
 ################
 
 
-## Wrapper function around the gcloud command used to access secrets
-#getCreds() {
-#
-#  if [[ $# -eq 2 && -n ${2} ]] ; then
-#    gcloud beta secrets versions access ${1} --secret="${2}"
-#  else
-#    exit 1
-#  fi
-#
-#}
-#
-## Calling the 'getCreds' function
-#getCreds 1 DockerHubUserID > ./UserID
-#getCreds 1 DockerHubAccessToken > ./AccessToken
-#
-gcloud beta secrets versions access 1 --secret=DockerHubUserID > ./UserID
-gcloud beta secrets versions access 1 --secret=DockerHubAccessToken > ./AccessToken
+# Wrapper function around the gcloud command used to access secrets
+getCreds() {
+
+  if [[ $# -eq 2 && -n ${2} ]] ; then
+    gcloud beta secrets versions access ${1} --secret="${2}"
+  else
+    exit 1
+  fi
+
+}
+
+# Calling the 'getCreds' function
+getCreds 1 DockerHubUserID > ./UserID
+getCreds 1 DockerHubAccessToken > ./AccessToken
 
 # End of script
