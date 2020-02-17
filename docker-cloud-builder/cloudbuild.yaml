@@ -1,9 +1,28 @@
 steps:
+  # Get the Docker Hub user ID from Secrets Manager and save it to a file
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: ["bash"]
+    args: ["-c", "gcloud", "beta", "secrets", "versions", "access", "1", "--secret=DockerHubUserID", ">", "./UserID"]
+
+  # Get the Docker Hub access token from Secrets Manager and save it to a file
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: ["bash"]
+    args: ["-c", "gcloud", "beta", "secrets", "versions", "access", "1", "--secret=DockerHubAccessToken", ">", "./AccessToken"]
+
+  # Log in to Docker Hub using the credentials obtained in the previous steps
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ["login", "-u=$(cat ./UserID)", "-p=$(cat ./AccessToken)"]
+
+  # Build the container image using `buildx` and push it to Docker Hub
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
       - '-t'
-      - 'gcr.io/$PROJECT_ID/github.com/docker_files/docker-buildx:$SHORT_SHA'
+      - 'harshavardhanj/docker-buildx:latest'
+      - '--platform'
+      - 'linux/amd64,linux/arm64,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6'
       - '-f'
       - './docker-cloud-builder/Dockerfile'
-images: ['gcr.io/$PROJECT_ID/github.com/docker_files/docker-buildx:$SHORT_SHA']
+      - '--push'
+      - './docker-cloud-builder/.'
+images: ['harshavardhanj/docker-buildx:latest']
