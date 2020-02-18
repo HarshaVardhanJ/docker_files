@@ -3,16 +3,18 @@
 # Start with golang image as builder step
 FROM golang:alpine as gitea-build
 
-# Setting the nodeJS version
+# Setting the nodeJS version and NPM version
 ARG nodejsVersion=12.15.0-r1
+ARG npmVersion=12.15.0-r1
 
-# Install dependencies for go
+# Install dependencies for Go, and for building Gitea
 RUN apk add --no-cache --virtual .go-deps \
       gcc \
       git \
       make \
       musl-dev \
-      nodejs=$nodejsVersion
+      nodejs=$nodejsVersion \
+      npm=$npmVersion
 
 # Environment variables
 ENV GOPATH="/go"
