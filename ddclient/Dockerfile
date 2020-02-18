@@ -88,8 +88,8 @@ CMD ["/usr/bin/ddclient", "-verbose", "-file", "/etc/ddclient/ddclient.conf", "-
 # Maintainer information
 LABEL maintainer="Harsha Vardhan J" \
       github.account="https://github.com/HarshaVardhanJ" \
-      dockerfile.github.page="https://github.com/HarshaVardhanJ/docker_files/blob/master/ddclient/Dockerfile"
+      dockerfile.github.page="https://github.com/HarshaVardhanJ/docker_files/blob/master/ddclient/Dockerfile" \
       description="This Dockerfile creates an image containing \
-      the utility `ddclient`, which is used for updating Dynamic DNS \
-      records." \
+the utility `ddclient`, which is used for updating Dynamic DNS \
+records." \
       version="1.0"
