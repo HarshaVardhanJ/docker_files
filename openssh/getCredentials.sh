@@ -11,7 +11,7 @@
 ################
 
 
-## Wrapper function around the gcloud command used to access secrets
+# Wrapper function around the gcloud command used to access secrets
 getCreds() {
 
   if [[ $# -eq 2 && -n ${2} ]] ; then
