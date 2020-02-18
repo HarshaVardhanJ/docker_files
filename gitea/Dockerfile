@@ -81,5 +81,5 @@ LABEL maintainer="Harsha Vardhan J" \
       github.account="https://github.com/HarshaVardhanJ" \
       dockerfile.github.page="https://github.com/HarshaVardhanJ/docker_files/blob/master/gitea/Dockerfile" \
       description="This Dockerfile creates an image containing Gitea, which is a light-weight self-hosted \
-      Git repository." \
+Git repository." \
       version="1.0"
