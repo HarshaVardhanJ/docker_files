@@ -1,0 +1,33 @@
+# Config file to be used by Container Structure Test
+# for endlessh:busybox image
+
+schemaVersion: 2.0.0
+
+metadataTest:
+  labels:
+    - key: 'maintainer'
+      value: 'Harsha Vardhan J'
+    - key: 'github.account'
+      value: 'https://github.com/HarshaVardhanJ'
+    - key: 'dockerfile.github.page'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/blob/master/endlessh/busybox/Dockerfile'
+    - key: 'software.author.github.page'
+      value: 'https://github.com/skeeto/endlessh'
+  exposedPorts: ["2222"]
+  entrypoint: ["/endlessh"]
+  cmd: ["-v"]
+
+fileExistenceTests:
+  - name: 'Endlessh executable'
+    path: '/endlessh'
+    shouldExist: true
+    permissions: '---x------'
+    isExecutableBy: 'owner'
+    uid: 1000
+    gid: 1000
+
+commandTests:
+  - name: "Check if running as 'endlessh' user"
+    command: "whoami"
+    expectedOutput: ["endlessh"]
+    exitCode: 0
