@@ -32,8 +32,6 @@ file_env() {
 
   export "${variableName}"="${val}"
   unset "${fileVariable}"
-
-  echo "${variableName}"
 }
 
 
