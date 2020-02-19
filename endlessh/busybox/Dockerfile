@@ -62,7 +62,7 @@ CMD ["-v"]
 # Maintainer information
 LABEL maintainer="Harsha Vardhan J" \
       github.account="https://github.com/HarshaVardhanJ" \
-      dockerfile.github.page="https://github.com/HarshaVardhanJ/docker_files/blob/master/endlessh/Dockerfile" \
+      dockerfile.github.page="https://github.com/HarshaVardhanJ/docker_files/blob/master/endlessh/busybox/Dockerfile" \
       description="This Dockerfile creates an image containing the executable `endlessh` which is an SSH tarpit \
       that very slowly sends an endless, random SSH banner. It keeps SSH clients locked up for hours or even days \
       at a time. The purpose is to put your real SSH server on another port and then let the script kiddies get \
