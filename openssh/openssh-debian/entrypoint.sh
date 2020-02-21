@@ -46,11 +46,11 @@ user_setup() {
 	file_env 'PASSWORD'
 
 	# Creating user (default - 'docker') and changing password (default -  'docker')
-	if [ "$(id -u "${USER:-docker}")" != "0" ]
+	if [ "$(id -u "${USER:-docker}" 2>/dev/null)" != "0" ]
 	then
 		USER_HOME="$( eval echo "/home/${USER:-docker}" )"
-		adduser -g "Docker user for SSH login" -h "${USER_HOME}" -s /bin/bash -G wheel -D "${USER:-docker}"
-	elif [ "$(id -u "${USER:-docker}")" == "0" ]
+		useradd -c "Docker user for SSH login" -d "${USER_HOME}" -m -s /bin/bash "${USER:-docker}"
+	elif [ "$(id -u "${USER:-docker}" 2>/dev/null)" == "0" ]
 	then
 		USER_HOME="$( eval echo "/home/${USER:-docker}" )"
 		echo "Root login is prohibited by default. Changing to 'allowed'."
