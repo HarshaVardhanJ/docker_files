@@ -50,7 +50,7 @@ RUN apk update \
 	bash \
 	&& apk add --no-cache openssh-server && \
 # Changing SSHD configuration file defaults
-	sed -ri 's|^#?LogLevel INFO|LogLevel VERBOSE|g' ${CONFIG} ; \
+	sed -ri 's|^#?LogLevel(%s+).*|LogLevel VERBOSE|g' ${CONFIG} ; \
 	sed -ri 's|^#?PasswordAuthentication(\s+).*|PasswordAuthentication yes|g' ${CONFIG} ; \
 	sed -ri 's|^#?PermitRootLogin(\s+).*|PermitRootLogin no|g' ${CONFIG} ; \
 	sed -ri 's|#?PermitEmptyPasswords(\s+).*|PermitEmptyPasswords no|g' ${CONFIG} ; \
@@ -77,5 +77,5 @@ EXPOSE 22
 
 # The 'ssh' CMD is required by the 'entrypoint.sh' script to set up the SSH server. 
 # Any command given to the 'docker container run' will override the CMD below which
-# will result in the SSH server not being set up. 
+# will result in the SSH server not being started. 
 CMD ["ssh"]

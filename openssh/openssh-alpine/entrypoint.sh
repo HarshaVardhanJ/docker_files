@@ -11,6 +11,8 @@
 #
 #    docker container run ...... -e USER="$(cat user.file)" -e PASSWORD="$(cat password.file)" -e SSH_PUBKEY="$(cat ssh_key.pub)" image:latest
 # The function below was taken from the 'entrypoint.sh' script that the Postgres Dockerfile refers to. 
+# This function is called by the 'user_setup' function. There is no necessity to call this function outside the 'user_setup' function.
+#
 file_env() {
 	local var="$1"
 	local fileVar="${var}_FILE"
@@ -33,8 +35,13 @@ file_env() {
 	unset "$fileVar"
 }
 
-if [ "$1" = "ssh" ]
-then
+
+# Function that takes care of creation of user, setting up of home directory,
+# setting up files required for SSH access. This function calls the 'file_env'
+# function.
+#
+user_setup() {
+
 	file_env 'USER'
 	file_env 'PASSWORD'
 
@@ -73,10 +80,28 @@ then
 		echo "${SSH_PUBKEY}" >> "${USER_HOME}"/.ssh/authorized_keys
 	fi
 
-	exec /usr/sbin/sshd -D
-fi
+}
 
-# Executing any argument passed to this script. This is useful to run the container in interactive mode.
-exec "$@"
+
+# Main function
+main() {
+
+  # Calling the 'user_setup' function
+  user_setup || exit 1
+
+  # If the first argument to the script is "ssh"
+  if [ "$1" = "ssh" ] ; then
+    # Run the SSH server as the user 'sshd_user' in foreground
+    exec /usr/sbin/sshd -D
+  else
+    # Executing any argument passed to this script.
+    # This is useful to run the container in interactive mode.
+    exec "$@"
+  fi
+
+}
+
+# Calling the 'main' function
+main "$@"
 
 ################## End of script
