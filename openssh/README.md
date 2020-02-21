@@ -1,7 +1,6 @@
 # Supported tags and respective `Dockerfile` links
 
--	[`alpine`, `latest` (*OpenSSH/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/with-sh/openssh/openssh-alpine/Dockerfile)
-- [`alpine-bash` (*OpenSSH/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/master/openssh/openssh-alpine/Dockerfile)
+-	[`alpine`, `latest` (*OpenSSH/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/master/openssh/openssh-alpine/Dockerfile)
 -	[`debian` (*OpenSSH/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/master/openssh/openssh-debian/Dockerfile)
 
 # Quick reference
@@ -16,7 +15,6 @@
 # Software Packages installed
 
 * OpenSSH Server (latest version)
-* `bash` (Bourne Again Shell), only if using the `alpine-bash` image
 
 # Description of tags
 
@@ -27,8 +25,7 @@ top of the base Alpine Linux image.
 
 * OpenSSH Server (latest version)
 
-As bash is not installed, this image is slightly smaller in size than the
-`alpine-bash` image. To use this image, use the `alpine` tag as follows
+To use this image, use the `alpine` tag as follows
 
 ```console
 $ docker container run -d --name ssh -p "2222:22/tcp" \
@@ -46,24 +43,6 @@ harshavardhanj/openssh
 ```  
 
 Any of the above commands will pull the image with the `alpine` tag.  
-
-
-## `alpine-bash`
-
-The image with this tag contains the following software packages installed on
-top of the base Alpine Linux image.
-
-* OpenSSH Server (latest version)
-* `bash` (Bourne Again Shell)
-
-Due to bash being installed, this image is slightly larger in size than the
-`alpine` image. To use this image, use the `alpine-bash` tag as follows
-
-```console
-$ docker container run -d --name ssh -p "2222:22/tcp" \
-harshavardhanj/openssh:alpine-bash
-```  
-
 
 ## `debian`
 
@@ -116,7 +95,7 @@ services:
   
 
 [![Try in 'Play With
-Docker'](https://github.com/play-with-docker/stacks/raw/cff22438cb4195ace27f9b15784bbb497047afa7/assets/images/button.png)](http://play-with-docker.com?stack=https://raw.githubusercontent.com/HarshaVardhanJ/docker_files/with-sh/openssh/openssh-alpine/docker-compose.yml)
+Docker'](https://github.com/play-with-docker/stacks/raw/cff22438cb4195ace27f9b15784bbb497047afa7/assets/images/button.png)](http://play-with-docker.com?stack=https://raw.githubusercontent.com/HarshaVardhanJ/docker_files/master/openssh/openssh-alpine/docker-compose.yml)
 
 
 To use in a swarm, run `docker stack deploy -c stack.yml harshavardhanj/openssh`
@@ -207,7 +186,7 @@ The `openssh` image comes in two flavours currently. One is based on Alpine Linu
 and the other on Debian Stretch
 
 
-## `openssh:alpine`, `openssh`, `alpine-bash`
+## `openssh:alpine`, `openssh:latest`, `openssh`
 
 These images are based on the popular [Alpine Linux
 project](http://alpinelinux.org), available in [the `alpine` official

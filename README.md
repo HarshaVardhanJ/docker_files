@@ -5,13 +5,23 @@
 -	**Maintained by**:
 	[Harsha Vardhan J](https://github.com/HarshaVardhanJ/docker_files)
 
+# Supported tags and respective `Dockerfile` links
+
+-	[`alpine`, `latest` (*OpenSSH/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/with-sh/openssh/openssh-alpine/Dockerfile)
+-	[`debian` (*OpenSSH/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/master/openssh/openssh-debian/Dockerfile)
+
+# Quick reference
+
+-	**Maintained by**:
+	[Harsha Vardhan J](https://github.com/HarshaVardhanJ/)
+
 -	**Source of this description**:
 	[README in `docker_files` repository](https://github.com/HarshaVardhanJ/docker_files/blob/master/README.md)
-
 
 # Software  
 
 * [OpenSSH](https://www.openssh.com/) - A secure shell server
+* [Docker-buildx](https://docs.docker.com/buildx/working-with-buildx/) - Docker with `buildx` support for building multi-arch images
 * [Gitea](https://gitea.io/en-us) - A self-hosted Git repository
 * [Nginx](https://nginx.org/en/) - A high-performance web server
 * [ddclient](https://ddclient.net/) - A client used for updating dynamic DNS records
@@ -37,7 +47,10 @@ To that end, almost every image begins either with the Alpine Linux base image o
 ## Note about autobuilds on DockerHub  
 
 DockerHub currently supports autobuilding images for the x86 architecture only. Therefore, autobuilds
-will not be used. The images will be built elsewhere and pushed to DockerHub.
+will not be used. The images will be built elsewhere and pushed to DockerHub. Currently, most of the
+images are built with Google Cloud Platform's Cloud Build by using a custom `docker-buildx` image,
+which is Docker built with `buildx` support, and are then pushed to Docker Hub. This way the images 
+are being built for multiple architectures.
 
 
 # Image Variants  
@@ -45,10 +58,9 @@ will not be used. The images will be built elsewhere and pushed to DockerHub.
 
 # `openssh`  
 
-The `openssh` image comes in two variants(and three tags) currently.
+The `openssh` image comes in two variants currently.
 
 -	`openssh:alpine` (based on [Alpine Linux](https://hub.docker.com/_/alpine/))
--	`openssh:alpine-bash` (based on [Alpine Linux](https://hub.docker.com/_/alpine/), with `bash` installed)
 -	`openssh:debian` (based on [Debian Stretch](https://hub.docker.com/_/debian/))  
 
 
@@ -56,6 +68,156 @@ The `openssh` image comes in two variants(and three tags) currently.
 
 This is the defacto image. If you are unsure about what your needs are, you
 probably want to use this one.
+
+# Software Packages installed
+
+* OpenSSH Server (latest version)
+
+# Description of tags
+
+
+## `alpine`
+
+The image with this tag contains the following software packages installed on
+top of the base Alpine Linux image.
+
+* OpenSSH Server (latest version)
+
+To use this image, use the `alpine` or `latest` tag as follows
+
+```console
+$ docker container run -d --name ssh -p "2222:22/tcp" \
+harshavardhanj/openssh:alpine
+```  
+or
+```console
+$ docker container run -d --name ssh -p "2222:22/tcp" \
+harshavardhanj/openssh:latest
+```  
+or 
+```console
+$ docker container run -d --name ssh -p "2222:22/tcp" \
+harshavardhanj/openssh
+```  
+
+Any of the above commands will pull the image with the `alpine` tag.  
+
+
+# How to use this image
+
+## Start an OpenSSH instance
+
+```console
+$ docker container run --name ssh-server --publish "2222:22/tcp" \
+-e USER=test_user -e PASSWORD=test_password -d harshavardhanj/openssh
+```
+
+This image includes `EXPOSE 22` (the standard SSH port), so standard container
+linking will make it automatically available to linked containers. The default
+user that you can login as is created in the entrypoint script.
+
+## ... via [`docker stack deploy`](https://docs.docker.com/engine/reference/commandline/stack_deploy/) or [`docker-compose`](https://github.com/docker/compose)
+
+Example `stack.yml` for `openssh`:
+
+```yaml
+# Use OpenSSH example user/password credentials
+version: '3.4'
+
+services:
+	ssh:
+		image: harshavardhanj/openssh:latest
+		ports:
+			- "2222:22"
+		restart: always
+		environment:
+			- USER=example
+			- PASSWORD=example
+```  
+  
+
+[![Try in 'Play With
+Docker'](https://github.com/play-with-docker/stacks/raw/cff22438cb4195ace27f9b15784bbb497047afa7/assets/images/button.png)](http://play-with-docker.com?stack=https://raw.githubusercontent.com/HarshaVardhanJ/docker_files/master/openssh/openssh-alpine/docker-compose.yml)
+
+
+To use in a swarm, run `docker stack deploy -c stack.yml harshavardhanj/openssh`
+from the manager node in your swarm, wait for it to initialize completely, and
+try to connect using `ssh example@swarm-ip -p 2222`.  
+
+To use on a local development machine, use `docker-compose -f stack.yml up` from
+your local machine, wait for it to initialize completely, and try to connect
+using `ssh example@localhost -p 2222`, or `ssh example@host-ip -p 2222` (as
+appropriate).  
+
+## Environment Variables
+
+The OpenSSH image uses three environment variables. While none of the variables
+are required, they will aid you in customising certain aspects of the OpenSSH
+server for better security.
+
+### `USER`  
+
+This environment variable is used in conjunction with `PASSWORD` to set its
+username and password. This variable will create the specified user that you can
+login as. If it is not specified, then the default user of `docker` will be
+used.
+
+
+### `PASSWORD`
+
+This environment variable is recommended for you to use the OpenSSH image. This
+environment variable sets the password for user that is defined by the `USER`
+environment variable. The default user is defined by the `USER` environment
+variable. If the `PASSWORD` environment variable is not specified, the default
+value of `docker` is used.
+
+
+### `SSH_PUBKEY`
+
+This environment variable is recommended for you to use the OpenSSH image. This
+environment variable adds the SSH public-key for the user defined by the `USER`
+environment variable. Using the `SSH_PUBKEY` variable, you can login using
+key-based authentication. It is preferable to use `docker secrets` to pass the
+`SSH_PUBKEY` environment variable. If this not possible, you can pass the
+public-key as follows
+
+```console
+$ docker container run --name ssh -p "2222:22/tcp" \
+-e SSH_PUBKEY="$(cat /path/to/public/key.pub)" -d harshavardhanj/openssh
+```
+
+The double-quotes for passing the public-key is necessary to prevent
+word-splitting by the shell.
+
+
+### Docker Secrets
+
+As an alternative to passing sensitive information via environment variables,
+`_FILE` may be appended to the previously listed environment variables, causing
+the initialization script to load the values for those variables from files
+present in the container. In particular, this can be used to load passwords from
+Docker secrets stored in `/run/secrets/<secret_name>` files. For example:
+
+```console
+$ docker container run --name ssh -p "2222:22/tcp" \
+-e PASSWORD_FILE=/run/secrets/ssh_password -d harshavardhanj/openssh
+```
+
+# Image Variants
+
+The `openssh` image comes in one flavour currently. In the future, more variants
+will be added.
+
+
+## `openssh:<version>`
+
+This is the defacto image. If you are unsure about what your needs are, you
+probably want to use this one. It is designed to be used both as a throw away
+container (mount your source code and start the container to start your app), as
+well as the base to build other images off of.
+
+
+## `openssh:alpine`
 
 This image is based on the popular [Alpine Linux
 project](http://alpinelinux.org), available in [the `alpine` official
@@ -81,18 +243,10 @@ description](https://hub.docker.com/_/alpine/) for examples of how to install
 packages if you are unfamiliar).  
 
 
-## `openssh:alpine-bash`  
-
-This image is slightly larger than the default `alpine` image as it has `bash` installed
-in the image. For most cases, you will not need to use this image unless you need something
-that requires the presence of `bash`. In the future, this image will be removed.  
-
-
 ## `openssh:debian`  
 
 This image is based on the Debian Stretch Slim distribution. This image is considerably
 larger than the Alpine Linux image.  
-
 
 # License
 

@@ -12,7 +12,7 @@
 #                                                                   #
 #    1. Imports the latest base image of Alpine Linux.              #
 #    2. Updates the repositories via the package manager.           #
-#    3. Installs the OpenSSH server and 'bash' shell.               #
+#    3. Installs the OpenSSH server.                                #
 #    5. Sets some configuration values in '/etc/sshd_config'.       #
 #    6. Creates RSA, DSA, ECDSA, and ED25519 host keys.             #
 #    7. Copies 'entrypoint.sh' script to container to be run.       #
@@ -44,11 +44,10 @@ public-key authentication." \
 ARG CONFIG=/etc/ssh/sshd_config
 
 # Installing bash and OpenSSH server
-RUN apk update \
+RUN apk update --no-cache \
   && apk upgrade -U \
-  && apk add --no-cache --virtual .entrypoint-deps \
-	bash \
-	&& apk add --no-cache openssh-server && \
+  && apk add --no-cache \
+    openssh-server && \
 # Changing SSHD configuration file defaults
 	sed -ri 's|^#?LogLevel(%s+).*|LogLevel VERBOSE|g' ${CONFIG} ; \
 	sed -ri 's|^#?PasswordAuthentication(\s+).*|PasswordAuthentication yes|g' ${CONFIG} ; \
