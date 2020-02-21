@@ -1,0 +1,34 @@
+# Config file to be used by Container Structure Test
+# for gitea:latest image
+
+schemaVersion: 2.0.0
+
+metadataTest:
+  labels:
+    - key: "maintainer"
+      value: "Harsha Vardhan J"
+    - key: "github.account"
+      value: "https://github.com/HarshaVardhanJ"
+    - key: "dockerfile.github.page"
+      value: "https://github.com/HarshaVardhanJ/docker_files/blob/master/gitea/Dockerfile"
+  entrypoint: ["gitea", "web"]
+  cmd: []
+  volumes: ["/data"]
+  exposedPorts: ["22", "3000"]
+
+fileExistenceTests:
+  - name: "Check if 'data' directory exists"
+    path: "/data"
+    shouldExist: true
+
+commandTests:
+  - name: "Check if running as user 'git'"
+    command: "whoami"
+    expectedOutput: ["git"]
+    exitCode: 0
+
+  - name: "Check if 'git' user exists"
+    command: "id"
+    args: ["-u", "git"]
+    expectedOutput: ["1000"]
+    exitCode: 0

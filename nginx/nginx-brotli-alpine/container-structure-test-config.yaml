@@ -1,0 +1,41 @@
+# Config file to be used by Container Structure Test
+# for nginx-brotli:latest image
+
+
+schemaVersion: 2.0.0
+
+metadataTest:
+  labels:
+    - key: "maintainer"
+      value: "Harsha Vardhan J"
+    - key: "github.account"
+      value: "https://github.com/HarshaVardhanJ"
+    - key: "dockerfile.github.page"
+      value: "https://github.com/HarshaVardhanJ/docker_files/blob/master/nginx-brotli-alpine/Dockerfile"
+  exposedPorts: ["80", "443"]
+  entrypoint: []
+  cmd: ["nginx", "-g", "daemon off;"]
+
+fileExistenceTests:
+  - name: "Check if '/etc/nginx' directory exists"
+    path: "/etc/nginx"
+    shouldExist: true
+
+commandTests:
+  - name: "Check if 'nginx' is present in PATH"
+    command: "which"
+    args: ["nginx"]
+    expectedOutput: [".*nginx"]
+    exitCode: 0
+
+  - name: "Check if 'nginx' user exists"
+    command: "id"
+    args: ["-u", "nginx"]
+    expectedOutput: ["1000"]
+    exitCode: 0
+
+  - name: "Check if running as 'nginx' user"
+    command: "whoami"
+    expectedOutput: ["nginx"]
+    exitCode: 0
+

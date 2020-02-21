@@ -1,0 +1,41 @@
+# Config file to be used by Container Structure Test
+# for docker-buildx:latest image
+
+schemaVersion: 2.0.0
+
+metadataTest:
+  labels:
+    - key: 'maintainer'
+      value: 'Harsha Vardhan J'
+    - key: 'github.account'
+      value: 'https://github.com/HarshaVardhanJ'
+    - key: 'dockerfile.github.page'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/blob/master/docker-cloud-builder/Dockerfile'
+  workdir: "/"
+  entrypoint: ["entrypoint.sh"]
+  cmd: []
+
+commandTests:
+  - name: "Check if 'docker' is installed in PATH"
+    command: "which"
+    args: ["docker"]
+    expectedOutput: [".*docker"]
+    exitCode: 0
+
+  - name: "Check if 'docker-buildx' is installed in PATH"
+    command: "which"
+    args: ["docker-buildx"]
+    expectedOutput: [".*docker-buildx"]
+    exitCode: 0
+
+  - name: "Check if running as 'root' user"
+    command: "whoami"
+    expectedOutput: ["root"]
+    exitCode: 0
+
+fileExistenceTests:
+  - name: "Check if 'docker-buildx' is executable"
+    path: "/usr/bin/docker-buildx"
+    shouldExist: true
+    isExecutableBy: 'any'
+

@@ -1,0 +1,49 @@
+# Config file to be used by Container Structure Test
+# for ddclient:latest image
+
+
+schemaVersion: 2.0.0
+
+metadataTest:
+  labels:
+    - key: 'maintainer'
+      value: 'Harsha Vardhan J'
+    - key: 'github.account'
+      value: 'https://github.com/HarshaVardhanJ'
+    - key: 'dockerfile.github.page'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/blob/master/ddclient/Dockerfile'
+  workdir: "/"
+  entrypoint: []
+  cmd: ["/usr/bin/ddclient", "-verbose", "-file", "/etc/ddclient/ddclient.conf", "-foreground", "-pid", "/var/run/ddclient.pid", "&"]
+
+fileExistenceTests:
+  - name: 'Check if ddclient.conf file exists'
+    path: '/etc/ddclient/ddclient.conf'
+    shouldExist: true
+    permissions: '-rw-------'
+    uid: 1000
+    gid: 1000
+
+  - name: 'Check if /var/cache/ddclient file exists'
+    path: '/var/cache/ddclient'
+    shouldExist: true
+    uid: 1000
+    gid: 1000
+
+  - name: 'Check if ddclient.pid file exists'
+    path: '/var/run/ddclient.pid'
+    shouldExist: true
+    uid: 1000
+    gid: 1000
+
+commandTests:
+  - name: "Check if 'ddclient' user exists"
+    command: "id"
+    args: ["-u", "ddclient"]
+    expectedOutput: ["1000"]
+    exitCode: 0
+
+  - name: "Check if running as 'ddclient' user"
+    command: "whoami"
+    expectedOutput: ["ddclient"]
+    exitCode: 0
