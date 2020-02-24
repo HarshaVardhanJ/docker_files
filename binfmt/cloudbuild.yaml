@@ -14,7 +14,7 @@ steps:
     args:
       - 'build'
       - '-t'
-      - 'harshavardhanj/binfmt:latest'
+      - 'harshavardhanj/binfmt:testing'
       - '-f'
       - './binfmt/Dockerfile'
       - './binfmt/.'
