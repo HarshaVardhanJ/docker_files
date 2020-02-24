@@ -38,12 +38,14 @@ RUN apk update \
 # Setting GOPATH and PATH
 ENV GOPATH=/go PATH=$PATH:/go/bin
 
-# Copy file src directory in GOPATH
+# Copy file to src directory in GOPATH
 COPY main.go /go/src/binfmt/
-COPY go-compile.sh .
+
+# Copy script to help compile Go code
+COPY go-compile.sh /
 
 # Running the compilation script
-RUN go-compile.sh /go/src/binfmt
+RUN ./go-compile.sh /go/src/binfmt
 
 
 # Start with scratch image
