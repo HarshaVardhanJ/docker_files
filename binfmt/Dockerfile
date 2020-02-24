@@ -40,6 +40,7 @@ ENV GOPATH=/go PATH=$PATH:/go/bin
 
 # Copy file src directory in GOPATH
 COPY main.go /go/src/binfmt/
+COPY go-compile.sh .
 
 # Running the compilation script
 RUN go-compile.sh /go/src/binfmt
