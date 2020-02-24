@@ -21,3 +21,7 @@ steps:
       - './nginx/nginx-brotli-alpine/Dockerfile'
       - '--push'
       - './nginx/nginx-brotli-alpine/.'
+
+timeout: "5400"
+options:
+  machineType: 'N1_HIGHCPU_8'

@@ -21,3 +21,7 @@ steps:
       - './nginx/nginx-brotli-modsecurity-alpine/Dockerfile'
       - '--push'
       - './nginx/nginx-brotli-modsecurity-alpine/.'
+
+timeout: "5400s"
+options:
+  machineType: 'N1_HIGHCPU_8'

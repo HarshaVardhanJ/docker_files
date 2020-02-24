@@ -21,3 +21,7 @@ steps:
       - './gitea/Dockerfile'
       - '--push'
       - './gitea/.'
+
+timeout: "5400s"
+options:
+  machineType: 'N1_HIGHCPU_8'
