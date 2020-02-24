@@ -25,7 +25,7 @@ steps:
       - '-t'
       - 'harshavardhanj/docker-buildx:latest'
       - '--platform'
-      - 'linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6,linux/386,linux/sparc,linux/sparc64'
+      - 'linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6,linux/386,linux/sparc'
       - '-f'
       - './docker-cloud-builder/Dockerfile'
       - '--push'
