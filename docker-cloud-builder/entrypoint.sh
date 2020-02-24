@@ -26,7 +26,7 @@ buildxInitialise() {
   # If the `buildx` executable is in PATH
   if [ $(which "${buildxCommand}") ] ; then
     # Initialise a builder and switch to it
-    "${buildxCommand}" create --platforms=linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6,linux/s390x,linux/386,linux/ppc64le,linux/sparc,linux/sparc32plus,linux/sparc64 \
+    "${buildxCommand}" create --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6,linux/s390x,linux/386,linux/ppc64le,linux/sparc,linux/sparc32plus,linux/sparc64 \
       --name multiarch-builder \
       && "${buildxCommand}" use multiarch-builder \
       && "${buildxCommand}" inspect --bootstrap
