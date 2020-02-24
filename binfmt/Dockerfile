@@ -21,9 +21,7 @@ RUN apt-get update \
     && mv qemu-i386-static qemu-i386 \
     && mv qemu-ppc64le-static qemu-ppc64le \
     && mv qemu-s390x-static qemu-s390x \
-    && mv qemu-sparc-static qemu-sparc \
-    && mv qemu-sparc32plus-static qemu-sparc32plus \
-    && mv qemu-sparc64-static qemu-sparc64
+    && rm *-static
     #&& for fileName in qemu-* ; do mv "${fileName}" "${fileName//-static/}" ; done \
 
 
