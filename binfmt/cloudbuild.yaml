@@ -1,20 +1,20 @@
 steps:
-  #  # Get the Docker Hub user ID from Secrets Manager and save it to a file
-  #  - name: 'gcr.io/cloud-builders/gcloud'
-  #    entrypoint: "bash"
-  #    args: ["./docker-cloud-builder/getCredentials.sh"]
-  #
-  #  # Log in to Docker Hub using the credentials obtained in the previous steps
-  #  - name: 'gcr.io/cloud-builders/docker'
-  #    entrypoint: "bash"
-  #    args: ["-c", "docker login --username=$(cat ./UserID) --password=$(cat ./AccessToken)"]
+  # Get the Docker Hub user ID from Secrets Manager and save it to a file
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: "bash"
+    args: ["./docker-cloud-builder/getCredentials.sh"]
+
+  # Log in to Docker Hub using the credentials obtained in the previous steps
+  - name: 'gcr.io/cloud-builders/docker'
+    entrypoint: "bash"
+    args: ["-c", "docker login --username=$(cat ./UserID) --password=$(cat ./AccessToken)"]
 
   # Build the container image using and push it to Docker Hub
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
       - '-t'
-      - 'docker-binfmt:latest'
+      - 'harshavardhanj/docker-binfmt:latest'
       - '-f'
       - './binfmt/Dockerfile'
       - './binfmt/.'

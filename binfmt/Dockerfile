@@ -1,5 +1,7 @@
 # Dockerfile for customising binfmt image
-# Adds support for more architectures in docker buildx
+## Influenced by https://github.com/linuxkit/linuxkit/tree/master/pkg/binfmt
+### Adds support for more architectures in docker buildx
+
 
 # Start with debian stretch slim image
 FROM debian:stretch-slim AS qemu
