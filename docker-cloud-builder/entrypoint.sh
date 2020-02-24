@@ -19,8 +19,9 @@ binfmtVersion="0.7"
 buildxInitialise() {
   # Running the below command adds support for multi-arch
   # builds by setting up QEMU
-  docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-  docker run --privileged linuxkit/binfmt:v${binfmtVersion} || exit 1
+  #docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+  #docker run --privileged linuxkit/binfmt:v${binfmtVersion} || exit 1
+  docker run --privileged harshavardhanj/binfmt:latest || exit 1
 
   # If the `buildx` executable is in PATH
   if [ $(which "${buildxCommand}") ] ; then
