@@ -17,7 +17,7 @@ cd "$dir"
 >&2 echo "gofmt..."
 test -z $(gofmt -s -l .| grep -v .pb. | grep -v vendor/ | tee /dev/stderr)
 
->&2 echo "govet..."
+>&2 echo "go vet..."
 test -z $(GOOS=linux go tool vet -printf=false . 2>&1 | grep -v vendor/ | tee /dev/stderr)
 
 >&2 echo "golint..."
