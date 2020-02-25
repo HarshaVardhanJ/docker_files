@@ -32,7 +32,7 @@ buildxInitialise() {
   # If the `buildx` executable is in PATH
   if [ $(which "${buildxCommand}") ] ; then
     # Initialise a builder and switch to it
-    "${buildxCommand}" create --driver=docker-container --name multiarch-builder --use \
+    "${buildxCommand}" create --driver docker-container --name multiarch-builder --use \
       && "${buildxCommand}" inspect --bootstrap
       #&& "${buildxCommand}" use multiarch-builder \
   else
