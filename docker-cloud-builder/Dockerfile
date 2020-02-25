@@ -55,8 +55,10 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >> /etc/
     && apk update \
     # Upgrading packages
     && apk upgrade -U \
-    # Installing Docker of version $dockerVersion
-    && apk add --no-cache docker=$dockerVersion \
+    # Installing Docker of version $dockerVersion and 'su-exec'
+    && apk add --no-cache \
+      docker=$dockerVersion \
+      su-exec \
     # Setting environment variable for enabling experimental features in Docker
     && export DOCKER_CLI_EXPERIMENTAL=1 \
     # Downloading `buildx` binary release
@@ -69,7 +71,7 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >> /etc/
     && adduser --gecos "Docker user" --shell /bin/nologin --ingroup docker --system --no-create-home --uid 1000 docker
 
 # Run as user 'root'
-USER docker
+#USER docker
 
 # Copying the 'entrypoint' script, which will help configure 'docker-buildx', to a directory
 # which is under $PATH

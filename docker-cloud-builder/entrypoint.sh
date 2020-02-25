@@ -13,15 +13,18 @@
 
 # Variable that contains name of `buildx` executable
 buildxCommand="docker-buildx"
-binfmtVersion="0.7"
+
+# Variable that contains name of non-root user account which
+# will be used to run `docker-buildx` commands
+nonRootUser="docker"
 
 # Function which initialises `buildx`
+#
 buildxInitialise() {
   # Running the below command adds support for multi-arch
   # builds by setting up QEMU
   docker run --privileged harshavardhanj/binfmt:testing || exit 1
   docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-  #docker run --privileged linuxkit/binfmt:v${binfmtVersion} || exit 1
 
   # If the `buildx` executable is in PATH
   if [ $(which "${buildxCommand}") ] ; then
@@ -35,8 +38,29 @@ buildxInitialise() {
   fi
 }
 
+# Main function which checks if the user defined in $nonRootUser exists.
+# If the user exists, buildxInitialise function is called, and buildx is
+# run as non-root user with all arguments being passed to it.
+#
+main() {
+
+  # If 'docker' user exists
+  if [ $(id "${nonRootUser}") ] ; then
+    buildxInitialise \
+      && exec su-exec "${nonRootUser}" "${buildxCommand}" $@
+  else
+    printf '%s\n' "User 'docker' does not exist. Exiting." >&2 \
+      && exit 1
+  fi
+
+}
+
 # Calling the initialisation function and passing all arguments to buildx
-buildxInitialise \
-  && ${buildxCommand} $@
+#buildxInitialise \
+#  && ${buildxCommand} $@
+
+
+# Calling the main function and passing all arguments to it
+main $@
 
 # End of script
