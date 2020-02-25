@@ -32,6 +32,8 @@ RUN apk update \
     # Upgrade all packages
     && apk upgrade -U \
     && apk add --no-cache \
+      build-base \
+      gcc \
       go \
       musl-dev
 
