@@ -18,6 +18,9 @@ buildxCommand="docker-buildx"
 # will be used to run `docker-buildx` commands
 nonRootUser="docker"
 
+# Variable which contains the path to the Docker socket
+dockerSocket="/var/run/docker.sock"
+
 # Function which initialises `buildx`
 #
 buildxInitialise() {
@@ -42,6 +45,27 @@ buildxInitialise() {
   fi
 }
 
+
+# Function which grants group permission of Docker socket to the
+# non-root user
+#
+socketOwnership() {
+
+ if [ -S "${dockerSocket}" ] ; then
+   # Get GID which owns the Docker socket
+   userGid=$(stat -c '%g' "${dockerSocket}")
+
+   # Add the GID of group who is owner of the Docker socket
+   # to the non-root user
+   addgroup -g "${userGid}" "${nonRootUser}"
+ else
+    printf '%s\n' "Could not find ${dockerSocket}" >&2 \
+      && exit 1
+ fi
+
+}
+
+
 # Main function which checks if the user defined in $nonRootUser exists.
 # If the user exists, buildxInitialise function is called, and buildx is
 # run as non-root user with all arguments being passed to it.
@@ -50,8 +74,9 @@ main() {
 
   printf '%s\n' "***********Main Function**************"
   # If 'docker' user exists
-  if [ -n $(id -u "${nonRootUser}") ] ; then
+  if [ -n "$(id -u "${nonRootUser}")" ] ; then
     buildxInitialise \
+      && socketOwnership \
       && exec su-exec "${nonRootUser}" "${buildxCommand}" $@
   else
     printf '%s\n' "User 'docker' does not exist. Exiting." >&2 \
