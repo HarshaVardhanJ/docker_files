@@ -18,6 +18,7 @@ steps:
       - '-f'
       - './docker-cloud-builder/Dockerfile'
       - './docker-cloud-builder/.'
+images: ['harshavardhanj/docker-buildx:testing']
   # Pull buildx image from Docker Hub and build 'buildx' image with multi-arch support
   - name: 'harshavardhanj/docker-buildx:testing'
     args:
@@ -30,4 +31,3 @@ steps:
       - './docker-cloud-builder/Dockerfile'
       - '--push'
       - './docker-cloud-builder/.'
-images: ['harshavardhanj/docker-buildx:testing']
