@@ -24,23 +24,19 @@ dockerSocket="/var/run/docker.sock"
 # Function which initialises `buildx`
 #
 buildxInitialise() {
-  # Running the below command adds support for multi-arch
+  # Running the below commands adds support for multi-arch
   # builds by setting up QEMU
-  printf '%s\n' "***********Running binfmt command**************"
   docker run --privileged harshavardhanj/binfmt:testing || exit 1
-
-  printf '%s\n' "***********Running qemu-user-static command**************"
   docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
   # If the `buildx` executable is in PATH
   if [ $(which "${buildxCommand}") ] ; then
     # Initialise a builder and switch to it
-    printf '%s\n' "***********Builder Init**************"
     "${buildxCommand}" create --name multiarch-builder \
       && "${buildxCommand}" use multiarch-builder \
       && "${buildxCommand}" inspect --bootstrap
   else
-    printf '%s\n' "The ${buildxCommand} could not be found in the PATH." \
+    printf '%s\n' "The executable '${buildxCommand}' could not be found in the PATH." \
       && exit 1
   fi
 }
@@ -50,46 +46,36 @@ buildxInitialise() {
 # non-root user
 #
 socketOwnership() {
-
+  # If the file defined by $dockerSocket is a socket
  if [ -S "${dockerSocket}" ] ; then
-   # Get GID which owns the Docker socket
-   #userGid=$(stat -c '%g' "${dockerSocket}")
-
    # Get group which owns the Docker socket
-   userGroup=$(stat -c '%G' "${dockerSocket}")
+   userGroup="$(stat -c '%G' "${dockerSocket}")"
 
    # Add non-root user to group which owns Docker socket
-   addgroup "${nonRootUser}" "${userGroup}"
+   addgroup "${nonRootUser}" "${userGroup}" || exit 1
  else
-    printf '%s\n' "Could not find ${dockerSocket}" >&2 \
+    printf '%s\n' "Could not find '${dockerSocket}'" >&2 \
       && exit 1
  fi
-
 }
 
 
 # Main function which checks if the user defined in $nonRootUser exists.
-# If the user exists, buildxInitialise function is called, and buildx is
+# If the user exists, first the buildxInitialise function is called, then
+# the socketOwnership function is called. Finally the buildx command is
 # run as non-root user with all arguments being passed to it.
 #
 main() {
-
-  printf '%s\n' "***********Main Function**************"
-  # If 'docker' user exists
+  # If user defined in '$nonRootUser' user exists
   if [ -n "$(id -u "${nonRootUser}")" ] ; then
     buildxInitialise \
       && socketOwnership \
       && exec su-exec "${nonRootUser}" "${buildxCommand}" $@
   else
-    printf '%s\n' "User 'docker' does not exist. Exiting." >&2 \
+    printf '%s\n' "User '${nonRootUser}' does not exist. Exiting." >&2 \
       && exit 1
   fi
-
 }
-
-# Calling the initialisation function and passing all arguments to buildx
-#buildxInitialise \
-#  && ${buildxCommand} $@
 
 
 # Calling the main function and passing all arguments to it
