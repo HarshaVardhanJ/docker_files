@@ -23,12 +23,16 @@ nonRootUser="docker"
 buildxInitialise() {
   # Running the below command adds support for multi-arch
   # builds by setting up QEMU
+  printf '%s\n' "***********Running binfmt command**************"
   docker run --privileged harshavardhanj/binfmt:testing || exit 1
+
+  printf '%s\n' "***********Running qemu-user-static command**************"
   docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
   # If the `buildx` executable is in PATH
   if [ $(which "${buildxCommand}") ] ; then
     # Initialise a builder and switch to it
+    printf '%s\n' "***********Builder Init**************"
     "${buildxCommand}" create --name multiarch-builder \
       && "${buildxCommand}" use multiarch-builder \
       && "${buildxCommand}" inspect --bootstrap
@@ -44,6 +48,7 @@ buildxInitialise() {
 #
 main() {
 
+  printf '%s\n' "***********Main Function**************"
   # If 'docker' user exists
   if [ -n $(id -u "${nonRootUser}") ] ; then
     buildxInitialise \
