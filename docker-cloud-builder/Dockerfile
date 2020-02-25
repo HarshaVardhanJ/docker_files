@@ -19,9 +19,10 @@
 #    6. Downloads a specific version of the 'buildx' binary from    #
 #       GitHub, extracts it, moves it to a directory in $PATH,      #
 #       and sets the execute bit on it.                             #
-#    7. Sets the 'run as' user as root.                             #
-#    8. Copies the 'entrypoint.sh' script to a directory in $PATH.  #
-#    9. Runs the 'entrypoint.sh' script, which takes care of        #
+#    7. Creates a user 'docker' who is part of the 'docker' group.  #
+#    8. Sets the 'run as' user as 'docker'.                         #
+#    9. Copies the 'entrypoint.sh' script to a directory in $PATH.  #
+#   10. Runs the 'entrypoint.sh' script, which takes care of        #
 #       setting up 'buildx'.                                        #
 #                                                                   #
 # Note : This file is meant to be on GCP Cloud Build to build       #
@@ -63,10 +64,12 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >> /etc/
     # Moving `buildx` binary to a directory which is under $PATH
     && mv buildx-v${buildxVersion}.linux-amd64 /usr/bin/docker-buildx \
     # Setting execute permission on the `buildx` executable
-    && chmod a+x /usr/bin/docker-buildx
+    && chmod a+x /usr/bin/docker-buildx \
+    # Creating user 'docker'
+    && adduser --gecos "Docker user" --shell /bin/nologin --ingroup docker --system --no-create-home --uid 1000 docker
 
 # Run as user 'root'
-USER root
+USER docker
 
 # Copying the 'entrypoint' script, which will help configure 'docker-buildx', to a directory
 # which is under $PATH
