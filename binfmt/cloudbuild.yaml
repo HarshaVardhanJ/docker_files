@@ -30,5 +30,4 @@ steps:
       - './binfmt/Dockerfile'
       - '--push'
       - './binfmt/.'
-options:
-  machineType: 'N1_HIGHCPU_8'
+timeout: "900s"
