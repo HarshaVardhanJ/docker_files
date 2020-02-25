@@ -37,7 +37,7 @@ steps:
       - '-f'
       - './docker-cloud-builder/Dockerfile'
 #      - '--push'
-      - 'load'
+      - '--load'
       - './docker-cloud-builder/.'
 
 images: ['harshavardhanj/docker-buildx:non-root']
