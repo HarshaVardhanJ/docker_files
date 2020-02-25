@@ -30,3 +30,5 @@ steps:
       - './binfmt/Dockerfile'
       - '--push'
       - './binfmt/.'
+options:
+  machineType: 'N1_HIGHCPU_8'
