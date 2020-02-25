@@ -45,7 +45,7 @@ buildxInitialise() {
 main() {
 
   # If 'docker' user exists
-  if [ $(id "${nonRootUser}") ] ; then
+  if [ -n $(id -u "${nonRootUser}") ] ; then
     buildxInitialise \
       && exec su-exec "${nonRootUser}" "${buildxCommand}" $@
   else
