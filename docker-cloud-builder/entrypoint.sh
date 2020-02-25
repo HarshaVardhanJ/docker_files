@@ -53,14 +53,13 @@ socketOwnership() {
 
  if [ -S "${dockerSocket}" ] ; then
    # Get GID which owns the Docker socket
-   userGid=$(stat -c '%g' "${dockerSocket}")
+   #userGid=$(stat -c '%g' "${dockerSocket}")
 
    # Get group which owns the Docker socket
    userGroup=$(stat -c '%G' "${dockerSocket}")
 
-   # Add the GID of group who is owner of the Docker socket
-   # to the non-root user
-   addgroup -g "${userGid}" "${nonRootUser}" "${userGroup}"
+   # Add non-root user to group which owns Docker socket
+   addgroup "${nonRootUser}" "${userGroup}"
  else
     printf '%s\n' "Could not find ${dockerSocket}" >&2 \
       && exit 1
