@@ -38,7 +38,6 @@ steps:
       - './docker-cloud-builder/Dockerfile'
       - '--push'
       - './docker-cloud-builder/.'
-#images: ['harshavardhanj/docker-buildx:non-root']
 timeout: "1500s"
 #options:
 #  machineType: 'N1_HIGHCPU_8'
