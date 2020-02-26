@@ -32,9 +32,8 @@ buildxInitialise() {
   # If the `buildx` executable is in PATH
   if [ $(which "${buildxCommand}") ] ; then
     # Initialise a builder and switch to it
-    "${buildxCommand}" create --driver docker-container --name multiarch-builder --use \
+    "${buildxCommand}" create --driver docker-container --driver-opt image=moby/buildkit:master --name multiarch-builder --use \
       && "${buildxCommand}" inspect --bootstrap
-      #&& "${buildxCommand}" use multiarch-builder \
   else
     printf '%s\n' "The executable '${buildxCommand}' could not be found in the PATH." \
       && exit 1
