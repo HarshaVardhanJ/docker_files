@@ -70,7 +70,7 @@ main() {
   if [ -n "$(id -u "${nonRootUser}")" ] ; then
     buildxInitialise \
       && socketOwnership \
-      && exec su-exec "${nonRootUser}" "${buildxCommand}" $@
+      && su-exec "${nonRootUser}" "${buildxCommand}" $@
   else
     printf '%s\n' "User '${nonRootUser}' does not exist. Exiting." >&2 \
       && exit 1
