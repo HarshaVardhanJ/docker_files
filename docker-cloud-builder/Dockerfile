@@ -69,7 +69,7 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >> /etc/
     # Creating user 'docker'
     && adduser --gecos "Docker user" --shell /bin/nologin --ingroup docker --home /home/docker --system --uid 1000 docker \
     # Changing owner of `buildx` executable
-    && chown docker /usr/bin/docker-buildx
+    #&& chown docker /usr/bin/docker-buildx
 
 # Copying the 'entrypoint' script, which will help configure 'docker-buildx', to a directory
 # which is under $PATH
