@@ -18,9 +18,6 @@ buildxCommand="docker-buildx"
 # will be used to run `docker-buildx` commands
 nonRootUser="docker"
 
-# Variable which contains the path to the Docker socket
-dockerSocket="/var/run/docker.sock"
-
 # Function which initialises `buildx`
 #
 buildxInitialise() {
@@ -46,17 +43,40 @@ buildxInitialise() {
 # non-root user
 #
 socketOwnership() {
-  # If the file defined by $dockerSocket is a socket
- if [ -S "${dockerSocket}" ] ; then
-   # Get group which owns the Docker socket
-   userGroup="$(stat -c '%G' "${dockerSocket}")"
+  # Variable which contains the path to the Docker socket
+  dockerSocket="/var/run/docker.sock"
 
-   # Add non-root user to group which owns Docker socket
-   addgroup "${nonRootUser}" "${userGroup}" || exit 1
- else
+  # If the file defined by $dockerSocket is a socket
+  if [ -S "${dockerSocket}" ] ; then
+    # Get group which owns the Docker socket
+    userGroup="$(stat -c '%G' "${dockerSocket}")"
+
+    # Add non-root user to group which owns Docker socket
+    addgroup "${nonRootUser}" "${userGroup}" || exit 1
+  else
     printf '%s\n' "Could not find '${dockerSocket}'" >&2 \
+    && exit 1
+  fi
+}
+
+
+# Function that runs 'docker login' as non-root user
+#
+dockerLogin() {
+
+  # Variables that point to the files containing access credentials
+  userIdFile="./UserID"
+  accessTokenFile="./AccessToken"
+
+  # If files containing access credentials exist
+  if [ -f "${userIdFile}" && -f "${accessTokenFile}" ] ; then
+    su-exec "${nonRootUser}" docker login --username="$(cat ./UserID)" --password="$(cat ./AccessToken)" \
+      || exit 1
+  else
+    printf '%s\n' "Could not find '${userIdFile}' '${accessTokenFile}' in the container." >&2 \
       && exit 1
- fi
+  fi
+
 }
 
 
@@ -70,7 +90,8 @@ main() {
   if [ -n "$(id -u "${nonRootUser}")" ] ; then
     buildxInitialise \
       && socketOwnership \
-      && exec "${buildxCommand}" $@
+      && dockerLogin \
+      && exec su-exec "${buildxCommand}" $@
       #&& su-exec "${nonRootUser}" "${buildxCommand}" $@
   else
     printf '%s\n' "User '${nonRootUser}' does not exist. Exiting." >&2 \
