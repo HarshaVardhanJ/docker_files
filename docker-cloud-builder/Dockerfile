@@ -67,7 +67,7 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >> /etc/
     # Setting execute permission on the `buildx` executable
     && chmod a+x /usr/bin/docker-buildx \
     # Creating user 'docker'
-    && adduser --gecos "Docker user" --shell /bin/nologin --ingroup docker --home /home/docker --system --uid 1000 docker \
+    && adduser --gecos "Docker user" --shell /bin/nologin --ingroup docker --home /home/docker --system --uid 1000 docker
     # Changing owner of `buildx` executable
     #&& chown docker /usr/bin/docker-buildx
 
