@@ -9,14 +9,14 @@ steps:
     entrypoint: "bash"
     args: ["-c", "docker login --username=$(cat ./UserID) --password=$(cat ./AccessToken)"]
 
-  - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - 'build'
-      - '-t'
-      - 'harshavardhanj/docker-buildx:non-root'
-      - '-f'
-      - './docker-cloud-builder/Dockerfile'
-      - './docker-cloud-builder/.'
+    #  - name: 'gcr.io/cloud-builders/docker'
+    #    args:
+    #      - 'build'
+    #      - '-t'
+    #      - 'harshavardhanj/docker-buildx:non-root'
+    #      - '-f'
+    #      - './docker-cloud-builder/Dockerfile'
+    #      - './docker-cloud-builder/.'
 
   # Pull buildx image from Docker Hub and build 'buildx' image with multi-arch support
   ### NOTE:
@@ -27,24 +27,24 @@ steps:
   ###     container registry(Docker Hub, in this case). The image will need to be built
   ###     either locally or elsewhere and pushed to the registry before the below step
   ###     can be run.
-  #  - name: 'harshavardhanj/docker-buildx:non-root'
-  #    args:
-  #      - 'build'
-  #      - '-t'
-  #      - 'harshavardhanj/docker-buildx:non-root'
-  #      - '--platform'
-  #      - 'linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6'
-  #      - '-f'
-  #      - './docker-cloud-builder/Dockerfile'
-  #      - '--pull'
-  #      - '--secret'
-  #      - 'id=UserID,src=./UserID'
-  #      - '--secret'
-  #      - 'id=AccessToken,src=./AccessToken'
-  #      - '--push'
-  #      - './docker-cloud-builder/.'
+  - name: 'harshavardhanj/docker-buildx:non-root'
+    args:
+      - 'build'
+      - '-t'
+      - 'harshavardhanj/docker-buildx:non-root'
+      - '--platform'
+      - 'linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6'
+      - '-f'
+      - './docker-cloud-builder/Dockerfile'
+      - '--pull'
+      - '--secret'
+      - 'id=UserID,src=./UserID'
+      - '--secret'
+      - 'id=AccessToken,src=./AccessToken'
+      - '--push'
+      - './docker-cloud-builder/.'
 
-images: ['harshavardhanj/docker-buildx:non-root']
+        #images: ['harshavardhanj/docker-buildx:non-root']
 timeout: "1500s"
 #options:
 #  machineType: 'N1_HIGHCPU_8'
