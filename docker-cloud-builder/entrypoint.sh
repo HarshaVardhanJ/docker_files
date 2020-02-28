@@ -65,39 +65,40 @@ socketOwnership() {
 dockerLogin() {
 
   # Variables that point to the files containing access credentials
-  pwd
-  ls -al ./
-  UserIDFile="./UserID"
-  AccessTokenFile="./AccessToken"
-  ls -l "${UserIDFile}"
-  ls -l "${AccessTokenFile}"
-  wc "${UserIDFile}"
-  wc "${AccessTokenFile}" 
-  #UserIDFile="$(find ./ -type f -name "UserID" 2>/dev/null)"
-  #AccessTokenFile="$(find ./ -type f -name "AccessToken" 2>/dev/null)"
-
-  su-exec "${nonRootUser}" docker login -u $(cat "${UserIDFile}") -p $(cat "${AccessTokenFile}") \
-    || printf '%s\n' "Login failed" >&2
+  UserIDFile="$(find ./ -type f -name "UserID" 2>/dev/null)"
+  AccessTokenFile="$(find ./ -type f -name "AccessToken" 2>/dev/null)"
 
   # If files containing access credentials exist
-#  if [ -a "${UserIDFile}" && -a "${AccessTokenFile}" ] ; then
-#    su-exec "${nonRootUser}" docker login --username=$(cat ./UserID) --password=$(cat ./AccessToken) \
-#      || exit 1
-#
-#   # # If the login attempt was successful
-#   # if [ $? -ne 0 ] ; then
-#   #   printf '%s\n' "Could not login using the credentials provided." >&2 \
-#   #     && exit 1
-#   # fi
-#
-#    rm -f "${userIdFile}" "${accessTokenFile}" || exit 1
-#  else
-#    printf '%s\n' "Could not find '${UserIDFile}' '${AccessTokenFile}' in the container." >&2 \
-#      && exit 1
-#  fi
+  if [ -n "${UserIDFile}" && -n "${AccessTokenFile}" ] ; then
+    # Login using the access credentials
+    su-exec "${nonRootUser}" docker login -u $(cat "${UserIDFile}") -p $(cat "${AccessTokenFile}") \
+      || printf '%s\n' "Login failed" >&2
+  else
+    printf '%s\n' "Could not find '${UserIDFile}' '${AccessTokenFile}' in the container." >&2 \
+      && exit 1
+  fi
 
 }
 
+
+# Function to help cleanup after the script runs
+# This function deletes all sensitive information that has been created/added
+# to the container.
+#
+cleanup() {
+  # Files to be deleted
+  UserIDFile="$(find ./ -type f -name "UserID" 2>/dev/null)"
+  AccessTokenFile="$(find ./ -type f -name "AccessToken" 2>/dev/null)"
+  dockerConfig="$(ls /home/docker/.docker/config.json)"
+
+  # Loop through list of files with sensitive information
+  for fileToBeDeleted in "${UserIDFile}" "${AccessTokenFile}" "${dockerConfig}" ; do
+    # Delete the file
+    rm -f "${fileToBeDeleted}" \
+      || printf '%s\n' "Could not delete file '${fileToBeDeleted}'"
+  done
+
+}
 
 # Main function which checks if the user defined in $nonRootUser exists.
 # If the user exists, first the buildxInitialise function is called, then
@@ -117,6 +118,8 @@ main() {
   fi
 }
 
+# Calling the cleanup function
+trap cleanup SIGHUP SIGINT SIGQUIT SIGTRAP SIGTERM
 
 # Calling the main function and passing all arguments to it
 main $@
