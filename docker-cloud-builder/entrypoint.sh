@@ -27,7 +27,7 @@ buildxInitialise() {
   docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
   # If the `buildx` executable is in PATH
-  if [ $(which "${buildxCommand}") ] ; then
+  if [ "$(command -v "${buildxCommand}")" ] ; then
     # Initialise a builder and switch to it
     "${buildxCommand}" create --driver docker-container --driver-opt image=moby/buildkit:master,network=host \
       --name multiarch-builder --use \
@@ -65,20 +65,22 @@ socketOwnership() {
 dockerLogin() {
 
   # Variables that point to the files containing access credentials
-  userIdFile="./UserID"
-  accessTokenFile="./AccessToken"
+  #userIdFile="./UserID"
+  #accessTokenFile="./AccessToken"
+  userIdFile="$(find / -type f -name "UserID" 2>/dev/null)"
+  accessTokenFile="$(find / -type f -name "AccessToken" 2>/dev/null)"
 
   # If files containing access credentials exist
-  if [ -f "${userIdFile}" && -f "${accessTokenFile}" ] ; then
-    su-exec "${nonRootUser}" docker login --username="$(cat ./UserID)" --password="$(cat ./AccessToken)"
+  if [ -s "${userIdFile}" ] && [ -s "${accessTokenFile}" ] ; then
+    su-exec "${nonRootUser}" docker login --username="$(cat "${userIdFile}")" --password="$(cat "${accessTokenFile}")" \
 
     # If the login attempt was successful
-    if [ $? -eq 0 ] ; then
-      rm -f "${userIdFile}" "${accessTokenFile}" || exit 1
-    else
-      printf '%s\n' "Could not login using the credentials provided." >&2 \
+    if [ $? -ne 0 ] ; then
+      printf '%s\n' "Could not login using the credentials provided." >&2
         && exit 1
     fi
+
+    rm -f "${userIdFile}" "${accessTokenFile}" || exit 1
   else
     printf '%s\n' "Could not find '${userIdFile}' '${accessTokenFile}' in the container." >&2 \
       && exit 1
