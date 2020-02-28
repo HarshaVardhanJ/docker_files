@@ -68,12 +68,8 @@ dockerLogin() {
   UserIDFile="$(find ./ -type f -name "UserID" 2>/dev/null)"
   AccessTokenFile="$(find ./ -type f -name "AccessToken" 2>/dev/null)"
 
-  su-exec "${nonRootUser}" docker login -u $(cat "${UserIDFile}") -p $(cat "${AccessTokenFile}")
-  
-  if [ $? -eq 0 ] ; then 
-    printf '%s\n' "Login failed" >&2 \
-      && exit 1
-  fi
+  su-exec "${nonRootUser}" docker login -u $(cat "${UserIDFile}") -p $(cat "${AccessTokenFile}") \
+    exit 1
 
 }
 
