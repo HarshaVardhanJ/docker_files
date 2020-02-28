@@ -64,19 +64,23 @@ socketOwnership() {
 #
 dockerLogin() {
 
+  printf '%s\n' "********* Entered Docker Login Function **********"
   # Variables that point to the files containing access credentials
   #userIdFile="./UserID"
   #accessTokenFile="./AccessToken"
+  printf '%s\n' "********* Searching for credentials **********"
+  printf '%s\n' "\t********* List of files **********"
+  ls -al ./
   userIdFile="$(find / -type f -name "UserID" 2>/dev/null)"
   accessTokenFile="$(find / -type f -name "AccessToken" 2>/dev/null)"
 
   # If files containing access credentials exist
-  if [ -s "${userIdFile}" ] && [ -s "${accessTokenFile}" ] ; then
+  if [ -s "${userIdFile}" && -s "${accessTokenFile}" ] ; then
     su-exec "${nonRootUser}" docker login --username="$(cat "${userIdFile}")" --password="$(cat "${accessTokenFile}")" \
 
     # If the login attempt was successful
     if [ $? -ne 0 ] ; then
-      printf '%s\n' "Could not login using the credentials provided." >&2
+      printf '%s\n' "Could not login using the credentials provided." >&2 \
         && exit 1
     fi
 
