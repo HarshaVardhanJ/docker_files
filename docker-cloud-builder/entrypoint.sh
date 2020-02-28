@@ -68,13 +68,10 @@ dockerLogin() {
   UserIDFile="$(find ./ -type f -name "UserID" 2>/dev/null)"
   AccessTokenFile="$(find ./ -type f -name "AccessToken" 2>/dev/null)"
 
-  # If files containing access credentials exist
-  if [ -n "${UserIDFile}" && -n "${AccessTokenFile}" ] ; then
-    # Login using the access credentials
-    su-exec "${nonRootUser}" docker login -u $(cat "${UserIDFile}") -p $(cat "${AccessTokenFile}") \
-      || printf '%s\n' "Login failed" >&2
-  else
-    printf '%s\n' "Could not find '${UserIDFile}' '${AccessTokenFile}' in the container." >&2 \
+  su-exec "${nonRootUser}" docker login -u $(cat "${UserIDFile}") -p $(cat "${AccessTokenFile}")
+  
+  if [ $? -eq 0 ] ; then 
+    printf '%s\n' "Login failed" >&2 \
       && exit 1
   fi
 
