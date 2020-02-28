@@ -66,17 +66,18 @@ dockerLogin() {
 
   printf '%s\n' "********* Entered Docker Login Function **********"
   # Variables that point to the files containing access credentials
-  userIdFile="./UserID"
-  accessTokenFile="./AccessToken"
-  printf '%s\n' "********* Searching for credentials **********"
-  printf '%s\n' "\t********* List of files **********"
+  #userIdFile="./UserID"
+  #accessTokenFile="./AccessToken"
+  pwd
   ls -al ./
   #userIdFile="$(find ./ -type f -name "UserID" 2>/dev/null)"
   #accessTokenFile="$(find ./ -type f -name "AccessToken" 2>/dev/null)"
 
+  #su-exec "${nonRootUser}" docker login --username="$(cat "${userIdFile}")" --password="$(cat "${accessTokenFile}")"
+
   # If files containing access credentials exist
-  if [ -s "${userIdFile}" && -s "${accessTokenFile}" ] ; then
-    su-exec "${nonRootUser}" docker login --username="$(cat "${userIdFile}")" --password="$(cat "${accessTokenFile}")" \
+  if [ -s ./UserID && -s ./AccessToken ] ; then
+    su-exec "${nonRootUser}" docker login --username="$(cat ./UserID)" --password="$(cat ./AccessToken)"
 
     # If the login attempt was successful
     if [ $? -ne 0 ] ; then
