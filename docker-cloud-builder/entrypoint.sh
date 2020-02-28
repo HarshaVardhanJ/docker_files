@@ -66,13 +66,13 @@ dockerLogin() {
 
   printf '%s\n' "********* Entered Docker Login Function **********"
   # Variables that point to the files containing access credentials
-  #userIdFile="./UserID"
-  #accessTokenFile="./AccessToken"
+  userIdFile="./UserID"
+  accessTokenFile="./AccessToken"
   printf '%s\n' "********* Searching for credentials **********"
   printf '%s\n' "\t********* List of files **********"
   ls -al ./
-  userIdFile="$(find / -type f -name "UserID" 2>/dev/null)"
-  accessTokenFile="$(find / -type f -name "AccessToken" 2>/dev/null)"
+  #userIdFile="$(find ./ -type f -name "UserID" 2>/dev/null)"
+  #accessTokenFile="$(find ./ -type f -name "AccessToken" 2>/dev/null)"
 
   # If files containing access credentials exist
   if [ -s "${userIdFile}" && -s "${accessTokenFile}" ] ; then
