@@ -38,7 +38,9 @@ steps:
       - './docker-cloud-builder/Dockerfile'
       - '--pull'
       - '--secret'
-      - 'id=UserID,src=./UserID,id=AccessToken,src=./AccessToken'
+      - 'id=UserID,src=./UserID'
+      - '--secret'
+      - 'id=AccessToken,src=./AccessToken'
       - '--push'
       - './docker-cloud-builder/.'
 
