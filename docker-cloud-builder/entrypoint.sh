@@ -65,8 +65,10 @@ socketOwnership() {
 dockerLogin() {
 
   # Variables that point to the files containing access credentials
-  UserIDFile="./UserID"
-  AccessTokenFile="./AccessToken"
+  #UserIDFile="./UserID"
+  #AccessTokenFile="./AccessToken"
+  UserIDFile="$(find ./ -type f -name "UserID" 2>/dev/null)"
+  AccessTokenFile="$(find ./ -type f -name "AccessToken" 2>/dev/null)"
 
   su-exec "${nonRootUser}" docker login -u $(cat "${UserIDFile}") -p $(cat "${AccessTokenFile}") \
     || exit 1
@@ -80,8 +82,8 @@ dockerLogin() {
 #
 cleanup() {
   # Files to be deleted
-  UserIDFile="./UserID"
-  AccessTokenFile="./AccessToken"
+  UserIDFile="$(find ./ -type f -name "UserID" 2>/dev/null)"
+  AccessTokenFile="$(find ./ -type f -name "AccessToken" 2>/dev/null)"
   dockerConfig="$(ls /home/docker/.docker/config.json)"
 
   # Loop through list of files with sensitive information
