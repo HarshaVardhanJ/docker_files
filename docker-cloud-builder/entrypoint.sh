@@ -67,17 +67,21 @@ dockerLogin() {
   # Variables that point to the files containing access credentials
   pwd
   ls -al ./
-  userIdFile="/workspace/UserID"
-  accessTokenFile="/workspace/AccessToken"
-  #userIdFile="$(find ./ -type f -name "UserID" 2>/dev/null)"
-  #accessTokenFile="$(find ./ -type f -name "AccessToken" 2>/dev/null)"
+  UserIDFile="./UserID"
+  AccessTokenFile="./AccessToken"
+  ls -l "${UserIDFile}"
+  ls -l "${AccessTokenFile}"
+  wc "${UserIDFile}"
+  wc "${AccessTokenFile}" 
+  #UserIDFile="$(find ./ -type f -name "UserID" 2>/dev/null)"
+  #AccessTokenFile="$(find ./ -type f -name "AccessToken" 2>/dev/null)"
 
-  su-exec "${nonRootUser}" docker login --username="$(cat "${userIdFile}")" --password="$(cat "${accessTokenFile}")" \
+  su-exec "${nonRootUser}" docker login --username "$(cat "${UserIDFile}")" --password "$(cat "${AccessTokenFile}")" \
     printf '%s\n' "Login failed" >&2
 
   # If files containing access credentials exist
   if [ -s /workspace/UserID && -s /workspace/AccessToken ] ; then
-    su-exec "${nonRootUser}" docker login --username="$(cat ./UserID)" --password="$(cat ./AccessToken)" \
+    su-exec "${nonRootUser}" docker login --username "$(cat ./UserID)" --password "$(cat ./AccessToken)" \
       || exit 1
 
    # # If the login attempt was successful
