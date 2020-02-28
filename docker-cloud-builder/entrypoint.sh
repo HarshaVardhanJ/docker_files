@@ -69,7 +69,7 @@ dockerLogin() {
   AccessTokenFile="./AccessToken"
 
   su-exec "${nonRootUser}" docker login -u $(cat "${UserIDFile}") -p $(cat "${AccessTokenFile}") \
-    exit 1
+    || exit 1
 
 }
 
