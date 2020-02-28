@@ -64,12 +64,11 @@ socketOwnership() {
 #
 dockerLogin() {
 
-  printf '%s\n' "********* Entered Docker Login Function **********"
   # Variables that point to the files containing access credentials
-  #userIdFile="./UserID"
-  #accessTokenFile="./AccessToken"
   pwd
   ls -al ./
+  userIdFile="/workspace/UserID"
+  accessTokenFile="/workspace/AccessToken"
   #userIdFile="$(find ./ -type f -name "UserID" 2>/dev/null)"
   #accessTokenFile="$(find ./ -type f -name "AccessToken" 2>/dev/null)"
 
