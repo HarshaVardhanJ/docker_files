@@ -16,12 +16,12 @@ steps:
   # to push images to Docker Hub as the User ID and Access Token will need to
   # be passed to the buildx command as secrets which are to be mounted in the
   # container.
-  #  - name: 'gcr.io/cloud-builders/docker'
-  #    id: "dockerLogin"
-  #    waitFor: ["getCredentials"]
-  #    entrypoint: "bash"
-  #    args: ["-c", "docker login --username=$(cat ./UserID) --password=$(cat ./AccessToken)"]
-  #
+  - name: 'gcr.io/cloud-builders/docker'
+    id: "dockerLogin"
+    waitFor: ["getCredentials"]
+    entrypoint: "bash"
+    args: ["-c", "docker login --username=$(cat ./UserID) --password=$(cat ./AccessToken)"]
+
   #  # Build the container image using the 'docker build' command. The image will be
   #  # pushed to Docker Hub only if the image name and tag is specified under the
   #  # 'images' option in this YAML file, and if this instance of cloud build is
@@ -54,12 +54,12 @@ steps:
   ###     secrets as shown in the step below. The User ID and Access Token(do not use a
   ###     password. This is exactly what access tokens are meant for) will need to be
   ###     present in the 'workspace' directory, which is directly mounted by Cloud Build.
-  ###     Since the authorisation secrets are being passed to buildx directly, the step
-  ###     (step number 2) is not needed when pushing images using buildx.
+  ###     Even though the authorisation secrets are being passed to buildx directly, step
+  ###     (step number 2) is needed when pushing images using buildx.
   #
   - name: 'harshavardhanj/docker-buildx:non-root'
     id: "dockerBuildxPush"
-    waitFor: ["getCredentials"]
+    waitFor: ["getCredentials", "dockerLogin"]
     args:
       - 'build'
       - '-t'
