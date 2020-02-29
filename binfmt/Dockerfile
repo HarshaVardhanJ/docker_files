@@ -21,7 +21,6 @@ RUN apt-get update \
     && mv qemu-i386-static qemu-i386 \
     && mv qemu-ppc64le-static qemu-ppc64le \
     && mv qemu-s390x-static qemu-s390x
-    #&& for fileName in qemu-* ; do mv "${fileName}" "${fileName//-static/}" ; done \
 
 
 # Start with latest alpine image
