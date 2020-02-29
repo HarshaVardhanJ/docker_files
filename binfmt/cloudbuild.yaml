@@ -14,18 +14,18 @@ steps:
     args: ["-c", "docker login --username=$(cat ./UserID) --password=$(cat ./AccessToken)"]
 
   # Build image with docker
-  - name: 'gcr.io/cloud-builders/docker'
-    id: "dockerBuild"
-    waitFor: ["getCredentials", "dockerLogin"]
-    args:
-      - 'build'
-      - '-t'
-      - 'harshavardhanj/binfmt:testing'
-      - '--cache-from'
-      - 'harshavardhanj/binfmt:testing'
-      - '-f'
-      - './binfmt/Dockerfile'
-      - './binfmt/.'
+  #  - name: 'gcr.io/cloud-builders/docker'
+  #    id: "dockerBuild"
+  #    waitFor: ["getCredentials", "dockerLogin"]
+  #    args:
+  #      - 'build'
+  #      - '-t'
+  #      - 'harshavardhanj/binfmt:testing'
+  #      - '--cache-from'
+  #      - 'harshavardhanj/binfmt:testing'
+  #      - '-f'
+  #      - './binfmt/Dockerfile'
+  #      - './binfmt/.'
 
   # Pull `buildx:testing` image from Docker Hub and build 'binfmt' image with multi-arch support
   ### NOTE:
@@ -37,22 +37,22 @@ steps:
   ###     to be present in the container registry(Docker Hub, in this case). The image will
   ###     need to be built either locally or elsewhere and pushed to the registry before the 
   ###     below step can be run.
-  #  - name: 'harshavardhanj/docker-buildx:testing'
-  #    id: "dockerBuildxPush"
-  #    waitFor: ["getCredentials", "dockerLogin"]
-  #    args:
-  #      - 'build'
-  #      - '-t'
-  #      - 'harshavardhanj/binfmt:testing'
-  #      - '--platform'
-  #      - 'linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386'
-  #      - '--cache-from'
-  #      - 'harshavardhanj/binfmt:testing'
-  #      - '--pull'
-  #      - '-f'
-  #      - './binfmt/Dockerfile'
-  #      - '--push'
-  #      - './binfmt/.'
+  - name: 'harshavardhanj/docker-buildx:testing'
+    id: "dockerBuildxPush"
+    waitFor: ["getCredentials", "dockerLogin"]
+    args:
+      - 'build'
+      - '-t'
+      - 'harshavardhanj/binfmt:testing'
+      - '--platform'
+      - 'linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6'
+      - '--cache-from'
+      - 'harshavardhanj/binfmt:testing'
+      - '--pull'
+      - '-f'
+      - './binfmt/Dockerfile'
+      - '--push'
+      - './binfmt/.'
 
-images: ['harshavardhanj/binfmt:testing']
+#images: ['harshavardhanj/binfmt:testing']
 timeout: "1500s"
