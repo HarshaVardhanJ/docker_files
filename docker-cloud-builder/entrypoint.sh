@@ -18,7 +18,9 @@ buildxCommand="docker-buildx"
 # will be used to run `docker-buildx` commands
 nonRootUser="docker"
 
-# Function which initialises `buildx`
+# Function which initialises `buildx` by pulling the 'harshavardhanj:binfmt'
+# docker image and the 'qemu-user-static' image. This is required for running
+# buildx.
 #
 buildxInitialise() {
   # Running the below commands adds support for multi-arch
@@ -40,7 +42,8 @@ buildxInitialise() {
 
 
 # Function which grants group permission of Docker socket to the
-# non-root user
+# non-root user. This is required in order to interact with Docker
+# when running as non-root user.
 #
 socketOwnership() {
   # Variable which contains the path to the Docker socket
@@ -60,16 +63,17 @@ socketOwnership() {
 }
 
 
-# Function that runs 'docker login' as non-root user
+# Function that runs 'docker login' as non-root user. If this is
+# not done, buildx fails to push to the registry as the non-root
+# user has not been authorised.
 #
 dockerLogin() {
 
   # Variables that point to the files containing access credentials
-  #UserIDFile="./UserID"
-  #AccessTokenFile="./AccessToken"
   UserIDFile="$(find ./ -type f -name "UserID" 2>/dev/null)"
   AccessTokenFile="$(find ./ -type f -name "AccessToken" 2>/dev/null)"
 
+  # Run the 'docker login' command as non-root user
   su-exec "${nonRootUser}" docker login -u $(cat "${UserIDFile}") -p $(cat "${AccessTokenFile}") \
     || exit 1
 
@@ -92,12 +96,13 @@ cleanup() {
     rm -f "${fileToBeDeleted}" \
       || printf '%s\n' "Could not delete file '${fileToBeDeleted}'"
   done
-
 }
+
 
 # Main function which checks if the user defined in $nonRootUser exists.
 # If the user exists, first the buildxInitialise function is called, then
-# the socketOwnership function is called. Finally the buildx command is
+# the socketOwnership function is called, after which the dockerLogin function
+# is called which authorises the non-root user. Finally the buildx command is
 # run as non-root user with all arguments being passed to it.
 #
 main() {
@@ -112,6 +117,7 @@ main() {
       && exit 1
   fi
 }
+
 
 # Calling the cleanup function
 trap cleanup SIGHUP SIGINT SIGQUIT SIGTRAP SIGTERM

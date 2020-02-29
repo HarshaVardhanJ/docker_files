@@ -52,25 +52,27 @@ STOPSIGNAL SIGTERM
 RUN echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >> /etc/apk/repositories \
     # Updating package index
     && apk update \
-    # Upgrading packages
+    # Upgrading all packages
     && apk upgrade -U \
     # Installing Docker of version $dockerVersion and 'su-exec'
+    # which is used to run the 'docker-buildx' command as non-root user
     && apk add --no-cache \
       docker=$dockerVersion \
       su-exec \
     # Setting environment variable for enabling experimental features in Docker
+    # which is required to run 'buildx'
     && export DOCKER_CLI_EXPERIMENTAL=1 \
-    # Downloading `buildx` binary release
+    # Downloading `buildx` binary of version $buildVersion
     && wget https://github.com/docker/buildx/releases/download/v${buildxVersion}/buildx-v${buildxVersion}.linux-amd64 \
     # Moving `buildx` binary to a directory which is under $PATH
     && mv buildx-v${buildxVersion}.linux-amd64 /usr/bin/docker-buildx \
     # Setting execute permission on the `buildx` executable
     && chmod a+x /usr/bin/docker-buildx \
-    # Creating user 'docker'
+    # Creating user 'docker' which will be used to run 'docker-buildx' commands
     && adduser --gecos "Docker user" --shell /bin/nologin --ingroup docker --home /home/docker --system --uid 1000 docker
 
-# Copying the 'entrypoint' script, which will help configure 'docker-buildx', to a directory
-# which is under $PATH
+# Copying the 'entrypoint' script, which will help configure and run 'docker-buildx',
+# to a directory which is under $PATH
 COPY ./entrypoint.sh /usr/bin/
 
 # Run the 'entrypoint.sh' script
@@ -80,13 +82,14 @@ ENTRYPOINT ["entrypoint.sh"]
 LABEL maintainer="Harsha Vardhan J" \
       github.account="https://github.com/HarshaVardhanJ" \
       dockerfile.github.page="https://github.com/HarshaVardhanJ/docker_files\
-/blob/master/docker-cloud-builder/Dockerfile" \
+/blob/non-root/docker-cloud-builder/Dockerfile" \
       description="This Dockerfile creates an image of Docker with support for \
-`buildx` added. This way, images can be built for multiple architectures. The \
-suggested way to use this image is with GCP Cloud Build via a `cloudbuild.yaml` \
-file in which this image will need to be invoked as a Cloud Builder. The \
-arguments to the Cloud Builder will the same as the argument to the `buildx` \
-executable. Start the arguments with 'build -f [DOCKERFILE] [BUILD-CONTEXT]. \
-Check the sample `cloudbuild.yaml` file in this directory for an example of \
-how this image is to be used in a `cloudbuild.yaml` file." \
+`buildx` added which runs as a non-root user. This way, images can be built for \
+multiple architectures. The suggested way to use this image is with GCP Cloud \
+Build via a `cloudbuild.yaml` file in which this image will need to be invoked \
+as a Cloud Builder. The arguments to the Cloud Builder will the same as the \
+argument to the `buildx` executable. Start the arguments with \
+'build -f [DOCKERFILE] [BUILD-CONTEXT]. Check the sample `cloudbuild.yaml` file \
+in this directory for an example of how this image is to be used in a \
+`cloudbuild.yaml` file." \
       version="1.0"

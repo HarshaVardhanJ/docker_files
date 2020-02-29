@@ -1,22 +1,43 @@
 steps:
-  # Get the Docker Hub user ID from Secrets Manager and save it to a file
+  # Get the Docker Hub User ID and Access Token from Secrets Manager
+  # and save them to files.
+  # Run the 'getCredentials.sh' script within the gcloud builder.
+  # The script pulls two secrets, namely the User ID and Access Token, 
+  # from the Secrets Manager by using the gcloud command, and saves them 
+  # to individual files.
   - name: 'gcr.io/cloud-builders/gcloud'
+    id: "getCredentials"
+    waitFor: ["-"]
     entrypoint: "bash"
     args: ["./docker-cloud-builder/getCredentials.sh"]
 
-  # Log in to Docker Hub using the credentials obtained in the previous steps
+  # Log in to Docker Hub using the credentials obtained in the previous steps.
+  # This step is not needed when using 'harshavardhanj:docker-buildx:non-root'
+  # to push images to Docker Hub as the User ID and Access Token will need to
+  # be passed to the buildx command as secrets which are to be mounted in the
+  # container.
   - name: 'gcr.io/cloud-builders/docker'
+    id: "dockerLogin"
+    waitFor: ["getCredentials"]
     entrypoint: "bash"
     args: ["-c", "docker login --username=$(cat ./UserID) --password=$(cat ./AccessToken)"]
 
-    #  - name: 'gcr.io/cloud-builders/docker'
-    #    args:
-    #      - 'build'
-    #      - '-t'
-    #      - 'harshavardhanj/docker-buildx:non-root'
-    #      - '-f'
-    #      - './docker-cloud-builder/Dockerfile'
-    #      - './docker-cloud-builder/.'
+  # Build the container image using the 'docker build' command. The image will be
+  # pushed to Docker Hub only if the image name and tag is specified under the
+  # 'images' option in this YAML file, and if this instance of cloud build is
+  # authenticated to Docker Hub(hence the authorisation step above).
+  - name: 'gcr.io/cloud-builders/docker'
+    id: "dockerBuild"
+    waitFor: ["getCredentials", "dockerLogin"]
+    args:
+      - 'build'
+      - '-t'
+      - 'harshavardhanj/docker-buildx:non-root'
+      - '--cache-from'
+      - 'harshavardhanj/docker-buildx:non-root'
+      - '-f'
+      - './docker-cloud-builder/Dockerfile'
+      - './docker-cloud-builder/.'
 
   # Pull buildx image from Docker Hub and build 'buildx' image with multi-arch support
   ### NOTE:
@@ -27,24 +48,37 @@ steps:
   ###     container registry(Docker Hub, in this case). The image will need to be built
   ###     either locally or elsewhere and pushed to the registry before the below step
   ###     can be run.
+  ###
+  ###     Since the 'buildx' binary is being run as a non-root user, the credentials for
+  ###     authorising with Docker Hub will need to be passed to 'buildx' in the form of
+  ###     secrets as shown in the step below. The User ID and Access Token(do not use a
+  ###     password. This is exactly what access tokens are meant for) will need to be
+  ###     present in the 'workspace' directory, which is directly mounted by Cloud Build.
+  ###     Since the authorisation secrets are being passed to buildx directly, the step
+  ###     (step number 2) is not needed when pushing images using buildx.
+  #
   - name: 'harshavardhanj/docker-buildx:non-root'
+    id: "dockerBuildxPush"
+    waitFor: ["getCredentials", "dockerBuild"]
     args:
       - 'build'
       - '-t'
       - 'harshavardhanj/docker-buildx:non-root'
       - '--platform'
       - 'linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6'
-      - '-f'
-      - './docker-cloud-builder/Dockerfile'
+      - '--cache-from'
+      - 'harshavardhanj/docker-buildx:non-root'
       - '--pull'
       - '--secret'
       - 'id=UserID,src=./UserID'
       - '--secret'
       - 'id=AccessToken,src=./AccessToken'
+      - '-f'
+      - './docker-cloud-builder/Dockerfile'
       - '--push'
       - './docker-cloud-builder/.'
 
-#images: ['harshavardhanj/docker-buildx:non-root']
+images: ['harshavardhanj/docker-buildx:non-root']
 timeout: "1500s"
 #options:
 #  machineType: 'N1_HIGHCPU_8'
