@@ -1,5 +1,7 @@
 # Building multi-architecture images with `docker buildx`
 
+
+
 ### `docker-buildx`
 
 This is a tool builder to invoke `docker buildx` commands.
@@ -15,6 +17,8 @@ steps:
 	- name: 'harshavardhanj/docker-buildx:latest'
 		args: ['build', '-t', '[IMAGE_NAME:IMAGE_TAG]', '-f', '/path/to/Dockerfile', '.']
 ```
+
+
 
 ### Examples
 
@@ -199,3 +203,50 @@ steps:
 The arguments to the `--platform` flag can be changed if needed. At times, building for `s390x` or `386` platform results in error for some images. If you encounter any such errors, which will be visible in the build logs, remove the offending architecture in which the error was encountered and build the image.
 
 Now, using this setup multiple triggers can be created on Cloud Build to build and push multi-architecture images to Docker Hub and/or GCR.
+
+##### NOTE
+
+Storing and accessing secrets in Secrets Manager(and Key Management Service) incurs a charge. While this charge is quite low, it is important to note that it is not free. Therefore, if you go by the strategy suggested in this README, you will be using either Secrets Manager or KMS in order to store and access credentials needed to login to your container registry. This will result in a charge being levied for storage and access of secrets.
+
+#### Additional options in `cloudbuild.yaml`
+
+#### `timeout`
+
+Builds in Cloud Build are terminated after 10 minutes, by default. To override this, specify the `timeout` option in your `cloudbuild.yaml` file like so:
+
+```yaml
+steps:
+	- name: ...
+	
+	- name: ...
+	
+timeout: "1200s"
+```
+
+The value for `timeout` should always be specified in seconds. In the above example, the timeout value is `1200s` which is 20 minutes. If your builds take longer than 10 minutes to complete, use the `timeout` option. In my case, building an `nginx` image in which `openssl` is compiled from source, it takes quite a bit of time(upwards of 1.5 hours in Cloud Build). Therefore, I prefer to specify a high `timeout` value, and I use the `machineType` option which is described below.
+
+
+
+#### `machineType`
+
+Cloud Build has an option to build using a more powerful CPU by specifying the `machineType` option under `options` in your `cloudbuild.yaml` file. For example,
+
+```yaml
+steps:
+	- name: ...
+	
+	- name: ...
+	
+options:
+	machineType: 'N1_HIGHCPU_8'
+```
+
+The two `machineTypes` that are offered are
+
+* `N1_HIGHCPU_8` (provides 8 CPU cores for the build)
+* `N1_HIGHCPU_32`(provides 32 CPU cores for the build)
+
+While the speed of the build is considerably faster, the build may take longer to start due to the time taken to provision the underlying resources for the build. At times, the build may get cancelled if the resources are not available.
+
+While it might be tempting to mention a more powerful CPU using `machineType` for all builds in order to speed it up, being conservative with the usage of this option would be prudent. Builds with the `machineType` option specified aren’t free unlike the builds where this option is not specified. So do keep in mind that you will be billed for usage of either `N1_HIGHCPU_8` or `N1_HIGHCPU_32`.  For more information, please peruse the documentation for Cloud Build provided by GCP.
+
