@@ -1,6 +1,6 @@
 ## Supported tags and respective Dockerfile links
 
-* [`latest`, `stable`](https://github.com/HarshaVardhanJ/docker_files/blob/master/docker-cloud-builder/Dockerfile)
+* [`latest`](https://github.com/HarshaVardhanJ/docker_files/blob/master/docker-cloud-builder/Dockerfile)
 * [`testing`](https://github.com/HarshaVardhanJ/docker_files/blob/testing/docker-cloud-builder/Dockerfile)
 * [`non-root`](https://github.com/HarshaVardhanJ/docker_files/blob/non-root/docker-cloud-builder/Dockerfile)
 
@@ -8,7 +8,7 @@
 
 ## Quick Reference
 
-* **Where to get help**: [GitHub Issues Page](https://github.com/HarshaVardhanJ/docker_files/issues)
+* **Where to get help**: [Project’s GitHub Issues Page](https://github.com/HarshaVardhanJ/docker_files/issues)
 * **Where to file issues**: [GitHub Issues Page](https://github.com/HarshaVardhanJ/docker_files/issues)
 * **Maintained by**: [Harsha Vardhan J](https://github.com/HarshaVardhanJ/docker_files)
 * **Supported architectures**: `amd64`, `arm32v6`, `arm32v7`, `arm64v8`, `i386`, `ppc64le`, `s390x`
