@@ -9,6 +9,7 @@ ARG npmVersion=12.15.0-r1
 
 # Install dependencies for Go, and for building Gitea
 RUN apk add --no-cache --virtual .go-deps \
+      build-base \
       gcc \
       git \
       make \
