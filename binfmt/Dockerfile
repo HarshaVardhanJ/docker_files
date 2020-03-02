@@ -33,11 +33,8 @@ RUN apk update \
     && apk add --no-cache \
       build-base \
       gcc \
-      g++ \
       go \
-      libc6-compat \
-      musl-dev \
-      util-linux-dev
+      musl-dev
 
 # Setting GOPATH and PATH
 ENV GOPATH=/go PATH=$PATH:/go/bin
