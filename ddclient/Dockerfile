@@ -63,6 +63,9 @@ RUN apk update -U --no-cache \
     #
     && rm -rf ddclient* \
     && apk del --no-cache --purge .removable \
+    && rm -rf /tmp/cpan* \
+    && rm -rf /lib/apk/db \
+    && rm -rf /etc/apk/world \
     # Create directories for `ddclient` and creating config file
     #
     && mkdir -p /etc/ddclient /var/cache/ddclient \

@@ -24,4 +24,4 @@ steps:
       - './ddclient/Dockerfile'
       - '--push'
       - './ddclient/.'
-timeout: "1200s"
+timeout: "1320s"
