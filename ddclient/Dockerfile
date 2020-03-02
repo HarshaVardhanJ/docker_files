@@ -36,10 +36,10 @@ WORKDIR /
 ARG ddclientVersion=v3.9.0
 
 # Install dependencies for `ddclient`
-RUN apk update \
+RUN apk update -U --no-cache \
 		&& apk add --no-cache --virtual .removable \
       make \
-    && apk add --no-cache --virtual .ddclient-deps \
+    && apk add --no-cache \
       perl \
       perl-utils \
       perl-test-taint \
