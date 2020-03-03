@@ -5,9 +5,9 @@
 FROM debian:stretch-slim AS qemu-risc-builder
 
     # Update package index
-RUN apt-get update --no-cache \
+RUN apt-get update \
     # Install tools necessary for building qemu
-    && apt install --no-cache --no-install-recommends -y \
+    && apt install --no-install-recommends -y \
       build-essential \
       ca-certificates \
       file \
