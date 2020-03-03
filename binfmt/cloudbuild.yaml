@@ -22,7 +22,7 @@ steps:
   #      - '-t'
   #      - 'harshavardhanj/binfmt:latest'
   #      - '--cache-from'
-  #      - 'harshavardhanj/binfmt:testing'
+  #      - 'harshavardhanj/binfmt:latest'
   #      - '-f'
   #      - './binfmt/Dockerfile'
   #      - './binfmt/.'
@@ -37,7 +37,7 @@ steps:
   ###     to be present in the container registry(Docker Hub, in this case). The image will
   ###     need to be built either locally or elsewhere and pushed to the registry before the 
   ###     below step can be run.
-  - name: 'harshavardhanj/docker-buildx:latest'
+  - name: 'harshavardhanj/docker-buildx:testing'
     id: "dockerBuildxPush"
     waitFor: ["getCredentials", "dockerLogin"]
     args:
