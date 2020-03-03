@@ -18,11 +18,11 @@ steps:
   ###     container registry(Docker Hub, in this case). The image will need to be built
   ###     either locally or elsewhere and pushed to the registry before the below step
   ###     can be run.
-  - name: 'harshavardhanj/docker-buildx:testing'
+  - name: 'harshavardhanj/docker-buildx:latest'
     args:
       - 'build'
       - '-t'
-      - 'harshavardhanj/docker-buildx:testing'
+      - 'harshavardhanj/docker-buildx:latest'
       - '--platform'
       - 'linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6'
       - '-f'
