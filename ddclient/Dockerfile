@@ -50,7 +50,6 @@ RUN apk update -U --no-cache \
       perl-io-socket-ssl \
     # Configuring Perl for `ddclient`
     #
-    # && cpan install Test::Requires \
     && cpan Data::Validate::IP \
     # Download the latest version of `ddclient`
     #
