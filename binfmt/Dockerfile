@@ -20,11 +20,7 @@ RUN apt-get update \
     && mv qemu-armeb-static qemu-armeb \
     && mv qemu-i386-static qemu-i386 \
     && mv qemu-ppc64le-static qemu-ppc64le \
-    && mv qemu-s390x-static qemu-s390x \
-    && mv qemu-sparc-static qemu-sparc \
-    && mv qemu-sparc32plus-static qemu-sparc32plus \
-    && mv qemu-sparc64-static qemu-sparc64
-    #&& for fileName in qemu-* ; do mv "${fileName}" "${fileName//-static/}" ; done \
+    && mv qemu-s390x-static qemu-s390x
 
 
 # Start with latest alpine image
@@ -35,6 +31,8 @@ RUN apk update \
     # Upgrade all packages
     && apk upgrade -U \
     && apk add --no-cache \
+      build-base \
+      gcc \
       go \
       musl-dev
 

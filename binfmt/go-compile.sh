@@ -33,4 +33,4 @@ go test
 
 [ "${REQUIRE_CGO}" = 1 ] || export CGO_ENABLED=0
 
-go install -buildmode pie -ldflags "-s -w ${ldflags} -extldflags \"-fno-PIC -static\""
+go install -buildmode pie -ldflags "-s -w ${ldflags} -linkmode external -extldflags \"-fno-PIC -static\""

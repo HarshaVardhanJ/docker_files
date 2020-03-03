@@ -58,8 +58,6 @@ steps:
 images: ['gcr.io/$PROJECT_ID/image_name']
 ```
 
-
-
 As far as the functionality of`buildx` is concerned, it is primarily useful for building images with multi-architecture support with no additional changes to the `Dockerfile`.
 
 
@@ -188,3 +186,49 @@ Now, using this setup multiple triggers can be created on Cloud Build to build a
 This requires a few more steps in order to authenticate with Docker Hub. The steps for this is taken from [GCP’s Cloud Build documentation](https://cloud.google.com/cloud-build/docs/interacting-with-dockerhub-images#pushing_images_to_docker_hub). For more detailed information, navigate to the given link. 
 
 The first stage consists of encrypting your Docker Hub credentials so it can be passed to Cloud Build in a secure manner. As I am not using this method, I will not elaborate on it. In the link given above, you will find all the steps necessary to store and use credentials using GCP's KMS.
+
+##### NOTE
+
+Storing and accessing secrets in Secrets Manager(and Key Management Service) incurs a charge. While this charge is quite low, it is important to note that it is not free. Therefore, if you go by the strategy suggested in this README, you will be using either Secrets Manager or KMS in order to store and access credentials needed to login to your container registry. This will result in a charge being levied for storage and access of secrets.
+
+#### Additional options in `cloudbuild.yaml`
+
+#### `timeout`
+
+Builds in Cloud Build are terminated after 10 minutes, by default. To override this, specify the `timeout` option in your `cloudbuild.yaml` file like so:
+
+```yaml
+steps:
+	- name: ...
+	
+	- name: ...
+	
+timeout: "1200s"
+```
+
+The value for `timeout` should always be specified in seconds. In the above example, the timeout value is `1200s` which is 20 minutes. If your builds take longer than 10 minutes to complete, use the `timeout` option. In my case, building an `nginx` image in which `openssl` is compiled from source, it takes quite a bit of time(upwards of 1.5 hours in Cloud Build). Therefore, I prefer to specify a high `timeout` value, and I use the `machineType` option which is described below.
+
+
+
+#### `machineType`
+
+Cloud Build has an option to build using a more powerful CPU by specifying the `machineType` option under `options` in your `cloudbuild.yaml` file. For example,
+
+```yaml
+steps:
+	- name: ...
+	
+	- name: ...
+	
+options:
+	machineType: 'N1_HIGHCPU_8'
+```
+
+The two `machineTypes` that are offered are
+
+* `N1_HIGHCPU_8` (provides 8 CPU cores for the build)
+* `N1_HIGHCPU_32`(provides 32 CPU cores for the build)
+
+While the speed of the build is considerably faster, the build may take longer to start due to the time taken to provision the underlying resources for the build. At times, the build may get cancelled if the resources are not available.
+
+While it might be tempting to mention a more powerful CPU using `machineType` for all builds in order to speed it up, being conservative with the usage of this option would be prudent. Builds with the `machineType` option specified aren’t free unlike the builds where this option is not specified. So do keep in mind that you will be billed for usage of either `N1_HIGHCPU_8` or `N1_HIGHCPU_32`.  For more information, please peruse the documentation for Cloud Build provided by GCP.

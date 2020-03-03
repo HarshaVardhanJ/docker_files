@@ -1,32 +1,58 @@
 steps:
   # Get the Docker Hub user ID from Secrets Manager and save it to a file
   - name: 'gcr.io/cloud-builders/gcloud'
+    id: "getCredentials"
+    waitFor: ["-"]
     entrypoint: "bash"
     args: ["./docker-cloud-builder/getCredentials.sh"]
 
   # Log in to Docker Hub using the credentials obtained in the previous steps
   - name: 'gcr.io/cloud-builders/docker'
+    id: "dockerLogin"
+    waitFor: ["getCredentials"]
     entrypoint: "bash"
     args: ["-c", "docker login --username=$(cat ./UserID) --password=$(cat ./AccessToken)"]
 
-  # Build the container image using and push it to Docker Hub
+  # Build image with docker
   - name: 'gcr.io/cloud-builders/docker'
+    id: "dockerBuild"
+    waitFor: ["getCredentials", "dockerLogin"]
     args:
       - 'build'
       - '-t'
       - 'harshavardhanj/binfmt:latest'
+      - '--cache-from'
+      - 'harshavardhanj/binfmt:latest'
       - '-f'
       - './binfmt/Dockerfile'
       - './binfmt/.'
-        #  # Pull buildx image from Docker Hub and build 'buildx' image with multi-arch support
-        #  - name: 'harshavardhanj/docker-buildx:latest'
-        #    args:
-        #      - 'build'
-        #      - '-t'
-        #      - 'harshavardhanj/docker-buildx:latest'
-        #      - '--platform'
-        #      - 'linux/amd64,linux/arm64,linux/386,linux/arm/v7,linux/arm/v6'
-        #      - '-f'
-        #      - './docker-cloud-builder/Dockerfile'
-        #      - '--push'
-        #      - './docker-cloud-builder/.'
+
+  # Pull `buildx:testing` image from Docker Hub and build 'binfmt' image with multi-arch support
+  ### NOTE:
+  ###     In the build step below, the `docker-buildx:testing` image is used to build
+  ###     the `binfmt:testing` image with multi-arch support. Therefore, since
+  ###     there is a cyclical dependency because the `docker-buildx:testing` image uses
+  ###     the `binfmt:testing` image, before running this in Cloud Build, a working
+  ###     version of the `docker-buildx:testing`, and of `binfmt:testing` image will need 
+  ###     to be present in the container registry(Docker Hub, in this case). The image will
+  ###     need to be built either locally or elsewhere and pushed to the registry before the 
+  ###     below step can be run.
+  #  - name: 'harshavardhanj/docker-buildx:latest'
+  #    id: "dockerBuildxPush"
+  #    waitFor: ["getCredentials", "dockerLogin"]
+  #    args:
+  #      - 'build'
+  #      - '-t'
+  #      - 'harshavardhanj/binfmt:latest'
+  #      - '--platform'
+  #      - 'linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386'
+  #      - '--cache-from'
+  #      - 'harshavardhanj/binfmt:latest'
+  #      - '--pull'
+  #      - '-f'
+  #      - './binfmt/Dockerfile'
+  #      - '--push'
+  #      - './binfmt/.'
+
+images: ['harshavardhanj/binfmt:latest']
+timeout: "1500s"

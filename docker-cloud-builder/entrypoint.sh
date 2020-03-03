@@ -19,24 +19,29 @@ binfmtVersion="0.7"
 buildxInitialise() {
   # Running the below command adds support for multi-arch
   # builds by setting up QEMU
-  #docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-  #docker run --privileged linuxkit/binfmt:v${binfmtVersion} || exit 1
-  docker run --privileged harshavardhanj/binfmt:latest || exit 1
+  docker run --privileged harshavardhanj/binfmt:testing || exit 1
+  docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
   # If the `buildx` executable is in PATH
-  if [ $(which "${buildxCommand}") ] ; then
+  if [ "$(command -v "${buildxCommand}")" ] ; then
     # Initialise a builder and switch to it
-    "${buildxCommand}" create --name multiarch-builder \
-      && "${buildxCommand}" use multiarch-builder \
+    "${buildxCommand}" create --driver docker-container --driver-opt image=moby/buildkit:master,network=host \
+      --name multiarch-builder --use \
       && "${buildxCommand}" inspect --bootstrap
   else
-    printf '%s\n' "The ${buildxCommand} could not be found in the PATH." \
+    printf '%s\n' "The executable '${buildxCommand}' could not be found in the PATH." \
       && exit 1
   fi
 }
 
-# Calling the initialisation function and passing all arguments to buildx
-buildxInitialise \
-  && ${buildxCommand} $@
+# Main function
+main() {
+  # Calling the initialisation function and passing all arguments to buildx
+  buildxInitialise \
+    && "${buildxCommand}" $@
+}
+
+# Calling the main function and passing all arguments to it
+main $@
 
 # End of script
