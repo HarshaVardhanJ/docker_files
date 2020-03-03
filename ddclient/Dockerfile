@@ -50,7 +50,7 @@ RUN apk update -U --no-cache \
       perl-io-socket-ssl \
     # Configuring Perl for `ddclient`
     #
-    && cpan install Test::Requires \
+    # && cpan install Test::Requires \
     && cpan Data::Validate::IP \
     # Download the latest version of `ddclient`
     #
@@ -64,8 +64,10 @@ RUN apk update -U --no-cache \
     && rm -rf ddclient* \
     && apk del --no-cache --purge .removable \
     && rm -rf /tmp/cpan* \
+    && rm -rf /root/.cpan \
     && rm -rf /lib/apk/db \
     && rm -rf /etc/apk/world \
+    && rm -rf /usr/local/share/man \
     # Create directories for `ddclient` and creating config file
     #
     && mkdir -p /etc/ddclient /var/cache/ddclient \
