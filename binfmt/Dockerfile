@@ -2,9 +2,13 @@
 ## Influenced by https://github.com/linuxkit/linuxkit/tree/master/pkg/binfmt
 ### Adds support for more architectures in docker buildx
 
+# Start with debian:stretch-slim image
 FROM debian:stretch-slim AS qemu-risc-builder
 
-    # Update package index
+# Setting the working directory
+WORKDIR /
+
+# Update package index
 RUN apt-get update \
     # Install tools necessary for building qemu
     && apt install --no-install-recommends -y \
@@ -22,7 +26,7 @@ RUN apt-get update \
     && cd qemu \
     && ./configure --static --disable-system --target-list=riscv64-linux-user \
     && make \
-    && cp riscv64-linux-user/qemu-riscv64 /qemu-riscv64
+    && cp ./riscv64-linux-user/qemu-riscv64 /
 
 # Start with debian stretch slim image
 # Use Debian stretch until https://bugs.alpinelinux.org/issues/8131 is resolved.
@@ -80,7 +84,7 @@ WORKDIR /
 
 # Copy the qemu binaries
 COPY --from=qemu-builder usr/bin/qemu-* usr/bin/
-COPY --from=qemu-risc-builder /qemu-riscv64 usr/bin/
+COPY --from=qemu-risc-builder qemu-riscv64 usr/bin/
 
 # Copy the binfmt binary
 COPY --from=binfmt-builder /go/bin/binfmt usr/bin/binfmt
