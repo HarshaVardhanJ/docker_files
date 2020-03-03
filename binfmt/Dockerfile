@@ -2,10 +2,31 @@
 ## Influenced by https://github.com/linuxkit/linuxkit/tree/master/pkg/binfmt
 ### Adds support for more architectures in docker buildx
 
+FROM debian:stretch-slim AS qemu-risc-builder
+
+    # Update package index
+RUN apt-get update --no-cache \
+    # Install tools necessary for building qemu
+    && apt install --no-cache --no-install-recommends -y \
+      build-essential \
+      ca-certificates \
+      file \
+      git \
+      libglib2.0-dev \
+      libpixman-1-dev \
+      python \
+      pkgconf \
+    # Clone the 'qemu' git repository
+    && git clone https://git.qemu.org/git/qemu.git \
+    # Build QEMU with support for riscv64 emulation
+    && cd qemu \
+    && ./configure --static --disable-system --target-list=riscv64-linux-user \
+    && make \
+    && cp riscv64-linux-user/qemu-riscv64 /qemu-riscv64
 
 # Start with debian stretch slim image
 # Use Debian stretch until https://bugs.alpinelinux.org/issues/8131 is resolved.
-FROM debian@sha256:de3eac83cd481c04c5d6c7344cd7327625a1d8b2540e82a8231b5675cef0ae5f AS qemu
+FROM debian@sha256:de3eac83cd481c04c5d6c7344cd7327625a1d8b2540e82a8231b5675cef0ae5f AS qemu-builder
 
 # Setting the working directory
 WORKDIR /
@@ -24,7 +45,7 @@ RUN apt-get update \
 
 
 # Start with latest alpine image
-FROM alpine:latest AS mirror
+FROM alpine:latest AS binfmt-builder
 
 # Update repo information
 RUN apk update \
@@ -58,10 +79,11 @@ ENTRYPOINT []
 WORKDIR /
 
 # Copy the qemu binaries
-COPY --from=qemu usr/bin/qemu-* usr/bin/
+COPY --from=qemu-builder usr/bin/qemu-* usr/bin/
+COPY --from=qemu-risc-builder /qemu-riscv64 usr/bin/
 
 # Copy the binfmt binary
-COPY --from=mirror /go/bin/binfmt usr/bin/binfmt
+COPY --from=binfmt-builder /go/bin/binfmt usr/bin/binfmt
 
 # Copy the binfmt config file
 COPY etc/binfmt.d/00_linuxkit.conf etc/binfmt.d/00_linuxkit.conf
