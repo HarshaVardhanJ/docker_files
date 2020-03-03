@@ -36,10 +36,10 @@ WORKDIR /
 ARG ddclientVersion=v3.9.0
 
 # Install dependencies for `ddclient`
-RUN apk update \
+RUN apk update -U --no-cache \
 		&& apk add --no-cache --virtual .removable \
       make \
-    && apk add --no-cache --virtual .ddclient-deps \
+    && apk add --no-cache \
       perl \
       perl-utils \
       perl-test-taint \
@@ -50,7 +50,6 @@ RUN apk update \
       perl-io-socket-ssl \
     # Configuring Perl for `ddclient`
     #
-    && cpan install Test::Requires \
     && cpan Data::Validate::IP \
     # Download the latest version of `ddclient`
     #
@@ -63,6 +62,11 @@ RUN apk update \
     #
     && rm -rf ddclient* \
     && apk del --no-cache --purge .removable \
+    && rm -rf /tmp/cpan* \
+    && rm -rf /root/.cpan \
+    && rm -rf /lib/apk/db \
+    && rm -rf /etc/apk/world \
+    && rm -rf /usr/local/share/man \
     # Create directories for `ddclient` and creating config file
     #
     && mkdir -p /etc/ddclient /var/cache/ddclient \

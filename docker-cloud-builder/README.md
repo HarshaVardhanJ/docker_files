@@ -1,13 +1,34 @@
-# Building multi-architecture images with `docker buildx`
+## Supported tags and respective Dockerfile links
+
+* [`latest`](https://github.com/HarshaVardhanJ/docker_files/blob/master/docker-cloud-builder/Dockerfile)
+* [`testing`](https://github.com/HarshaVardhanJ/docker_files/blob/testing/docker-cloud-builder/Dockerfile)
+* [`non-root`](https://github.com/HarshaVardhanJ/docker_files/blob/non-root/docker-cloud-builder/Dockerfile)
 
 
 
-### `docker-buildx`
+## Quick Reference
 
-This is a tool builder to invoke `docker buildx` commands.
+* **Where to get help**: [Project’s GitHub Issues Page](https://github.com/HarshaVardhanJ/docker_files/issues)
+* **Where to file issues**: [GitHub Issues Page](https://github.com/HarshaVardhanJ/docker_files/issues)
+* **Maintained by**: [Harsha Vardhan J](https://github.com/HarshaVardhanJ/docker_files)
+* **Supported architectures**: `amd64`, `arm32v6`, `arm32v7`, `arm64v8`, `i386`, `ppc64le`, `s390x`
+* **Source of this description**: [README.md in repository](https://github.com/HarshaVardhanJ/docker_files/blob/master/docker-cloud-builder/README.md)
 
-Arguments passed to this builder will be passed to `docker buildx` directly,
-allowing callers to run [any `docker buildx` commands](https://docs.docker.com/engine/reference/commandline/buildx/). As of the moment of writing this README, there are no “official” images that serve this specific purpose, which is to help build images for multiple architectures by leveraging the `buildx` command in Docker. An example `cloudbuild.yaml` file is given below which is to be used with Cloud Build on Google Cloud Platform for automating builds.
+
+
+## What is `docker-buildx`?
+
+`docker-buildx` is a container image built on top of [Alpine Linux]() and has [Docker]() installed with [buildx]() support added. `buildx` is a Docker CLI plugin for extended build capabilities with BuildKit. `buildx` also has the ability to build for multiple architectures when supplied with the same Dockerfile. For more information on the features of `buildx`, click [this link](https://github.com/docker/buildx).
+
+  
+
+## How to use this image
+
+### Building multi-arch images using `docker-buildx`
+
+The easiest way to begin building images with the `docker-buildx` image is to use Google Cloud Platform’s Cloud Build. This is a tool builder to invoke `docker buildx` commands. Arguments passed to this builder will be passed to `docker buildx` directly, allowing callers to run [any `docker buildx` commands](https://docs.docker.com/engine/reference/commandline/buildx/).
+
+As of the moment of writing this README, there are no “official” images that serve this specific purpose, which is to help build images for multiple architectures by leveraging the `buildx` command in Docker. An example `cloudbuild.yaml` file is given below which is to be used with Cloud Build on Google Cloud Platform for automating builds.
 
 
 
@@ -37,46 +58,11 @@ steps:
 images: ['gcr.io/$PROJECT_ID/image_name']
 ```
 
-
-
 As far as the functionality of`buildx` is concerned, it is primarily useful for building images with multi-architecture support with no additional changes to the `Dockerfile`.
 
 
 
 #### Build and push a container image to Docker Hub
-
-##### Using GCP Key-Management Service(KMS)
-
-This requires a few more steps in order to authenticate with Docker Hub. The steps for this is taken from [GCP’s Cloud Build documentation](https://cloud.google.com/cloud-build/docs/interacting-with-dockerhub-images#pushing_images_to_docker_hub). For more detailed information, navigate to the given link. 
-
-The first stage consists of encrypting your Docker Hub credentials so it can be passed to Cloud Build in a secure manner. Then, the required information is provided to Cloud Build via the `cloudbuild.yaml` file.
-
-The below `cloudbuild.yaml` is a good place to start:
-
-```yaml
-steps:
-- name: "gcr.io/cloud-builders/docker"
-	entrypoint: "bash"
-	args: ["-c", "docker login --username=[DOCKER_USER_ID] --password=$$PASSWORD"]
-	secretEnv: ["PASSWORD"]
-- name: "gcr.io/cloud-builders/docker"
-	args: ["build", "-t", "[DOCKER_USER_ID]/[IMAGE]:[TAG]", "."]
-images: "[DOCKER_USER_ID]/[IMAGE]:[TAG]"
-secrets:
-- kmsKeyName: "projects/[PROJECT_ID]/locations/global/keyRings/[KEYRING-NAME]/cryptoKeys/[KEY-NAME]"
-	secretEnv:
-		PASSWORD: "[base64-encoded encrypted Dockerhub password]"
-```
-
-where
-
-* `[DOCKER_USER_ID]` is your Docker Hub username.
-* `[IMAGE]` is the name of the image you want to push to Docker Hub.
-* `[TAG]` is the name of the tag associated with the image you would like to push.
-* `[PROJECT_ID]` is your GCP project ID.
-* `[KEYRING-NAME]` is the name of your key ring.
-* `[KEY-NAME]` is the name of the key.
-* `[base64-encoded encrypted Dockerhub password]` is your encyrpted password as a base64 encoded string.
 
 ##### Using GCP Secrets Manager
 
@@ -86,7 +72,7 @@ Then, you will need to enable the Secrets Manager API on GCP. The steps to set u
 
 Once you’ve created the secrets, grant the Cloud Build service account access to those two secrets. Refer to [this page](https://cloud.google.com/cloud-build/docs/securing-builds/use-encrypted-secrets-credentials#grant_the_service_account_access_to_the_cryptokey) for instructions on how to grant access to the service account. That link provides instructions on how to grant access to CryptoKey, but the steps are similar for Secrets Manager. Once permission has been granted to Cloud Build, the `cloudbuild.yaml` file and other files required by it can be created.
 
-Given below is the `cloudbuild.yaml` file that I use for building images on Cloud Build and pushing the built images to Docker Hub.
+Given below is a simpler version of the `cloudbuild.yaml` file that I use for building images on Cloud Build and pushing the built images to Docker Hub.
 
 ```yaml
 steps:
@@ -101,15 +87,6 @@ steps:
     entrypoint: "bash"
     args: ["-c", "docker login --username=$(cat ./UserID) --password=$(cat ./AccessToken)"]
 
-  # Build the container image using and push it to Docker Hub
-  - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - 'build'
-      - '-t'
-      - 'harshavardhanj/docker-buildx:latest'
-      - '-f'
-      - './docker-cloud-builder/Dockerfile'
-      - './docker-cloud-builder/.'
   # Pull buildx image from Docker Hub and build 'buildx' image with multi-arch support
   - name: 'harshavardhanj/docker-buildx:latest'
     args:
@@ -164,7 +141,7 @@ getCreds 1 DockerHubAccessToken > ./AccessToken
 # End of script
 ```
 
-The only things that you will need to change are the image tags and the paths to the Dockerfile given in the last two steps of the `cloudbuild.yaml` file. A fairly generic `cloudbuild.yaml` file is given below which can be used as a template in order to build multi-architecture images. The first two steps remain the same as they deal with
+The only things that you will need to change are the image tags and the paths to the Dockerfile given in the final step of the `cloudbuild.yaml` file. A fairly generic `cloudbuild.yaml` file is given below which can be used as a template in order to build multi-architecture images. The first two steps remain the same as they deal with
 
 1. Obtaining the login credentials to Docker Hub.
 2. Logging in to Docker Hub using credentials obtained in the previous step.
@@ -203,6 +180,12 @@ steps:
 The arguments to the `--platform` flag can be changed if needed. At times, building for `s390x` or `386` platform results in error for some images. If you encounter any such errors, which will be visible in the build logs, remove the offending architecture in which the error was encountered and build the image.
 
 Now, using this setup multiple triggers can be created on Cloud Build to build and push multi-architecture images to Docker Hub and/or GCR.
+
+##### Using GCP Key-Management Service(KMS)
+
+This requires a few more steps in order to authenticate with Docker Hub. The steps for this is taken from [GCP’s Cloud Build documentation](https://cloud.google.com/cloud-build/docs/interacting-with-dockerhub-images#pushing_images_to_docker_hub). For more detailed information, navigate to the given link. 
+
+The first stage consists of encrypting your Docker Hub credentials so it can be passed to Cloud Build in a secure manner. As I am not using this method, I will not elaborate on it. In the link given above, you will find all the steps necessary to store and use credentials using GCP's KMS.
 
 ##### NOTE
 
@@ -249,4 +232,3 @@ The two `machineTypes` that are offered are
 While the speed of the build is considerably faster, the build may take longer to start due to the time taken to provision the underlying resources for the build. At times, the build may get cancelled if the resources are not available.
 
 While it might be tempting to mention a more powerful CPU using `machineType` for all builds in order to speed it up, being conservative with the usage of this option would be prudent. Builds with the `machineType` option specified aren’t free unlike the builds where this option is not specified. So do keep in mind that you will be billed for usage of either `N1_HIGHCPU_8` or `N1_HIGHCPU_32`.  For more information, please peruse the documentation for Cloud Build provided by GCP.
-

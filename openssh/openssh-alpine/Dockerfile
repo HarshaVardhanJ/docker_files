@@ -43,12 +43,11 @@ public-key authentication." \
 # Defining ARG and ENV variables
 ARG CONFIG=/etc/ssh/sshd_config
 
-# Installing bash and OpenSSH server
-RUN apk update --no-cache \
-  && apk upgrade -U \
+# Installing OpenSSH server
+RUN apk update -U --no-cache \
   && apk add --no-cache \
     openssh-server && \
-# Changing SSHD configuration file defaults
+  # Changing SSHD configuration file defaults
 	sed -ri 's|^#?LogLevel(%s+).*|LogLevel VERBOSE|g' ${CONFIG} ; \
 	sed -ri 's|^#?PasswordAuthentication(\s+).*|PasswordAuthentication yes|g' ${CONFIG} ; \
 	sed -ri 's|^#?PermitRootLogin(\s+).*|PermitRootLogin no|g' ${CONFIG} ; \
@@ -57,11 +56,14 @@ RUN apk update --no-cache \
 	sed -ri 's|^#?HostKey(\s+).*/etc/ssh/ssh_host_dsa_key|HostKey /etc/ssh/ssh_host_dsa_key|g' ${CONFIG} ; \
 	sed -ri 's|^#?HostKey(\s+).*/etc/ssh/ssh_host_ecdsa_key|HostKey /etc/ssh/ssh_host_ecdsa_key|g' ${CONFIG} ; \
 	sed -ri 's|^#?HostKey(\s+).*/etc/ssh/ssh_host_ed25519_key|HostKey /etc/ssh/ssh_host_ed25519_key|g' ${CONFIG} ; \
-# Creating SSH host keys
+  # Creating SSH host keys
 	ssh-keygen -t rsa -C "RSA Host Key" -N "" -f /etc/ssh/ssh_host_rsa_key -q && \
 	ssh-keygen -t dsa -C "DSA Host Key" -N "" -f /etc/ssh/ssh_host_dsa_key -q && \
 	ssh-keygen -t ecdsa -C "ECDSA Host Key" -N "" -f /etc/ssh/ssh_host_ecdsa_key -q && \
-	ssh-keygen -t ed25519 -C "ED25519 Host Key" -N "" -f /etc/ssh/ssh_host_ed25519_key -q
+	ssh-keygen -t ed25519 -C "ED25519 Host Key" -N "" -f /etc/ssh/ssh_host_ed25519_key -q \
+	# Cleaning up unnecessary files
+	&& rm -rf /var/cache \
+	&& rm -rf /lib/apk
 
 # Copying the 'entrypoint' script that will help configure the SSH server
 COPY ./entrypoint.sh /usr/local/bin/

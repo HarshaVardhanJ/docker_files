@@ -9,16 +9,19 @@ steps:
     entrypoint: "bash"
     args: ["-c", "docker login --username=$(cat ./UserID) --password=$(cat ./AccessToken)"]
 
-  # Pull buildx image from Docker Hub and build 'endlessh' image with multi-arch support
+  # Pull buildx image from Docker Hub and build 'ddclient' image with multi-arch support
   - name: 'harshavardhanj/docker-buildx:latest'
     args:
       - 'build'
       - '-t'
       - 'harshavardhanj/ddclient:latest'
+      - '--cache-from'
+      - 'harshavardhanj/ddclient:latest'
+      - '--pull'
       - '--platform'
       - 'linux/amd64,linux/arm64,linux/ppc64le,linux/386,linux/arm/v7,linux/arm/v6'
       - '-f'
       - './ddclient/Dockerfile'
       - '--push'
       - './ddclient/.'
-timeout: "1200s"
+timeout: "1320s"
