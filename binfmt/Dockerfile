@@ -2,40 +2,6 @@
 ## Influenced by https://github.com/linuxkit/linuxkit/tree/master/pkg/binfmt
 ### Adds support for more architectures in docker buildx
 
-# Start with debian:stretch-slim image
-FROM debian:stretch-slim AS qemu-risc-builder
-
-# Setting the working directory
-WORKDIR /
-
-# Update package index
-RUN apt-get update \
-    # Install tools necessary for building qemu
-    && apt install --no-install-recommends -y \
-      build-essential \
-      ca-certificates \
-      file \
-      git \
-      libglib2.0-dev \
-      libpixman-1-dev \
-      python \
-      pkgconf \
-    # Clone the 'qemu' git repository
-#    && git clone https://git.qemu.org/git/qemu.git \
-#    # Build QEMU with support for riscv64 emulation
-#    && cd qemu \
-#    #&& ./configure --static --disable-system --target-list=riscv64-linux-user \
-#    && make \
-#    && cp ./riscv64-*/qemu-* /qemu-riscv64
-    && git clone --single-branch --branch riscv-qemu-4.0.0 https://github.com/riscv/riscv-qemu.git \
-    # Build QEMU with support for riscv64 emulation
-    && cd riscv-qemu \
-    && ./configure --static --disable-system --target-list=riscv64-linux-user,riscv32-linux-user \
-    && make \
-    && cp ./riscv64-*/qemu-* /qemu-riscv64 \
-    && cp ./riscv32-*/qemu-* /qemu-riscv32
-
-
 # Start with debian stretch slim image
 # Use Debian stretch until https://bugs.alpinelinux.org/issues/8131 is resolved.
 FROM debian@sha256:de3eac83cd481c04c5d6c7344cd7327625a1d8b2540e82a8231b5675cef0ae5f AS qemu-builder
@@ -94,8 +60,6 @@ WORKDIR /
 
 # Copy the qemu binaries
 COPY --from=qemu-builder usr/bin/qemu-* usr/bin/
-COPY --from=qemu-risc-builder qemu-riscv64 usr/bin/
-COPY --from=qemu-risc-builder qemu-riscv32 usr/bin/
 
 # Copy the binfmt binary
 COPY --from=binfmt-builder /go/bin/binfmt usr/bin/binfmt
