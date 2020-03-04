@@ -24,9 +24,10 @@ RUN apt-get update \
     && git clone https://git.qemu.org/git/qemu.git \
     # Build QEMU with support for riscv64 emulation
     && cd qemu \
-    && ./configure --static --disable-system --target-list=riscv64-linux-user \
+    #&& ./configure --static --disable-system --target-list=riscv64-linux-user \
+    && ./configure --static --disable-system --target-list=riscv64-softmmu \
     && make \
-    && cp ./riscv64-linux-user/qemu-riscv64 /
+    && cp ./riscv64-*/qemu-* /qemu-riscv64
 
 # Start with debian stretch slim image
 # Use Debian stretch until https://bugs.alpinelinux.org/issues/8131 is resolved.
@@ -45,7 +46,9 @@ RUN apt-get update \
     && mv qemu-armeb-static qemu-armeb \
     && mv qemu-i386-static qemu-i386 \
     && mv qemu-ppc64le-static qemu-ppc64le \
-    && mv qemu-s390x-static qemu-s390x
+    && mv qemu-s390x-static qemu-s390x \
+    # Removing other unused qemu binaries
+    && rm -f qemu-*static
 
 
 # Start with latest alpine image
