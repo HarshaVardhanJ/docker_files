@@ -95,7 +95,7 @@ WORKDIR /
 # Copy the qemu binaries
 COPY --from=qemu-builder usr/bin/qemu-* usr/bin/
 COPY --from=qemu-risc-builder qemu-riscv64 usr/bin/
-COPY --from-qemu-risc-builder qemu-riscv32 usr/bin/
+COPY --from=qemu-risc-builder qemu-riscv32 usr/bin/
 
 # Copy the binfmt binary
 COPY --from=binfmt-builder /go/bin/binfmt usr/bin/binfmt
