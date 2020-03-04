@@ -26,18 +26,18 @@ steps:
   #  # pushed to Docker Hub only if the image name and tag is specified under the
   #  # 'images' option in this YAML file, and if this instance of cloud build is
   #  # authenticated to Docker Hub(hence the authorisation step above).
-  #  - name: 'gcr.io/cloud-builders/docker'
-  #    id: "dockerBuild"
-  #    waitFor: ["getCredentials", "dockerLogin"]
-  #    args:
-  #      - 'build'
-  #      - '-t'
-  #      - 'harshavardhanj/docker-buildx:non-root'
-  #      - '--cache-from'
-  #      - 'harshavardhanj/docker-buildx:non-root'
-  #      - '-f'
-  #      - './docker-cloud-builder/Dockerfile'
-  #      - './docker-cloud-builder/.'
+  - name: 'gcr.io/cloud-builders/docker'
+    id: "dockerBuild"
+    waitFor: ["getCredentials", "dockerLogin"]
+    args:
+      - 'build'
+      - '-t'
+      - 'harshavardhanj/docker-buildx:non-root'
+      - '--cache-from'
+      - 'harshavardhanj/docker-buildx:non-root'
+      - '-f'
+      - './docker-cloud-builder/Dockerfile'
+      - './docker-cloud-builder/.'
 
   # Pull buildx image from Docker Hub and build 'buildx' image with multi-arch support
   ### NOTE:
@@ -57,28 +57,28 @@ steps:
   ###     Even though the authorisation secrets are being passed to buildx directly, step
   ###     (step number 2) is needed when pushing images using buildx.
   #
-  - name: 'harshavardhanj/docker-buildx:non-root'
-    id: "dockerBuildxPush"
-    waitFor: ["getCredentials", "dockerLogin"]
-    args:
-      - 'build'
-      - '-t'
-      - 'harshavardhanj/docker-buildx:non-root'
-      - '--platform'
-      - 'linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6'
-      - '--cache-from'
-      - 'harshavardhanj/docker-buildx:non-root'
-      - '--pull'
-      - '--secret'
-      - 'id=UserID,src=./UserID'
-      - '--secret'
-      - 'id=AccessToken,src=./AccessToken'
-      - '-f'
-      - './docker-cloud-builder/Dockerfile'
-      - '--push'
-      - './docker-cloud-builder/.'
+  #  - name: 'harshavardhanj/docker-buildx:non-root'
+  #    id: "dockerBuildxPush"
+  #    waitFor: ["getCredentials", "dockerLogin"]
+  #    args:
+  #      - 'build'
+  #      - '-t'
+  #      - 'harshavardhanj/docker-buildx:non-root'
+  #      - '--platform'
+  #      - 'linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6'
+  #      - '--cache-from'
+  #      - 'harshavardhanj/docker-buildx:non-root'
+  #      - '--pull'
+  #      - '--secret'
+  #      - 'id=UserID,src=./UserID'
+  #      - '--secret'
+  #      - 'id=AccessToken,src=./AccessToken'
+  #      - '-f'
+  #      - './docker-cloud-builder/Dockerfile'
+  #      - '--push'
+  #      - './docker-cloud-builder/.'
 
-#images: ['harshavardhanj/docker-buildx:non-root']
+images: ['harshavardhanj/docker-buildx:non-root']
 timeout: "1500s"
 #options:
 #  machineType: 'N1_HIGHCPU_8'
