@@ -61,7 +61,7 @@ main() {
   # ${initialisationArgument}
   elif [ $# -gt 1 && "$1" != "${initialisationArgument}" ] ; then
     buildxInitialise \
-      && "${dockerCommand}" $@
+      && "${dockerCommand}" "$@"
   else
     printf '%s\n' "Incorrect argument(s) '$@' received. Expecting either '${initialisationArgument}'\
       or other arguments which '${dockerCommand}' accepts." >&2 \
@@ -70,6 +70,6 @@ main() {
 }
 
 # Calling the main function and passing all arguments to it
-main $@
+main "$@"
 
 # End of script
