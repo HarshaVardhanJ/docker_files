@@ -61,8 +61,7 @@ main() {
   # ${initialisationArgument}
   elif [ "$1" != "${initialisationArgument}" ] ; then
     buildxInitialise \
-      && docker build --help \
-      && "${dockerCommand}" $@
+      && docker $@
   else
     printf '%s\n' "Incorrect argument(s) '$@' received. Expecting either '${initialisationArgument}'\
       or other arguments which '${dockerCommand}' accepts." >&2 \

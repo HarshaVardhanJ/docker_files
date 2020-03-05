@@ -9,16 +9,16 @@ steps:
     entrypoint: "bash"
     args: ["-c", "docker login --username=$(cat ./UserID) --password=$(cat ./AccessToken)"]
 
-    #  - name: 'gcr.io/cloud-builders/docker'
-    #    args:
-    #      - 'build'
-    #      - '-t'
-    #      - 'harshavardhanj/docker-buildx:latest'
-    #      - '-t'
-    #      - 'harshavardhanj/docker-buildx:19.03.5-r0'
-    #      - '-f'
-    #      - './docker-cloud-builder/Dockerfile'
-    #      - './docker-cloud-builder/.'
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'harshavardhanj/docker-buildx:latest'
+      - '-t'
+      - 'harshavardhanj/docker-buildx:19.03.5-r0'
+      - '-f'
+      - './docker-cloud-builder/Dockerfile'
+      - './docker-cloud-builder/.'
 
   # Pull buildx image from Docker Hub and build 'buildx' image with multi-arch support
   ### NOTE:
@@ -29,22 +29,21 @@ steps:
   ###     container registry(Docker Hub, in this case). The image will need to be built
   ###     either locally or elsewhere and pushed to the registry before the below step
   ###     can be run.
-  - name: 'harshavardhanj/docker-buildx:latest'
-    args:
-      - 'buildx'
-      - 'build'
-      - '-t'
-      - 'harshavardhanj/docker-buildx:latest'
-      - '-t'
-      - 'harshavardhanj/docker-buildx:19.03.5-r0'
-      - '--platform'
-      - 'linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6'
-      - '-f'
-      - './docker-cloud-builder/Dockerfile'
-      - '--push'
-      - './docker-cloud-builder/.'
+  #  - name: 'harshavardhanj/docker-buildx:latest'
+  #    args:
+  #      - 'build'
+  #      - '-t'
+  #      - 'harshavardhanj/docker-buildx:latest'
+  #      - '-t'
+  #      - 'harshavardhanj/docker-buildx:19.03.5-r0'
+  #      - '--platform'
+  #      - 'linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6'
+  #      - '-f'
+  #      - './docker-cloud-builder/Dockerfile'
+  #      - '--push'
+  #      - './docker-cloud-builder/.'
 
-#images: ['harshavardhanj/docker-buildx:latest', 'harshavardhanj/docker-buildx:19.03.5-r0']
+images: ['harshavardhanj/docker-buildx:latest', 'harshavardhanj/docker-buildx:19.03.5-r0']
 timeout: "1500s"
 #options:
 #  machineType: 'N1_HIGHCPU_8'
