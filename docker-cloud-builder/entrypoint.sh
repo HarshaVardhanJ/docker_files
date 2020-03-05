@@ -30,7 +30,8 @@ buildxInitialise() {
     # Initialise a builder and switch to it
     "${buildxCommand}" create --driver docker-container --driver-opt image=moby/buildkit:master,network=host \
       --name multiarch-builder --use \
-      && "${buildxCommand}" inspect --bootstrap
+      && "${buildxCommand}" inspect --bootstrap \
+      && "${buildxCommand}" install || exit 1
   else
     printf '%s\n' "The executable '${buildxCommand}' could not be found in the PATH." \
       && exit 1
@@ -38,7 +39,7 @@ buildxInitialise() {
 
   # Command which "installs" buildx so that when `docker build` is called,
   # 'buildx' is automatically used instead of the old builder.
-  "${buildxCommand}" install || exit 1
+  #"${buildxCommand}" install || exit 1
 }
 
 
@@ -61,7 +62,7 @@ main() {
   # ${initialisationArgument}
   elif [ "$1" != "${initialisationArgument}" ] ; then
     buildxInitialise \
-      && docker $@
+      && "${dockerCommand}" $@
   else
     printf '%s\n' "Incorrect argument(s) '$@' received. Expecting either '${initialisationArgument}'\
       or other arguments which '${dockerCommand}' accepts." >&2 \
