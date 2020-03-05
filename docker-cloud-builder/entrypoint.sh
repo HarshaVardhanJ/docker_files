@@ -59,7 +59,7 @@ main() {
     buildxInitialise
   else
     buildxInitialise \
-      && "${dockerCommand}" --config=/root/.docker/config.json $@
+      && "${dockerCommand}" $@
   fi
 }
 
