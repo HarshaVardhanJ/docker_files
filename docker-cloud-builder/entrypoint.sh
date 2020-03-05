@@ -50,7 +50,7 @@ buildxInitialise() {
 #       the 'docker' command
 main() {
   # Name of docker executable
-  dockerCommand="docker"
+  dockerCommand="$(command -v docker)"
 
   # Argument which, when passed, begins ONLY the docker-buildx init process
   initialisationArgument="init"
@@ -62,7 +62,7 @@ main() {
   # ${initialisationArgument}
   elif [ "$1" != "${initialisationArgument}" ] ; then
     buildxInitialise \
-      && docker-buildx $@
+      && "${dockerCommand}" $@
   else
     printf '%s\n' "Incorrect argument(s) '$@' received. Expecting either '${initialisationArgument}'\
       or other arguments which '${dockerCommand}' accepts." >&2 \
