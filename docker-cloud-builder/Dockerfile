@@ -11,17 +11,16 @@
 #                                                                   #
 # This Dockerfile does the following:                               #
 #                                                                   #
-#    1. Imports the latest base image of Alpine Linux.              #
+#    1. Imports the 3.11.3 base image of Alpine Linux.              #
 #    2. Adds the Community repository which contains Docker.        #
-#    3. Upgrades all existing packages to their latest version.     #
-#    5. Downloads a specific version of Docker and sets a flag to   #
+#    3. Downloads a specific version of Docker and sets a flag to   #
 #       enable experimental features(buildx) in Docker.             #
-#    6. Downloads a specific version of the 'buildx' binary from    #
+#    4. Downloads a specific version of the 'buildx' binary from    #
 #       GitHub, extracts it, moves it to a directory in $PATH,      #
 #       and sets the execute bit on it.                             #
-#    7. Sets the 'run as' user as root.                             #
-#    8. Copies the 'entrypoint.sh' script to a directory in $PATH.  #
-#    9. Runs the 'entrypoint.sh' script, which takes care of        #
+#    5. Sets the 'run as' user as root.                             #
+#    6. Copies the 'entrypoint.sh' script to a directory in $PATH.  #
+#    7. Runs the 'entrypoint.sh' script, which takes care of        #
 #       setting up 'buildx'.                                        #
 #                                                                   #
 # Note : This file is meant to be on GCP Cloud Build to build       #
@@ -32,8 +31,8 @@
 #                                                                   #
 #####################################################################
 
-# Starting with the base image of the latest version of Alpine Linux
-FROM alpine:latest
+# Starting with the base image of Alpine Linux version 3.11.3
+FROM alpine:3.11.3
 
 # Version number of `docker buildx`
 ARG buildxVersion=0.3.1
@@ -52,8 +51,6 @@ STOPSIGNAL SIGTERM
 RUN echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >> /etc/apk/repositories \
     # Updating package index
     && apk update -U --no-cache \
-    # Upgrading packages
-    #&& apk upgrade -U \
     # Installing Docker of version $dockerVersion
     && apk add --no-cache docker=$dockerVersion \
     # Setting environment variable for enabling experimental features in Docker
@@ -64,8 +61,6 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >> /etc/
     && mv buildx-v${buildxVersion}.linux-amd64 /usr/bin/docker-buildx \
     # Setting execute permission on the `buildx` executable
     && chmod a+x /usr/bin/docker-buildx \
-    # Running the below command will ensure that 'docker build' will use buildx
-    && docker-buildx install \
     # Cleaning up
     && rm -r /lib/apk/db \
     && rm -r /var/cache/apk
@@ -89,8 +84,8 @@ LABEL maintainer="Harsha Vardhan J" \
 `buildx` added. This way, images can be built for multiple architectures. The \
 suggested way to use this image is with GCP Cloud Build via a `cloudbuild.yaml` \
 file in which this image will need to be invoked as a Cloud Builder. The \
-arguments to the Cloud Builder will the same as the argument to the `buildx` \
+arguments to the Cloud Builder will the same as the argument to the `docker` \
 executable. Start the arguments with 'build -f [DOCKERFILE] [BUILD-CONTEXT]. \
 Check the sample `cloudbuild.yaml` file in this directory for an example of \
 how this image is to be used in a `cloudbuild.yaml` file." \
-      version="1.0"
+      version="2.0"

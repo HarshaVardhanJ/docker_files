@@ -33,6 +33,27 @@ commandTests:
     expectedOutput: ["root"]
     exitCode: 0
 
+  - name: "Check if docker-buildx has been installed"
+    setup: [["entrypoint.sh"]]
+    command: "build"
+    args: ["--help"]
+    expectedOutput: [".*docker buildx build.*"]
+    exitCode: 0
+
+  - name: "Check version of docker installed"
+    setup: [["entrypoint.sh", "init"]]
+    command: "docker"
+    args: ["--version"]
+    expectedOutput: ["Docker version 19\.03\.5,.*"]
+    exitCode: 0
+
+  - name: "Check if docker config file has been saved"
+    setup: [["entrypoint.sh", "init"]]
+    command: "ls"
+    args: ["/root/home/.docker/config.json"]
+    expectedOutput: ["/root/home/.docker/config.json"]
+    exitCode: 0
+
 fileExistenceTests:
   - name: "Check if 'docker-buildx' is executable"
     path: "/usr/bin/docker-buildx"

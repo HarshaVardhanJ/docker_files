@@ -14,6 +14,8 @@ steps:
       - 'build'
       - '-t'
       - 'harshavardhanj/docker-buildx:latest'
+      - '-t'
+      - 'harshavardhanj/docker-buildx:19.03.5-r0'
       - '-f'
       - './docker-cloud-builder/Dockerfile'
       - './docker-cloud-builder/.'
@@ -32,6 +34,8 @@ steps:
   #      - 'build'
   #      - '-t'
   #      - 'harshavardhanj/docker-buildx:latest'
+  #      - '-t'
+  #      - 'harshavardhanj/docker-buildx:19.03.5-r0'
   #      - '--platform'
   #      - 'linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6'
   #      - '-f'
@@ -39,7 +43,7 @@ steps:
   #      - '--push'
   #      - './docker-cloud-builder/.'
 
-images: ['harshavardhanj/docker-buildx:latest']
+images: ['harshavardhanj/docker-buildx:latest', 'harshavardhanj/docker-buildx:19.03.5-r0']
 timeout: "1500s"
 #options:
 #  machineType: 'N1_HIGHCPU_8'
