@@ -51,9 +51,9 @@ STOPSIGNAL SIGTERM
     # Adding the 'Community' repository which contains the 'Docker' package
 RUN echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >> /etc/apk/repositories \
     # Updating package index
-    && apk update \
+    && apk update -U --no-cache \
     # Upgrading packages
-    && apk upgrade -U \
+    #&& apk upgrade -U \
     # Installing Docker of version $dockerVersion
     && apk add --no-cache docker=$dockerVersion \
     # Setting environment variable for enabling experimental features in Docker
@@ -63,7 +63,12 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >> /etc/
     # Moving `buildx` binary to a directory which is under $PATH
     && mv buildx-v${buildxVersion}.linux-amd64 /usr/bin/docker-buildx \
     # Setting execute permission on the `buildx` executable
-    && chmod a+x /usr/bin/docker-buildx
+    && chmod a+x /usr/bin/docker-buildx \
+    # Running the below command will ensure that 'docker build' will use buildx
+    && docker-buildx install \
+    # Cleaning up
+    && rm -r /lib/apk/db \
+    && rm -r /var/cache/apk
 
 # Run as user 'root'
 USER root
