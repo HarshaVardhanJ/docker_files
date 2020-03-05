@@ -55,11 +55,11 @@ main() {
   initialisationArgument="init"
 
   # If the only arguments passed IS the string defined in ${initialisationArgument}
-  if [ $# -eq 1 && "$1" = "${initialisationArgument}" ] ; then
+  if [ "$1" = "${initialisationArgument}" ] ; then
     buildxInitialise
   # If multiple arguments are passed and the first one is NOT the string defined in
   # ${initialisationArgument}
-  elif [ $# -gt 1 && "$1" != "${initialisationArgument}" ] ; then
+  elif [ "$1" != "${initialisationArgument}" ] ; then
     buildxInitialise \
       && "${dockerCommand}" "$@"
   else
