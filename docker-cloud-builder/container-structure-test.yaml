@@ -44,7 +44,7 @@ commandTests:
     setup: [["entrypoint.sh", "init"]]
     command: "docker"
     args: ["--version"]
-    expectedOutput: ["Docker version 19\.03\.5,.*"]
+    expectedOutput: ["Docker version 19.03.5"]
     exitCode: 0
 
 fileExistenceTests:
