@@ -33,6 +33,7 @@ steps:
     waitFor: ["getCredentials", "dockerLogin", "dockerBuildPush"]
     args: 
       - 'test' 
+      - '--pull'
       - '--image' 
       - 'harshavardhanj/docker-buildx:untested'
       - '--config'
