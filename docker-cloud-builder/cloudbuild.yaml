@@ -36,7 +36,7 @@ steps:
       - '--image' 
       - 'harshavardhanj/docker-buildx:untested'
       - '--config'
-      - 'container-structure-test.yaml'
+      - './docker-cloud-builder/container-structure-test.yaml'
 
         # NOTE:
         #     Do not use this block unless the 'stable' image
