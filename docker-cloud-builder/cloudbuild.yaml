@@ -30,7 +30,7 @@ steps:
   # Test the container pushed in the previous step
   - name: "gcr.io/gcp-runtimes/container-structure-test"
     id: "containerTest"
-    waitFor: ["getCredentials", "dockerLogin", "dockerBuild"]
+    waitFor: ["getCredentials", "dockerLogin", "dockerBuildPush"]
     args: 
       - 'test' 
       - '--image' 
