@@ -15,7 +15,7 @@
 # Function which initialises `buildx`
 buildxInitialise() {
   # Variable that contains name of `buildx` executable
-  buildxCommand="$(ls /root/.docker/cli-plugins/buildx)"
+  buildxCommand="$(command -v buildx)"
 
   # Variable that pins the binfmt image version
   binfmtVersion="latest"
@@ -36,9 +36,6 @@ buildxInitialise() {
       && exit 1
   fi
 
-  # Command which "installs" buildx so that when `docker build` is called,
-  # 'buildx' is automatically used instead of the old builder.
-  "${buildxCommand}" install || exit 1
 }
 
 
@@ -49,7 +46,7 @@ buildxInitialise() {
 #       the 'docker' command
 main() {
   # Name of docker executable
-  dockerCommand="$(command -v docker)"
+  buildxCommand="$(command -v buildx)"
 
   # Argument which, when passed, begins ONLY the docker-buildx init process
   initialisationArgument="init"
@@ -59,7 +56,7 @@ main() {
     buildxInitialise
   elif [[ $# -ge 1 && "$1" != "${initialisationArgument}" ]] ; then
     buildxInitialise \
-      && "${dockerCommand}" $@
+      && "${buildxCommand}" $@
   fi
 }
 
