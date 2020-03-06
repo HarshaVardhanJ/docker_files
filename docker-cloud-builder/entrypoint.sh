@@ -39,6 +39,37 @@ buildxInitialise() {
 }
 
 
+# Function which checks if a builder instance has already been set up.
+# If it has, that instance is used. Else, buildxInitialise function is
+# called.
+checkBuilderExistence() {
+  # Variable that contains the path to the buildx executable
+  buildxCommand="$(command -v buildx)"
+
+  # If the variable is not an empty string
+  if [ -n "${buildxCommand}" ] ; then
+    # Variables that contain strings which are being searched for in the output
+    # of the 'buildx inspect' command
+    builderNameCheck="$("${buildxCommand}" inspect | grep "multiarch-builder")"
+    builderStatusCheck="$("${buildxCommand}" inspect | grep "running")"
+
+    # If either of the variables are not empty strings, meaning if
+    # a builder instance has already been set up
+    if [[ -n "${builderNameCheck}" || -n  "${builderStatusCheck}" ]] ; then
+      "${buildxCommand}" use multiarch-builder \
+        || exit 1
+    else
+      buildxInitialise \
+        || exit 1
+    fi
+  # If buildx executable could not be found in PATH
+  else
+    printf '%s\n' "Could not find buildx executable." \
+      && exit 1
+  fi
+}
+
+
 # Main function
 # This function does one of the following, depending on the argument(s)
 #     * Initialises 'buildx'
@@ -53,9 +84,11 @@ main() {
 
   # If the only arguments passed IS the string defined in ${initialisationArgument}
   if [[ $# -eq 1 && "$1" == "${initialisationArgument}" ]] ; then
-    buildxInitialise
+    checkBuilderExistence \
+      && buildxInitialise
   elif [[ $# -ge 1 && "$1" != "${initialisationArgument}" ]] ; then
-    buildxInitialise \
+    checkBuilderExistence \
+      && buildxInitialise \
       && "${buildxCommand}" $@
   fi
 }
