@@ -84,11 +84,9 @@ main() {
 
   # If the only arguments passed IS the string defined in ${initialisationArgument}
   if [[ $# -eq 1 && "$1" == "${initialisationArgument}" ]] ; then
-    checkBuilderExistence \
-      && buildxInitialise
+    checkBuilderExistence
   elif [[ $# -ge 1 && "$1" != "${initialisationArgument}" ]] ; then
     checkBuilderExistence \
-      && buildxInitialise \
       && "${buildxCommand}" $@
   fi
 }
