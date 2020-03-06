@@ -46,6 +46,9 @@ WORKDIR /
 # System call signal which will be sent to the container to exit
 STOPSIGNAL SIGTERM
 
+# Run as user 'root'
+USER root
+
 # Run the following commands
     # Adding the 'Community' repository which contains the 'Docker' package
 RUN echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >> /etc/apk/repositories \
@@ -55,18 +58,19 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >> /etc/
     && apk add --no-cache docker=$dockerVersion \
     # Setting environment variable for enabling experimental features in Docker
     && export DOCKER_CLI_EXPERIMENTAL=1 \
+    # Creating directory to hold 'buildx' binary
+    && mkdir -p /root/.docker/cli-plugins \
     # Downloading `buildx` binary release
     && wget https://github.com/docker/buildx/releases/download/v${buildxVersion}/buildx-v${buildxVersion}.linux-amd64 \
+      -O /root/.docker/cli-plugins/buildx \
     # Moving `buildx` binary to a directory which is under $PATH
-    && mv buildx-v${buildxVersion}.linux-amd64 /usr/bin/docker-buildx \
+    #&& mv buildx-v${buildxVersion}.linux-amd64 /root/.docker/cli-plugins/docker-buildx \
     # Setting execute permission on the `buildx` executable
-    && chmod a+x /usr/bin/docker-buildx \
+    && chmod a+x /root/.docker/cli-plugins/buildx \
     # Cleaning up
     && rm -r /lib/apk/db \
     && rm -r /var/cache/apk
 
-# Run as user 'root'
-USER root
 
 # Copying the 'entrypoint' script, which will help configure 'docker-buildx', to a directory
 # which is under $PATH
