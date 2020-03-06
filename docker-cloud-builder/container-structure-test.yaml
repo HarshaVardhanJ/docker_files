@@ -47,11 +47,11 @@ commandTests:
     expectedOutput: ["v0.3.1"]
     exitCode: 0
 
-  - name: "Check if 'buildx' builder initialises and runs"
+  - name: "Check if 'buildx' builder initialises"
     setup: [["entrypoint.sh", "init"]]
     command: "buildx"
     args: ["inspect"]
-    expectedOutput: ["docker-container", "running"]
+    expectedOutput: ["docker-container"]
     exitCode: 0
 
 fileExistenceTests:
