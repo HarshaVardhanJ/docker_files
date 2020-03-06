@@ -15,7 +15,7 @@
 # Function which initialises `buildx`
 buildxInitialise() {
   # Variable that contains name of `buildx` executable
-  dockerCommand="$(command -v docker)"
+  buildxCommand="$(ls /root/.docker/cli-plugins/buildx)"
 
   # Variable that pins the binfmt image version
   binfmtVersion="latest"
@@ -26,11 +26,11 @@ buildxInitialise() {
   docker run --rm --privileged multiarch/qemu-user-static --reset -p yes || exit 1
 
   # If the `buildx` executable is in PATH
-  if [ -n "${dockerCommand}" ] ; then
+  if [ -n "${buildxCommand}" ] ; then
     # Initialise a builder and switch to it
-    "${dockerCommand}" buildx create --driver docker-container --driver-opt image=moby/buildkit:master,network=host \
+    "${buildxCommand}" create --driver docker-container --driver-opt image=moby/buildkit:master,network=host \
       --name multiarch-builder --use \
-      && "${dockerCommand}" buildx inspect --bootstrap
+      && "${buildxCommand}" inspect --bootstrap
   else
     printf '%s\n' "The executable '${buildxCommand}' could not be found in the PATH." \
       && exit 1
@@ -38,7 +38,7 @@ buildxInitialise() {
 
   # Command which "installs" buildx so that when `docker build` is called,
   # 'buildx' is automatically used instead of the old builder.
-  "${dockerCommand}" buildx install || exit 1
+  "${buildxCommand}" install || exit 1
 }
 
 
