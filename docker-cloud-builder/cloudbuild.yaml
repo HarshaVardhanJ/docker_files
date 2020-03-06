@@ -50,6 +50,10 @@ steps:
   #      - '-t'
   #      - 'harshavardhanj/docker-buildx:19.03.5-r0'
   #      - '-t'
+  #      - 'harshavardhanj/docker-buildx:19.03.5'
+  #      - '-t'
+  #      - 'harshavardhanj/docker-buildx:19.03'
+  #      - '-t'
   #      - 'harshavardhanj/docker-buildx:stable'
   #      - '-t'
   #      - 'harshavardhanj/docker-buildx'
@@ -74,6 +78,10 @@ steps:
       - '-t'
       - 'harshavardhanj/docker-buildx:19.03.5-r0'
       - '-t'
+      - 'harshavardhanj/docker-buildx:19.03.5'
+      - '-t'
+      - 'harshavardhanj/docker-buildx:19.03'
+      - '-t'
       - 'harshavardhanj/docker-buildx:stable'
       - '-t'
       - 'harshavardhanj/docker-buildx'
@@ -87,6 +95,8 @@ steps:
 
         #images:
         #  - 'harshavardhanj/docker-buildx:19.03.5-r0'
+        #  - 'harshavardhanj/docker-buildx:19.03.5'
+        #  - 'harshavardhanj/docker-buildx:19.03'
         #  - 'harshavardhanj/docker-buildx:stable' 
         #  - 'harshavardhanj/docker-buildx'
 timeout: "1500s"
