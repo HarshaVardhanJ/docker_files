@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 #
 #: Title        : entrypoint.sh 
 #: Date         :	13-Feb-2020
