@@ -251,7 +251,7 @@ This image is also referred to with the following tags:
 * `19.03.5`
 * `19.03`
 
-As the name of the tag suggests, this image is well-tested is recommended for usage. Version pinning of the image refers to the version of Docker installed in the image.
+As the name of the tag suggests, this image is well-tested and is recommended for usage. Version pinning of the image refers to the version of Docker installed in the image.
 
 
 
