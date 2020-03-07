@@ -1,37 +1,78 @@
 steps:
   # Get the Docker Hub user ID from Secrets Manager and save it to a file
   - name: 'gcr.io/cloud-builders/gcloud'
+    id: "getCredentials"
+    waitFor: ["-"]
     entrypoint: "bash"
     args: ["./docker-cloud-builder/getCredentials.sh"]
 
   # Log in to Docker Hub using the credentials obtained in the previous steps
   - name: 'gcr.io/cloud-builders/docker'
+    id: "dockerLogin"
+    waitFor: ["getCredentials"]
     entrypoint: "bash"
     args: ["-c", "docker login --username=$(cat ./UserID) --password=$(cat ./AccessToken)"]
 
-    #  - name: 'gcr.io/cloud-builders/docker'
-    #    args:
-    #      - 'build'
-    #      - '-t'
-    #      - 'harshavardhanj/docker-buildx:testing'
-    #      - '-f'
-    #      - './docker-cloud-builder/Dockerfile'
-    #      - './docker-cloud-builder/.'
+  # Build from Dockerfile using the docker-buildx:stable image, and
+  # tag the image with 'untested' and push to Docker Hub.
+  - name: 'harshavardhanj/docker-buildx:stable'
+    id: "dockerBuildPush"
+    waitFor: ["getCredentials", "dockerLogin"]
+    args:
+      - 'build'
+      - '-t'
+      - 'harshavardhanj/docker-buildx:untested'
+      - '-f'
+      - './docker-cloud-builder/Dockerfile'
+      - '--push'
+      - './docker-cloud-builder/.'
+
+  # Test the container pushed in the previous step using
+  # container-structure-test
+  - name: "gcr.io/gcp-runtimes/container-structure-test"
+    id: "containerTest"
+    waitFor: ["getCredentials", "dockerLogin", "dockerBuildPush"]
+    args: 
+      - 'test' 
+      - '--pull'
+      - '--image' 
+      - 'harshavardhanj/docker-buildx:untested'
+      - '--config'
+      - './docker-cloud-builder/container-structure-test.yaml'
+
+  # Using the 'docker-buildx:untested' image to build this Dockerfile.
+  # If the image builds from the Dockerfile successfully, it can be tagged
+  # and pushed with the 'testing' tag.
+  - name: 'harshavardhanj/docker-buildx:untested'
+    id: "testBuildx"
+    waitFor: ["getCredentials", "dockerLogin", "dockerBuildPush", "containerTest"]
+    args:
+      - 'build'
+      - '--pull'
+      - '--load'
+      - '--platform'
+      - 'linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6'
+      - '-f'
+      - './docker-cloud-builder/Dockerfile'
+      - './docker-cloud-builder/.'
 
   # Pull buildx image from Docker Hub and build 'buildx' image with multi-arch support
   ### NOTE:
-  ###     In the build step below, the `docker-buildx:testing` image is used to build
+  ###     In the build step below, the `docker-buildx:stable` image is used to build
   ###     the `docker-buildx:testing` image with multi-arch support. Therefore, since
-  ###     there is a cyclical dependency, before running this in Cloud Build, a working
-  ###     version of the `docker-buildx:testing` image will need to be present in the
+  ###     the `stable` image is necessary, before running this in Cloud Build, a working
+  ###     version of the `docker-buildx:stable` image will need to be present in the
   ###     container registry(Docker Hub, in this case). The image will need to be built
   ###     either locally or elsewhere and pushed to the registry before the below step
   ###     can be run.
-  - name: 'harshavardhanj/docker-buildx:testing'
+  - name: 'harshavardhanj/docker-buildx:stable'
+    id: "dockerBuildxPush"
+    waitFor: ["getCredentials", "dockerLogin", "dockerBuildPush", "containerTest", "testBuildx"]
     args:
       - 'build'
       - '-t'
       - 'harshavardhanj/docker-buildx:testing'
+      - '--pull'
       - '--platform'
       - 'linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6'
       - '-f'
@@ -39,7 +80,5 @@ steps:
       - '--push'
       - './docker-cloud-builder/.'
 
-#images: ['harshavardhanj/docker-buildx:testing']
+# Setting the timeout value to 25 minutes
 timeout: "1500s"
-#options:
-#  machineType: 'N1_HIGHCPU_8'

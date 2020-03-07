@@ -1,8 +1,9 @@
 ## Supported tags and respective Dockerfile links
 
-* [`latest`](https://github.com/HarshaVardhanJ/docker_files/blob/master/docker-cloud-builder/Dockerfile)
+* [`latest`, `stable`, `19.03.5-r0`, `19.03.5`, `19.03`](https://github.com/HarshaVardhanJ/docker_files/blob/master/docker-cloud-builder/Dockerfile)
 * [`testing`](https://github.com/HarshaVardhanJ/docker_files/blob/testing/docker-cloud-builder/Dockerfile)
 * [`non-root`](https://github.com/HarshaVardhanJ/docker_files/blob/non-root/docker-cloud-builder/Dockerfile)
+* [`untested`](https://github.com/HarshaVardhanJ/docker_files/blob/master/docker-cloud-builder/Dockerfile) - *This is **not** to be used by others. This exists for me to run tests against the image.*
 
 
 
@@ -232,3 +233,52 @@ The two `machineTypes` that are offered are
 While the speed of the build is considerably faster, the build may take longer to start due to the time taken to provision the underlying resources for the build. At times, the build may get cancelled if the resources are not available.
 
 While it might be tempting to mention a more powerful CPU using `machineType` for all builds in order to speed it up, being conservative with the usage of this option would be prudent. Builds with the `machineType` option specified aren’t free unlike the builds where this option is not specified. So do keep in mind that you will be billed for usage of either `N1_HIGHCPU_8` or `N1_HIGHCPU_32`.  For more information, please peruse the documentation for Cloud Build provided by GCP.
+
+
+
+## Image Variants
+
+The `docker-buildx` image comes in the following variants/tags, each of which are described below:
+
+
+
+### `docker-buildx:stable`
+
+This image is also referred to with the following tags:
+
+* `latest`
+* `19.03.5-r0`
+* `19.03.5`
+* `19.03`
+
+As the name of the tag suggests, this image is well-tested and is recommended for usage. Version pinning of the image refers to the version of Docker installed in the image.
+
+
+
+### `docker-buildx:testing`
+
+Any and all new features or changes will be first introduced in this image before it is tested and incorporated into the `stable` image. At times, this image will be the same as the `stable` image. Regardless, it is not advisable to use this unless you don’t mind abrupt changes introduced to the image.
+
+
+
+### `docker-buildx:non-root`
+
+This image runs the `buildx` executable as a non-root user(`docker`, currently, is the name of the user). The absence of the `stable` tag does not in any way indicate an unstable or untested image. This image is just as stable as the image with the  `stable` tag.
+
+As the image with the `stable` tag runs the `buildx` command as `root` user, for people who do not wish to run a container that runs processes as root, this image provides the same functionality as the `stable` image but with the added benefit(?) of running as non-root user within the container. For more information on how to go about using this image, refer to the beginning of this document which points to the Dockerfile page on GitHub for each of the image tags.
+
+
+
+### `docker-buildx:untested`
+
+**This image is NOT meant for public use**. It exists purely for purposes of testing the image. Using this image will most certainly result in some failure/error. The container may not even start to begin with.
+
+
+
+## License
+
+Currently, no specific license has been applied to the software in the image’s repository.
+
+As with all Docker images, these likely also contain other software which may be under other licenses (such as Bash, etc from the base distribution, along with any direct or indirect dependencies of the primary software being contained).
+
+As for any pre-built image usage, it is the image user's responsibility to ensure that any use of this image complies with any relevant licenses for all software contained within.
