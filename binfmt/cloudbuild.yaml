@@ -13,46 +13,55 @@ steps:
     entrypoint: "bash"
     args: ["-c", "docker login --username=$(cat ./UserID) --password=$(cat ./AccessToken)"]
 
-  # Build image with docker
-  #  - name: 'gcr.io/cloud-builders/docker'
-  #    id: "dockerBuild"
-  #    waitFor: ["getCredentials", "dockerLogin"]
-  #    args:
-  #      - 'build'
-  #      - '-t'
-  #      - 'harshavardhanj/binfmt:testing'
-  #      - '--cache-from'
-  #      - 'harshavardhanj/binfmt:testing'
-  #      - '-f'
-  #      - './binfmt/Dockerfile'
-  #      - './binfmt/.'
-
-  # Pull `buildx:testing` image from Docker Hub and build 'binfmt' image with multi-arch support
-  ### NOTE:
-  ###     In the build step below, the `docker-buildx:testing` image is used to build
-  ###     the `binfmt:testing` image with multi-arch support. Therefore, since
-  ###     there is a cyclical dependency because the `docker-buildx:testing` image uses
-  ###     the `binfmt:testing` image, before running this in Cloud Build, a working
-  ###     version of the `docker-buildx:testing`, and of `binfmt:testing` image will need 
-  ###     to be present in the container registry(Docker Hub, in this case). The image will
-  ###     need to be built either locally or elsewhere and pushed to the registry before the 
-  ###     below step can be run.
-  - name: 'harshavardhanj/docker-buildx:testing'
-    id: "dockerBuildxPush"
+  # Build 'binfmt:untested' and push to Docker Hub
+  - name: 'harshavardhanj/docker-buildx:stable'
+    id: "dockerBuildPush"
     waitFor: ["getCredentials", "dockerLogin"]
     args:
       - 'build'
       - '-t'
-      - 'harshavardhanj/binfmt:testing'
-      - '--platform'
-      - 'linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386'
-      - '--cache-from'
-      - 'harshavardhanj/binfmt:testing'
+      - 'harshavardhanj/binfmt:untested'
       - '--pull'
       - '-f'
       - './binfmt/Dockerfile'
       - '--push'
       - './binfmt/.'
 
-#images: ['harshavardhanj/binfmt:testing']
+  # Test the image with the 'untested' tag with
+  # container-structure-test
+  - name: 'gcr.io/gcp-runtimes/container-structure-test'
+    id: "containerTest"
+    waitFor: ["getCredentials", "dockerLogin", "dockerBuildPush"]
+    args:
+      - 'test'
+      - '--pull'
+      - '--image'
+      - 'harshavardhanj/binfmt:untested'
+      - '--config'
+      - './binfmt/container-structure-test.yaml'
+
+  # Pull `buildx:testing` image from Docker Hub and build 'binfmt' image with multi-arch support
+  ### NOTE:
+  ###     In the build step below, the `docker-buildx:stable` image is used to build
+  ###     the `binfmt:testing` image with multi-arch support. Therefore, since a working
+  ###     version of the `docker-buildx:stable`, and of `binfmt:latest` image will need 
+  ###     to be present in the container registry(Docker Hub, in this case). The image will
+  ###     need to be built either locally or elsewhere and pushed to the registry before the 
+  ###     below step can be run.
+  - name: 'harshavardhanj/docker-buildx:stable'
+    id: "dockerBuildxPush"
+    waitFor: ["getCredentials", "dockerLogin", "dockerBuildPush", "containerTest"]
+    args:
+      - 'build'
+      - '-t'
+      - 'harshavardhanj/binfmt:testing'
+      - '--platform'
+      - 'linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386'
+      - '--pull'
+      - '-f'
+      - './binfmt/Dockerfile'
+      - '--push'
+      - './binfmt/.'
+
+# Set the timeout value to 1 hour
 timeout: "3600s"
