@@ -49,11 +49,13 @@ steps:
     args:
       - 'build'
       - '--pull'
-      - '--load'
+      - '-t'
+      - 'harshavardhanj/docker-buildx:untested'
       - '--platform'
       - 'linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6'
       - '-f'
       - './docker-cloud-builder/Dockerfile'
+      - '--push'
       - './docker-cloud-builder/.'
 
   # Pull buildx image from Docker Hub and build 'buildx' image with multi-arch support
