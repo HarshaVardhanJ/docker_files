@@ -29,16 +29,16 @@ steps:
 
   # Test the image with the 'untested' tag with
   # container-structure-test
-  - name: 'gcr.io/gcp-runtimes/container-structure-test'
-    id: "containerTest"
-    waitFor: ["getCredentials", "dockerLogin", "dockerBuildPush"]
-    args:
-      - 'test'
-      - '--pull'
-      - '--image'
-      - 'harshavardhanj/binfmt:untested'
-      - '--config'
-      - './binfmt/container-structure-test.yaml'
+  #  - name: 'gcr.io/gcp-runtimes/container-structure-test'
+  #    id: "containerTest"
+  #    waitFor: ["getCredentials", "dockerLogin", "dockerBuildPush"]
+  #    args:
+  #      - 'test'
+  #      - '--pull'
+  #      - '--image'
+  #      - 'harshavardhanj/binfmt:untested'
+  #      - '--config'
+  #      - './binfmt/container-structure-test.yaml'
 
   # Pull `buildx:testing` image from Docker Hub and build 'binfmt' image with multi-arch support
   ### NOTE:
@@ -50,7 +50,7 @@ steps:
   ###     below step can be run.
   - name: 'harshavardhanj/docker-buildx:stable'
     id: "dockerBuildxPush"
-    waitFor: ["getCredentials", "dockerLogin", "dockerBuildPush", "containerTest"]
+    waitFor: ["getCredentials", "dockerLogin", "dockerBuildPush"]
     args:
       - 'build'
       - '-t'
