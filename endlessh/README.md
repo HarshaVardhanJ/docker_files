@@ -1,8 +1,11 @@
 # Supported tags and respective `Dockerfile` links
 
-- [`latest`(*Endlessh/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/master/endlessh/Dockerfile)
-- [`busybox`(*Endlessh/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/master/endlessh/busybox/Dockerfile)
-- [`alpine`(*Endlessh/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/master/endlessh/alpine/Dockerfile)
+- [`1.1`, `latest`(*Endlessh/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/master/endlessh/v1.1/Dockerfile)
+- [`1.0`, `stable`(*Endlessh/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/master/endlessh/v1.0/Dockerfile)
+- [`busybox`, `1.0-busybox`, `stable-busybox`(*Endlessh/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/master/endlessh/v1.0/busybox/Dockerfile)
+- [`alpine`, `1.0-alpine`, `stable-alpine`(*Endlessh/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/master/endlessh/v1.0/alpine/Dockerfile)
+- [`1.1-busybox`(*Endlessh/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/master/endlessh/v1.1/busybox/Dockerfile)
+- [`1.1-alpine`(*Endlessh/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/master/endlessh/v1.1/alpine/Dockerfile)
 
 
 
