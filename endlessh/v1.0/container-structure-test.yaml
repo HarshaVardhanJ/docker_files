@@ -1,5 +1,5 @@
 # Config file to be used by Container Structure Test
-# for endlessh:alpine image
+# for endlessh:latest image
 
 schemaVersion: 2.0.0
 
@@ -18,7 +18,7 @@ metadataTest:
     - key: 'org.opencontainers.image.documentation'
       value: 'https://github.com/HarshaVardhanJ/docker_files/blob/master/endlessh/README.md'
     - key : 'org.opencontainers.image.source'
-      value: 'https://github.com/HarshaVardhanJ/docker_files/blob/master/endlessh/v1.0/alpine/Dockerfile'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/blob/master/endlessh/v1.0/Dockerfile'
     - key: 'org.opencontainers.image.version'
       value: '1.0'
     - key: 'software.author.github.page'
@@ -33,13 +33,5 @@ fileExistenceTests:
   - name: 'Endlessh executable'
     path: '/endlessh'
     shouldExist: true
-    permissions: '---x------'
-    isExecutableBy: 'owner'
-    uid: 1000
-    gid: 1000
-
-commandTests:
-  - name: "Check if running as 'endlessh' user"
-    command: "whoami"
-    expectedOutput: ["endlessh"]
-    exitCode: 0
+    isExecutableBy: 'any'
+    permissions: '-rwxr-xr-x'

@@ -7,6 +7,10 @@
 - [`1.1-busybox`(*Endlessh/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/master/endlessh/v1.1/busybox/Dockerfile)
 - [`1.1-alpine`(*Endlessh/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/master/endlessh/v1.1/alpine/Dockerfile)
 
+### NOTE:
+
+Apart from the aforementioned images, there are other images that contain `untested` as part of their tag. **Do not use these images.** As the tag suggests, they are present for purposes of testing. In order to test the images with `container-structure-test` and `trivy`, the image needs to be present in a public repository. Therefore, I first build and push the images with an `untested` tag. Then, I run tests on these images. When the image passes all tests, it is built again and pushed with the appropriate tags.
+
 
 
 # Quick Reference

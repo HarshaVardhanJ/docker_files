@@ -45,14 +45,19 @@ ENTRYPOINT ["/endlessh"]
 # Run it in verbose mode
 CMD ["-v"]
 
-# Maintainer information
-LABEL maintainer="Harsha Vardhan J" \
-      github.account="https://github.com/HarshaVardhanJ" \
-      dockerfile.github.page="https://github.com/HarshaVardhanJ/docker_files/blob/master/endlessh/Dockerfile" \
-      description="This Dockerfile creates an image containing the executable `endlessh` which is an SSH tarpit \
+# Labels
+LABEL org.opencontainers.image.vendor="Harsha Vardhan J" \
+      org.opencontainers.image.authors="https://github.com/HarshaVardhanJ" \
+      org.opencontainers.image.title="endlessh" \
+      org.opencontainers.image.licenses="Unlicense AND MIT" \
+      org.opencontainers.image.url="https://github.com/HarshaVardhanJ/docker_files/tree/master/endlessh" \
+      org.opencontainers.image.documentation="https://github.com/HarshaVardhanJ/docker_files/blob/master/endlessh/README.md" \
+      org.opencontainers.image.source="https://github.com/HarshaVardhanJ/docker_files/blob/master/endlessh/v1.0/Dockerfile" \
+      org.opencontainers.image.description="This Dockerfile creates an image containing the executable `endlessh` which is an SSH tarpit \
       that very slowly sends an endless, random SSH banner. It keeps SSH clients locked up for hours or even days \
       at a time. The purpose is to put your real SSH server on another port and then let the script kiddies get \
       stuck in this tarpit instead of bothering a real server." \
+      org.opencontainers.image.version="1.0" \
       software.author.github.page="https://github.com/skeeto/endlessh" \
-      software.release.version="1.0" \
-      version="1.0"
+      software.release.version="1.0"
+
