@@ -1,0 +1,20 @@
+# Docker compose file for `endlessh`
+#
+version: "3.4"
+services:
+  endlessh:
+    image: harshavardhanj/endlessh:busybox
+    ports:
+      - "2222:2222"
+    deploy:
+      mode: replicated
+      replicas: 3
+      placement:
+        constraints:
+          - node.role == worker
+        update_config:
+          parallelism: 1
+          delay: 10s
+        restart_policy:
+          condition: on-failure
+          delay: 10s

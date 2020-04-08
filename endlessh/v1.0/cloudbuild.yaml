@@ -9,15 +9,17 @@ steps:
     entrypoint: "bash"
     args: ["-c", "docker login --username=$(cat ./UserID) --password=$(cat ./AccessToken)"]
 
-  # Pull buildx image from Docker Hub and build 'endlessh:alpine' image with multi-arch support
+  # Pull buildx image from Docker Hub and build 'endlessh:latest' image with multi-arch support
   - name: 'harshavardhanj/docker-buildx:latest'
     args:
       - 'build'
       - '-t'
-      - 'harshavardhanj/endlessh:alpine'
+      - 'harshavardhanj/endlessh:1.0'
+      - '-t'
+      - 'harshavardhanj/endlessh:stable'
       - '--platform'
-      - 'linux/amd64,linux/arm64,linux/386,linux/s390x,linux/ppc64le,linux/arm/v7,linux/arm/v6'
+      - 'linux/amd64,linux/arm64,linux/386,linux/arm/v7,linux/arm/v6'
       - '-f'
-      - './endlessh/alpine/Dockerfile'
+      - './endlessh/Dockerfile'
       - '--push'
-      - './endlessh/alpine/.'
+      - './endlessh/.'

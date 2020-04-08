@@ -1,0 +1,9 @@
+# Docker compose file for `endlessh`
+#
+version: "3.4"
+services:
+  endlessh:
+    image: harshavardhanj/endlessh:alpine
+    ports:
+      - "2222:2222"
+    restart: always

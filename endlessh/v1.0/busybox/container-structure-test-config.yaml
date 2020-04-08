@@ -13,6 +13,8 @@ metadataTest:
       value: 'https://github.com/HarshaVardhanJ/docker_files/blob/master/endlessh/busybox/Dockerfile'
     - key: 'software.author.github.page'
       value: 'https://github.com/skeeto/endlessh'
+    - key: 'software.release.version'
+      value: '1.0'
   exposedPorts: ["2222"]
   entrypoint: ["/endlessh"]
   cmd: ["-v"]

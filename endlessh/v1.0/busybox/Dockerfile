@@ -27,11 +27,25 @@ RUN wget -qc https://github.com/skeeto/endlessh/archive/$version.tar.gz -O endle
       #
       && mv endlessh ../
 
-# Start from scratch
-FROM scratch
+# Start with base image of Busybox
+FROM busybox:latest
+
+# Setting working directory
+WORKDIR /
 
 # Copy the executable from the intermediate builder stage
 COPY --from=intermediate /endlessh /
+
+# Creating new user and group for running endlessh
+RUN addgroup -S -g 1000 endlessh \
+    && adduser -H -g "User account for running the endlessh executable" -s /bin/nologin -G endlessh -u 1000 -S -D endlessh \
+    # Changing permissions on the endlessh executable
+    #
+    && chown endlessh:endlessh /endlessh \
+    && chmod 100 /endlessh
+
+# Run as user endlessh
+USER endlessh
 
 # Expose port 2222 on which the executable listens
 EXPOSE 2222/tcp
@@ -48,10 +62,11 @@ CMD ["-v"]
 # Maintainer information
 LABEL maintainer="Harsha Vardhan J" \
       github.account="https://github.com/HarshaVardhanJ" \
-      dockerfile.github.page="https://github.com/HarshaVardhanJ/docker_files/blob/master/endlessh/Dockerfile" \
+      dockerfile.github.page="https://github.com/HarshaVardhanJ/docker_files/blob/master/endlessh/busybox/Dockerfile" \
       description="This Dockerfile creates an image containing the executable `endlessh` which is an SSH tarpit \
       that very slowly sends an endless, random SSH banner. It keeps SSH clients locked up for hours or even days \
       at a time. The purpose is to put your real SSH server on another port and then let the script kiddies get \
       stuck in this tarpit instead of bothering a real server." \
       software.author.github.page="https://github.com/skeeto/endlessh" \
+      software.release.version="1.0" \
       version="1.0"

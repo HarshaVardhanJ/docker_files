@@ -1,0 +1,27 @@
+steps:
+  # Get the Docker Hub user ID from Secrets Manager and save it to a file
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: "bash"
+    args: ["./endlessh/getCredentials.sh"]
+
+  # Log in to Docker Hub using the credentials obtained in the previous steps
+  - name: 'gcr.io/cloud-builders/docker'
+    entrypoint: "bash"
+    args: ["-c", "docker login --username=$(cat ./UserID) --password=$(cat ./AccessToken)"]
+
+  # Pull buildx image from Docker Hub and build 'endlessh:busybox' image with multi-arch support
+  - name: 'harshavardhanj/docker-buildx:latest'
+    args:
+      - 'build'
+      - '-t'
+      - 'harshavardhanj/endlessh:busybox'
+      - '-t'
+      - 'harshavardhanj/endlessh:1.0-busybox'
+      - '-t'
+      - 'harshavardhanj/endlessh:stable-busybox'
+      - '--platform'
+      - 'linux/amd64,linux/arm64,linux/386,linux/ppc64le,linux/arm/v6'
+      - '-f'
+      - './endlessh/busybox/Dockerfile'
+      - '--push'
+      - './endlessh/busybox/.'
