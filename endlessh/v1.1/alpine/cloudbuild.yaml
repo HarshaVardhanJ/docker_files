@@ -46,9 +46,9 @@ steps:
     args:
       - '--severity'
       - 'HIGH,CRITICAL'
-      - '--ignore-unfixed'
-      - 'exit-code'
+      - '--exit-code'
       - '1'
+      - '--ignore-unfixed'
       - '--light'
       - '--no-progress'
       - 'harshavardhanj/endlessh:untested-alpine-1.1'
