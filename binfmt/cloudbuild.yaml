@@ -21,7 +21,7 @@ steps:
     args:
       - 'build'
       - '-t'
-      - 'harshavardhanj/endlessh:untested'
+      - 'harshavardhanj/binfmt:untested'
       - '-f'
       - './binfmt/Dockerfile'
       - '--push'
