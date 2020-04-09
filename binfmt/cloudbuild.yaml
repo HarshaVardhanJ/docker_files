@@ -27,17 +27,17 @@ steps:
   #      - './binfmt/Dockerfile'
   #      - './binfmt/.'
 
-  # Pull `buildx:testing` image from Docker Hub and build 'binfmt' image with multi-arch support
+  # Pull `docker-buildx:stable` image from Docker Hub and build 'binfmt' image with multi-arch support
   ### NOTE:
-  ###     In the build step below, the `docker-buildx:testing` image is used to build
+  ###     In the build step below, the `docker-buildx:stable` image is used to build
   ###     the `binfmt:testing` image with multi-arch support. Therefore, since
-  ###     there is a cyclical dependency because the `docker-buildx:testing` image uses
-  ###     the `binfmt:testing` image, before running this in Cloud Build, a working
-  ###     version of the `docker-buildx:testing`, and of `binfmt:testing` image will need 
+  ###     there is a cyclical dependency because the `docker-buildx:stable` image uses
+  ###     the `binfmt:stable` image, before running this in Cloud Build, a working
+  ###     version of the `docker-buildx:stable`, and of `binfmt:stable` image will need 
   ###     to be present in the container registry(Docker Hub, in this case). The image will
   ###     need to be built either locally or elsewhere and pushed to the registry before the 
   ###     below step can be run.
-  - name: 'harshavardhanj/docker-buildx:latest'
+  - name: 'harshavardhanj/docker-buildx:stable'
     id: "dockerBuildxPush"
     waitFor: ["getCredentials", "dockerLogin"]
     args:

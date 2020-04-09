@@ -1,0 +1,84 @@
+# Container Structure Test for `binfmt` image
+#
+schemaVersion: 2.0.0
+metadataTest:
+  labels:
+    - key: 'org.opencontainers.image.vendor'
+      value: 'Harsha Vardhan J'
+    - key: 'org.opencontainers.image.title'
+      value: 'binfmt'
+    - key: 'org.opencontainers.image.authors'
+      value: 'https://github.com/HarshaVardhanJ'
+    - key: 'org.opencontainers.image.url'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/tree/master/binfmt'
+    - key: 'org.opencontainers.image.documentation'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/blob/master/binfmt/README.md'
+    - key: 'org.opencontainers.image.source'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/blob/master/binfmt/Dockerfile'
+    - key: 'org.opencontainers.image.version'
+      value: '1.0'
+    - key: 'org.opencontainers.image.licenses'
+      value: 'MIT'
+  entrypoint: []
+  cmd: ['/usr/bin/binfmt']
+  workdir: '/'
+fileContentTests:
+  - name: 'Check content of linuxkit.conf file'
+    path: '/etc/binfmt.d/00_linuxkit.conf'
+    expectedContents: ["\n:qemu-aarch64:.*", "\n:qemu-arm:.*", "\n:qemu-armeb:.*", "\n:qemu-i386:.*", "\n:qemu-ppc64le:.*", "\n:qemu-s390x:.*"]
+fileExistenceTests:
+  - name: 'Check if linuxkit.conf file exists'
+    path: '/etc/binfmt.d/00_linuxkit.conf'
+    shouldExist: true
+    permissions: '-rw-rw-r--'
+    uid: 0
+    gid: 0
+  - name: 'Check if binfmt binary exists'
+    path: '/usr/bin/binfmt'
+    shouldExist: true
+    permissions: '-rwxr-xr-x'
+    uid: 0
+    gid: 0
+    isExecutableBy: 'any'
+  - name: 'Check if qemu-aarch64 binary exists'
+    path: '/usr/bin/qemu-aarch64'
+    shouldExist: true
+    permissions: '-rwxr-xr-x'
+    uid: 0
+    gid: 0
+    isExecutableBy: 'any'
+  - name: 'Check if qemu-arm binary exists'
+    path: '/usr/bin/qemu-arm'
+    shouldExist: true
+    permissions: '-rwxr-xr-x'
+    uid: 0
+    gid: 0
+    isExecutableBy: 'any'
+  - name: 'Check if qemu-armeb binary exists'
+    path: '/usr/bin/qemu-armeb'
+    shouldExist: true
+    permissions: '-rwxr-xr-x'
+    uid: 0
+    gid: 0
+    isExecutableBy: 'any'
+  - name: 'Check if qemu-i386 binary exists'
+    path: '/usr/bin/qemu-i386'
+    shouldExist: true
+    permissions: '-rwxr-xr-x'
+    uid: 0
+    gid: 0
+    isExecutableBy: 'any'
+  - name: 'Check if qemu-ppc64le binary exists'
+    path: '/usr/bin/qemu-ppc64le'
+    shouldExist: true
+    permissions: '-rwxr-xr-x'
+    uid: 0
+    gid: 0
+    isExecutableBy: 'any'
+  - name: 'Check if qemu-s390x binary exists'
+    path: '/usr/bin/qemu-s390x'
+    shouldExist: true
+    permissions: '-rwxr-xr-x'
+    uid: 0
+    gid: 0
+    isExecutableBy: 'any'

@@ -69,3 +69,15 @@ COPY etc/binfmt.d/00_linuxkit.conf etc/binfmt.d/00_linuxkit.conf
 
 # Running the binfmt command
 CMD ["/usr/bin/binfmt"]
+
+# Labels
+LABEL org.opencontainers.image.vendor="Harsha Vardhan J" \
+      org.opencontainers.image.title="binfmt" \
+      org.opencontainers.image.authors="https://github.com/HarshaVardhanJ" \
+      org.opencontainers.image.url="https://github.com/HarshaVardhanJ/docker_files/tree/master/binfmt" \
+      org.opencontainers.image.documentation="https://github.com/HarshaVardhanJ/docker_files/blob/master/binfmt/README.md" \
+      org.opencontainers.image.source="https://github.com/HarshaVardhanJ/docker_files/blob/master/binfmt/Dockerfile" \
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.description="This Dockerfile creates an image which helps enable `binfmt` support thereby \
+      helping build multi-architecture container images by leveraging the `buildx` utility in Docker." \
+      org.opencontainers.image.version="1.0"
