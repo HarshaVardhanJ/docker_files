@@ -13,19 +13,31 @@ steps:
     entrypoint: "bash"
     args: ["-c", "docker login --username=$(cat ./UserID) --password=$(cat ./AccessToken)"]
 
-  # Build image with docker
-  #  - name: 'gcr.io/cloud-builders/docker'
-  #    id: "dockerBuild"
-  #    waitFor: ["getCredentials", "dockerLogin"]
-  #    args:
-  #      - 'build'
-  #      - '-t'
-  #      - 'harshavardhanj/binfmt:latest'
-  #      - '--cache-from'
-  #      - 'harshavardhanj/binfmt:latest'
-  #      - '-f'
-  #      - './binfmt/Dockerfile'
-  #      - './binfmt/.'
+  # Build from Dockerfile using the docker-buildx:stable image, and
+  # tag the image with 'untested' and push to Docker Hub
+  - name: 'harshavardhanj/docker-buildx:stable'
+    id: "dockerBuildPush"
+    waitFor: ["getCredentials", "dockerLogin"]
+    args:
+      - 'build'
+      - '-t'
+      - 'harshavardhanj/endlessh:untested'
+      - '-f'
+      - './binfmt/Dockerfile'
+      - '--push'
+      - './binfmt/.'
+
+  # Test the container pushed in the previous step
+  - name: "gcr.io/gcp-runtimes/container-structure-test"
+    id: "containerTest"
+    waitFor: ["getCredentials", "dockerLogin", "dockerBuildPush"]
+    args:
+      - 'test'
+      - '--pull'
+      - '--image'
+      - 'harshavardhanj/binfmt:untested'
+      - '--config'
+      - './binfmt/container-structure-test.yaml'
 
   # Pull `docker-buildx:stable` image from Docker Hub and build 'binfmt' image with multi-arch support
   ### NOTE:
@@ -39,11 +51,13 @@ steps:
   ###     below step can be run.
   - name: 'harshavardhanj/docker-buildx:stable'
     id: "dockerBuildxPush"
-    waitFor: ["getCredentials", "dockerLogin"]
+    waitFor: ["getCredentials", "dockerLogin", "dockerBuildPush", "containerTest"]
     args:
       - 'build'
       - '-t'
       - 'harshavardhanj/binfmt:latest'
+      - '-t'
+      - 'harshavardhanj/binfmt:stable'
       - '--platform'
       - 'linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386'
       - '--cache-from'
@@ -54,5 +68,4 @@ steps:
       - '--push'
       - './binfmt/.'
 
-#images: ['harshavardhanj/binfmt:latest']
 timeout: "3600s"
