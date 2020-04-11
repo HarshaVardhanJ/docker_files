@@ -27,11 +27,11 @@ steps:
     args:
       - 'build'
       - '--build-arg'
-      - 'BUILD_DATE=$(cat /workspace/_DATE_TIME)'
+      - 'BUILD_DATE=$$(cat /workspace/_DATE_TIME)'
       - '--build-arg'
       - 'VCS_REF=$SHORT_SHA'
       - '--build-arg'
-      - 'VERSION=$(cat /workspace/VERSION)'
+      - 'VERSION=$$(cat /workspace/VERSION)'
       - '-t'
       - 'harshavardhanj/binfmt:untested'
       - '-f'
@@ -67,7 +67,7 @@ steps:
     args:
       - 'build'
       - '--build-arg'
-      - 'BUILD_DATE=$(cat /workspace/_DATE_TIME)'
+      - 'BUILD_DATE=$$(cat /workspace/_DATE_TIME)'
       - '--build-arg'
       - 'VCS_REF=$SHORT_SHA'
       - '--build-arg'
