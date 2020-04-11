@@ -21,11 +21,11 @@ steps:
     args:
       - 'build'
       - '--build-arg'
-      - 'BUILD_DATE=`date --utc +"%Y-%m-%dT%H:%M:%SZ"`'
+      - 'BUILD_DATE=$$(date --utc +"%Y-%m-%dT%H:%M:%SZ")'
       - '--build-arg'
-      - 'VCS_REF=`git rev-parse --short HEAD`'
+      - 'VCS_REF=$SHORT_SHA'
       - '--build-arg'
-      - 'VERSION=`cat VERSION`'
+      - 'VERSION=$$(cat VERSION)'
       - '-t'
       - 'harshavardhanj/binfmt:untested'
       - '-f'
@@ -61,11 +61,11 @@ steps:
     args:
       - 'build'
       - '--build-arg'
-      - 'BUILD_DATE=`date --utc +"%Y-%m-%dT%H:%M:%SZ"`'
+      - 'BUILD_DATE=$$(date --utc +"%Y-%m-%dT%H:%M:%SZ")'
       - '--build-arg'
-      - 'VCS_REF=`git rev-parse --short HEAD`'
+      - 'VCS_REF=$SHORT_SHA'
       - '--build-arg'
-      - 'VERSION=`cat VERSION`'
+      - 'VERSION=$$(cat VERSION)'
       - '-t'
       - 'harshavardhanj/binfmt:latest'
       - '-t'
@@ -79,5 +79,4 @@ steps:
       - './binfmt/Dockerfile'
       - '--push'
       - './binfmt/.'
-
 timeout: "3600s"
