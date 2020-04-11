@@ -3,14 +3,14 @@ steps:
   - name: 'gcr.io/cloud-builders/gcloud'
     id: "getCredentials"
     waitFor: ["-"]
-    entrypoint: "bash"
+    entrypoint: 'bash'
     args: ["./docker-cloud-builder/getCredentials.sh"]
 
   # Log in to Docker Hub using the credentials obtained in the previous steps
   - name: 'gcr.io/cloud-builders/docker'
     id: "dockerLogin"
     waitFor: ["getCredentials"]
-    entrypoint: "bash"
+    entrypoint: 'bash'
     args: ["-c", "docker login --username=$(cat ./UserID) --password=$(cat ./AccessToken)"]
 
   # Get build arguments
@@ -25,7 +25,7 @@ steps:
   - name: 'harshavardhanj/docker-buildx:stable'
     id: "dockerBuildPush"
     waitFor: ["getCredentials", "dockerLogin"]
-    entrypoint: ["sh"]
+    entrypoint: 'sh'
     args:
       - '-c'
       - '/usr/bin/entrypoint.sh'
@@ -66,7 +66,7 @@ steps:
   - name: 'harshavardhanj/docker-buildx:stable'
     id: "dockerBuildxPush"
     waitFor: ["getCredentials", "dockerLogin", "dockerBuildPush", "containerTest"]
-    entrypoint: ["sh"]
+    entrypoint: 'sh'
     args:
       - '-c'
       - '/usr/bin/entrypoint.sh'
