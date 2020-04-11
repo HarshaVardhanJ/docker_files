@@ -13,19 +13,25 @@ steps:
     entrypoint: "bash"
     args: ["-c", "docker login --username=$(cat ./UserID) --password=$(cat ./AccessToken)"]
 
+  # Get build arguments
+  - name: 'hub.docker.com/alpine:latest'
+    id: "getEnv"
+    waitFor: ["-"]
+    args: ['sh', '-c', 'date --utc +"%Y-%m-%dT%H:%M:%SZ" > ./_DATE_TIME']
+
   # Build from Dockerfile using the docker-buildx:stable image, and
   # tag the image with 'untested' and push to Docker Hub
   - name: 'harshavardhanj/docker-buildx:stable'
     id: "dockerBuildPush"
-    waitFor: ["getCredentials", "dockerLogin"]
+    waitFor: ["getCredentials", "dockerLogin", "getEnv"]
     args:
       - 'build'
       - '--build-arg'
-      - 'BUILD_DATE=$$(date --utc +"%Y-%m-%dT%H:%M:%SZ")'
+      - 'BUILD_DATE=$(cat ./_DATE_TIME)'
       - '--build-arg'
       - 'VCS_REF=$SHORT_SHA'
       - '--build-arg'
-      - 'VERSION=$$(cat VERSION)'
+      - 'VERSION=$(cat ./VERSION)'
       - '-t'
       - 'harshavardhanj/binfmt:untested'
       - '-f'
@@ -36,7 +42,7 @@ steps:
   # Test the container pushed in the previous step
   - name: "gcr.io/gcp-runtimes/container-structure-test"
     id: "containerTest"
-    waitFor: ["getCredentials", "dockerLogin", "dockerBuildPush"]
+    waitFor: ["getCredentials", "dockerLogin", "getEnv", "dockerBuildPush"]
     args:
       - 'test'
       - '--pull'
@@ -57,15 +63,15 @@ steps:
   ###     below step can be run.
   - name: 'harshavardhanj/docker-buildx:stable'
     id: "dockerBuildxPush"
-    waitFor: ["getCredentials", "dockerLogin", "dockerBuildPush", "containerTest"]
+    waitFor: ["getCredentials", "dockerLogin", "getEnv", "dockerBuildPush", "containerTest"]
     args:
       - 'build'
       - '--build-arg'
-      - 'BUILD_DATE=$$(date --utc +"%Y-%m-%dT%H:%M:%SZ")'
+      - 'BUILD_DATE=$(cat ./_DATE_TIME)'
       - '--build-arg'
       - 'VCS_REF=$SHORT_SHA'
       - '--build-arg'
-      - 'VERSION=$$(cat VERSION)'
+      - 'VERSION=$$(cat ./VERSION)'
       - '-t'
       - 'harshavardhanj/binfmt:latest'
       - '-t'
