@@ -14,7 +14,7 @@ steps:
     args: ["-c", "docker login --username=$(cat ./UserID) --password=$(cat ./AccessToken)"]
 
   # Get build arguments
-  - name: 'hub.docker.com/alpine:latest'
+  - name: 'alpine'
     id: "getEnv"
     waitFor: ["-"]
     args: ['sh', '-c', 'date --utc +"%Y-%m-%dT%H:%M:%SZ" > ./_DATE_TIME']
