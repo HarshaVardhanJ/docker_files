@@ -1,15 +1,10 @@
 # `endlessh` Docker Image
 
 [![](https://images.microbadger.com/badges/version/harshavardhanj/endlessh:stable.svg)](https://microbadger.com/images/harshavardhanj/endlessh:stable "Get your own version badge on microbadger.com")
-
 [![](https://images.microbadger.com/badges/commit/harshavardhanj/endlessh:stable.svg)](https://microbadger.com/images/harshavardhanj/endlessh:stable "Get your own commit badge on microbadger.com")
-
 ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/harshavardhanj/endlessh/stable)
-
 ![MicroBadger Layers (tag)](https://img.shields.io/microbadger/layers/harshavardhanj/endlessh/stable)
-
 ![Docker Pulls](https://img.shields.io/docker/pulls/harshavardhanj/endlessh)
-
 ![GitHub](https://img.shields.io/github/license/HarshaVardhanJ/docker_files) AND ![GitHub](https://img.shields.io/github/license/skeeto/endlessh)
 
 
@@ -228,4 +223,9 @@ It was necessary to compile the executable to be statically-linked so as to make
 As with all Docker images, these likely also contain other software which may be under other license (such as `bash`, etc from the base distribution, along with any direct or indirect dependencies of the primary software being contained.)
 
 As for any pre-built image usage, it is the image user’s responsibility to ensure that any use of this image complies with any relevant licenses for all software container within.
+
+The license for `endlessh` as given on the author's GitHub page is ![GitHub](https://img.shields.io/github/license/skeeto/endlessh).
+
+The license for the code pertaining to the Docker container as given on my GitHub page is ![GitHub](https://img.shields.io/github/license/HarshaVardhanJ/docker_files).
+
 

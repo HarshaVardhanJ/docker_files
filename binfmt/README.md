@@ -119,3 +119,5 @@ As with all Docker images, these likely also contain other software which may be
 
 As for any pre-built image usage, it is the image user’s responsibility to ensure that any use of this image complies with any relevant licenses for all software container within.
 
+The license for the code pertaining to the Docker container for binfmt is 
+[![](https://images.microbadger.com/badges/license/harshavardhanj/binfmt.svg)](https://microbadger.com/images/harshavardhanj/binfmt "Get your own license badge on microbadger.com")
