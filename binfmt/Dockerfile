@@ -35,11 +35,6 @@
 ## Influenced by https://github.com/linuxkit/linuxkit/tree/master/pkg/binfmt
 ### Adds support for more architectures in docker buildx
 
-# ARG values for injecting image metadata during build time
-ARG BUILD_DATE
-ARG VCS_REF
-ARG VERSION=1.0
-
 # Start with debian stretch slim image
 # Use Debian stretch until https://bugs.alpinelinux.org/issues/8131 is resolved.
 FROM debian@sha256:de3eac83cd481c04c5d6c7344cd7327625a1d8b2540e82a8231b5675cef0ae5f AS qemu-builder
@@ -90,6 +85,11 @@ RUN ./go-compile.sh /go/src/binfmt
 
 # Start with scratch image
 FROM scratch
+
+# ARG values for injecting image metadata during build time
+ARG BUILD_DATE
+ARG VCS_REF
+ARG VERSION=1.0
 
 ENTRYPOINT []
 
