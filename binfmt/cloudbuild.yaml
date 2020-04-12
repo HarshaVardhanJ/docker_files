@@ -13,13 +13,6 @@ steps:
     entrypoint: 'bash'
     args: ["-c", "docker login --username=$(cat ./UserID) --password=$(cat ./AccessToken)"]
 
-  # Get build arguments(get time value in RFC3399 format
-  #  - name: 'alpine'
-  #    id: "getEnv"
-  #    waitFor: ["-"]
-  #    entrypoint: "sh"
-  #    args: ['-c', 'date --utc +"%Y-%m-%dT%H:%M:%SZ" > ./_DATE_TIME']
-
   # Build from Dockerfile using the docker-buildx:stable image, and
   # tag the image with 'untested' and push to Docker Hub
   - name: 'harshavardhanj/docker-buildx:stable'
@@ -28,20 +21,10 @@ steps:
     entrypoint: "sh"
     args:
       - '-c'
-      - 'entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/binfmt:untested -f ./binfmt/Dockerfile --push ./binfmt/.'
-        #      - 'entrypoint.sh'
-        #      - 'build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/binfmt:untested -f ./binfmt/Dockerfile --push ./binfmt/.'
-        #      - 'build'
-        #      - '--build-arg'
-        #      - 'BUILD_DATE=$(date --utc +%Y-%m-%dT%H:%M:%SZ)'
-        #      - '--build-arg'
-        #      - 'VCS_REF=$SHORT_SHA'
-        #      - '-t'
-        #      - 'harshavardhanj/binfmt:untested'
-        #      - '-f'
-        #      - './binfmt/Dockerfile'
-        #      - '--push'
-        #      - './binfmt/.'
+      - |
+        entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
+        --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/binfmt:untested \
+        -f ./binfmt/Dockerfile --push ./binfmt/.'
 
   # Test the container pushed in the previous step
   - name: "gcr.io/gcp-runtimes/container-structure-test"
@@ -71,24 +54,9 @@ steps:
     entrypoint: 'sh'
     args:
       - '-c'
-      - 'entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/binfmt:latest -t harshavardhanj/binfmt:stable --platform linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386 --cache-from harshavardhanj/binfmt:latest --pull --push -f ./binfmt/Dockerfile ./binfmt/.'
-        #      - '/usr/bin/entrypoint.sh'
-        #      - 'build'
-        #      - '--build-arg'
-        #      - 'BUILD_DATE=$(date --utc +%Y-%m-%dT%H:%M:%SZ)'
-        #      - '--build-arg'
-        #      - 'VCS_REF=$SHORT_SHA'
-        #      - '-t'
-        #      - 'harshavardhanj/binfmt:latest'
-        #      - '-t'
-        #      - 'harshavardhanj/binfmt:stable'
-        #      - '--platform'
-        #      - 'linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386'
-        #      - '--cache-from'
-        #      - 'harshavardhanj/binfmt:latest'
-        #      - '--pull'
-        #      - '-f'
-        #      - './binfmt/Dockerfile'
-        #      - '--push'
-        #      - './binfmt/.'
+      - |
+        entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
+        --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/binfmt:latest -t harshavardhanj/binfmt:stable \
+        --platform linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386 \
+        --cache-from harshavardhanj/binfmt:latest --pull --push -f ./binfmt/Dockerfile ./binfmt/.'
 timeout: "3600s"
