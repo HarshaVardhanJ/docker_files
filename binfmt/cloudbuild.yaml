@@ -24,7 +24,7 @@ steps:
       - |
         entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
         --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/binfmt:untested \
-        -f ./binfmt/Dockerfile --push ./binfmt/.'
+        -f ./binfmt/Dockerfile --push ./binfmt/.
 
   # Test the container pushed in the previous step
   - name: "gcr.io/gcp-runtimes/container-structure-test"
@@ -58,5 +58,5 @@ steps:
         entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
         --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/binfmt:latest -t harshavardhanj/binfmt:stable \
         --platform linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386 \
-        --cache-from harshavardhanj/binfmt:latest --pull --push -f ./binfmt/Dockerfile ./binfmt/.'
+        --cache-from harshavardhanj/binfmt:latest --pull --push -f ./binfmt/Dockerfile ./binfmt/.
 timeout: "3600s"
