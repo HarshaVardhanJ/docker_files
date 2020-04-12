@@ -45,10 +45,10 @@
 FROM alpine:latest as intermediate
 
 # Setting version number for `endlessh` download
-ARG version=1.0
+ARG VERSION=1.0
 
 # Download the source code and extract it
-RUN wget -qc https://github.com/skeeto/endlessh/archive/$version.tar.gz -O endlessh.tar.gz \
+RUN wget -qc https://github.com/skeeto/endlessh/archive/$VERSION.tar.gz -O endlessh.tar.gz \
     && tar -xzf endlessh.tar.gz \
     && cd endlessh* \
     # Add the '-static' option to the 'CFLAGS' line 
@@ -72,6 +72,11 @@ RUN wget -qc https://github.com/skeeto/endlessh/archive/$version.tar.gz -O endle
 
 # Start with base image of Busybox
 FROM busybox:latest
+
+# Setting ARG values for injecting metadata during build time
+ARG BUILD_DATE
+ARG VCS_REF
+ARG VERSION=1.0
 
 # Setting working directory
 WORKDIR /
@@ -123,4 +128,4 @@ LABEL org.opencontainers.image.vendor="Harsha Vardhan J" \
       org.label-schema.version=$VERSION \
       org.label-schema.schema-version="1.0" \
       software.author.github.page="https://github.com/skeeto/endlessh" \
-      software.release.version="1.0"
+      software.release.version=$VERSION

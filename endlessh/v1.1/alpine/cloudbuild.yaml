@@ -14,20 +14,6 @@ steps:
     args: ["-c", "docker login --username=$(cat ./UserID) --password=$(cat ./AccessToken)"]
 
   # Build from Dockerfile using the docker-buildx:stable image, and
-  # tag the image with 'untested-alpine-1.1' and push to Docker Hub
-  - name: 'harshavardhanj/docker-buildx:stable'
-    id: "dockerBuildPush"
-    waitFor: ["dockerLogin"]
-    args:
-      - 'build'
-      - '-t'
-      - 'harshavardhanj/endlessh:untested-alpine-1.1'
-      - '-f'
-      - './endlessh/v1.1/alpine/Dockerfile'
-      - '--push'
-      - './endlessh/v1.1/alpine/.'
-
-  # Build from Dockerfile using the docker-buildx:stable image, and
   # tag the image with 'untested-alpine' and push to Docker Hub
   - name: 'harshavardhanj/docker-buildx:stable'
     id: "dockerBuildPush"

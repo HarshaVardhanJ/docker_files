@@ -47,7 +47,7 @@ steps:
       - '-c'
       - |
         entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
-        --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/endlessh:1.0 -t harshavardhanj:stable \
+        --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/endlessh:1.0 -t harshavardhanj/endlessh:stable \
         --platform linux/amd64,linux/arm64,linux/386,linux/arm/v7,linux/arm/v6 \
         --cache-from harshavardhanj/endlessh:latest --pull -f ./endlessh/v1.0/Dockerfile \
         --push ./endlessh/v1.0/.

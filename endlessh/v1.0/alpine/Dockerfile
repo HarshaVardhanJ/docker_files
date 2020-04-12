@@ -116,4 +116,4 @@ LABEL org.opencontainers.image.vendor="Harsha Vardhan J" \
       org.label-schema.version=$VERSION \
       org.label-schema.schema-version="1.0" \
       software.author.github.page="https://github.com/skeeto/endlessh" \
-      software.release.version="1.0"
+      software.release.version=$VERSION
