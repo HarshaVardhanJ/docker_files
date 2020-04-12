@@ -1,6 +1,5 @@
-# Config file to be used by Container Structure Test
-# for endlessh:alpine image
-
+# Container Structure Test for 'endlessh:alpine' image
+#
 schemaVersion: 2.0.0
 
 metadataTest:
@@ -15,11 +14,17 @@ metadataTest:
       value: 'Unlicense AND MIT'
     - key: 'org.opencontainers.image.url'
       value: 'https://github.com/HarshaVardhanJ/docker_files/tree/master/endlessh'
+    - key: 'org.label-schema.vcs-url'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/tree/master/endlessh'
     - key: 'org.opencontainers.image.documentation'
       value: 'https://github.com/HarshaVardhanJ/docker_files/blob/master/endlessh/README.md'
     - key : 'org.opencontainers.image.source'
       value: 'https://github.com/HarshaVardhanJ/docker_files/blob/master/endlessh/v1.0/alpine/Dockerfile'
     - key: 'org.opencontainers.image.version'
+      value: '1.0'
+    - key: 'org.label-schema.version'
+      value: '1.0'
+    - key: 'org.label-schema.schema-version'
       value: '1.0'
     - key: 'software.author.github.page'
       value: 'https://github.com/skeeto/endlessh'
