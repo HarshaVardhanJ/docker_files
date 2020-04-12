@@ -60,11 +60,19 @@ steps:
         --platform linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386 \
         --cache-from harshavardhanj/binfmt:latest --pull --push -f ./binfmt/Dockerfile ./binfmt/.
 
+  # Get unique URL which is used to prompt MicroBadger to update image metadata.
+  # The token, which is a part of the unique URL, is stored with Secrets Manager.
+  # This step retrieves that secret and saves it to a file.
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: 'webhookSecret'
+    waitFor: ["dockerBuildxPush"]
+    entrypoint: 'sh'
+    args: ["-c", "gcloud beta secrets versions access 1 --secret=binfmt-microbadger-webhook >./microbadgerWebhook"]
+
   # Calling the webhook on Micro Badger in order to update image metadata
-  # NOTE: I don't think it is necessary to secure the webhook URL as calling this
-  #       URL only prompts Micro Badger to update the image's metadata on their servers.
   - name: 'gcr.io/cloud-builders/curl'
     id: "microbadgerWebhook"
-    waitFor: ["dockerBuildxPush"]
-    args: ["-X", "POST", "https://hooks.microbadger.com/images/harshavardhanj/binfmt/C4-Jz3TXxmfo6hxOqEuFEgedKr8="]
+    waitFor: ["webhookSecret"]
+    entrypoint: 'sh'
+    args: ["-c", "curl -X POST https://hooks.microbadger.com/images/harshavardhanj/binfmt/$(cat ./microbadgerWebhook)"]
 timeout: "3600s"

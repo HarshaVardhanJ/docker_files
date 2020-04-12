@@ -1,6 +1,14 @@
 # `binfmt` Docker Image
 
-[![](https://images.microbadger.com/badges/version/harshavardhanj/binfmt.svg)](https://microbadger.com/images/harshavardhanj/binfmt "Get your own version badge on microbadger.com") [![](https://images.microbadger.com/badges/commit/harshavardhanj/binfmt.svg)](https://microbadger.com/images/harshavardhanj/binfmt "Get your own commit badge on microbadger.com") [![](https://images.microbadger.com/badges/license/harshavardhanj/binfmt.svg)](https://microbadger.com/images/harshavardhanj/binfmt "Get your own license badge on microbadger.com")
+# [![](https://images.microbadger.com/badges/version/harshavardhanj/binfmt.svg)](https://microbadger.com/images/harshavardhanj/binfmt "Get your own version badge on microbadger.com")
+[![](https://images.microbadger.com/badges/commit/harshavardhanj/binfmt.svg)](https://microbadger.com/images/harshavardhanj/binfmt "Get your own commit badge on microbadger.com")
+[![](https://images.microbadger.com/badges/license/harshavardhanj/binfmt.svg)](https://microbadger.com/images/harshavardhanj/binfmt "Get your own license badge on microbadger.com")
+![Docker Image Size (tag)](https://img.shields.io/docker/image-size/harshavardhanj/binfmt/stable)
+![MicroBadger Layers (tag)](https://img.shields.io/microbadger/layers/harshavardhanj/binfmt/stable)
+![Docker Pulls](https://img.shields.io/docker/pulls/harshavardhanj/binfmt)
+
+In case you find this image to be useful, please consider clicking the link below to say thanks! Thank you.  
+[![saythanks](https://img.shields.io/badge/say-thanks-ff69b4.svg)](https://saythanks.io/to/vardhanharshaj%40gmail.com)
 
 # Supported tags and respective `Dockerfile` links
 
@@ -17,6 +25,7 @@ Apart from the aforementioned images, there are other images that contain `untes
 
 - **Maintained by** : [HarshaVardhanJ](https://github.com/HarshaVardhanJ/docker_files/)
 - **Source of this description** : [README in `docker_files` repository](https://github.com/HarshaVardhanJ/docker_files/blob/master/binfmt/README.md)
+- **Submit issues on** : [GitHub Issues](https://github.com/HarshaVardhanJ/docker_files/issues)  ![GitHub Issues](https://img.shields.io/github/issues/HarshaVardhanJ/docker_files)
 
 
 
