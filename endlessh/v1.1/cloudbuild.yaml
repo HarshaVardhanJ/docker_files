@@ -12,21 +12,21 @@ steps:
     waitFor: ["getCredentials"]
     entrypoint: "bash"
     args: ["-c", "docker login --username=$(cat ./UserID) --password=$(cat ./AccessToken)"]
- 
+
+
   # Build from Dockerfile using the docker-buildx:stable image, and
-  # tag the image with 'untested-1.1' and push to Docker Hub
+  # tag the image with 'untested' and push to Docker Hub
   - name: 'harshavardhanj/docker-buildx:stable'
     id: "dockerBuildPush"
-    waitFor: ["getCredentials", "dockerLogin"]
+    waitFor: ["dockerLogin"]
+    entrypoint: "sh"
     args:
-      - 'build'
-      - '-t'
-      - 'harshavardhanj/endlessh:untested-1.1'
-      - '-f'
-      - './endlessh/v1.1/Dockerfile'
-      - '--push'
-      - './endlessh/v1.1/.'
-
+      - '-c'
+      - |
+        entrypoint.sh build --build-arg BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
+        --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/endlessh:untested-1.1 --push \
+        ./endlessh/v1.1/.
+ 
   # Test the container pushed in the previous step
   - name: "gcr.io/gcp-runtimes/container-structure-test"
     id: "containerTest"
@@ -39,19 +39,32 @@ steps:
       - '--config'
       - './endlessh/v1.1/container-structure-test.yaml'
 
-  # Pull buildx image from Docker Hub and build 'endlessh:latest' image with multi-arch support
+  # Pull buildx image from Docker Hub and build 'endlessh:stable' image with multi-arch support
   - name: 'harshavardhanj/docker-buildx:latest'
     id: "dockerBuildxPush"
-    waitFor: ["getCredentials", "dockerLogin", "dockerBuildPush", "containerTest"]
+    waitFor: ["containerTest"]
+    entrypoint: "sh"
     args:
-      - 'build'
-      - '-t'
-      - 'harshavardhanj/endlessh:latest'
-      - '-t'
-      - 'harshavardhanj/endlessh:1.1'
-      - '--platform'
-      - 'linux/amd64,linux/arm64,linux/386,linux/arm/v7,linux/arm/v6'
-      - '-f'
-      - './endlessh/v1.1/Dockerfile'
-      - '--push'
-      - './endlessh/v1.1/.'
+      - '-c'
+      - |
+        entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
+        --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/endlessh:1.1 -t harshavardhanj:latest \
+        --platform linux/amd64,linux/arm64,linux/386,linux/arm/v7,linux/arm/v6 \
+        --cache-from harshavardhanj/endlessh:latest --pull -f ./endlessh/v1.1/Dockerfile \
+        --push ./endlessh/v1.1/.
+
+  # Get unique URL which is used to prompt MicroBadger to update image metadata.
+  # The token, which is a part of the unique URL, is stored with Secrets Manager.
+  # This step retrieves that secret and saves it to a file.
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: 'webhookSecret'
+    waitFor: ["dockerBuildxPush"]
+    entrypoint: 'sh'
+    args: ["-c", "gcloud beta secrets versions access 1 --secret=endlessh-microbadger-webhook >./microbadgerWebhook"]
+
+  # Calling the webhook on Micro Badger in order to update image metadata
+  - name: 'gcr.io/cloud-builders/curl'
+    id: "microbadgerWebhook"
+    waitFor: ["webhookSecret"]
+    entrypoint: 'sh'
+    args: ["-c", "curl -X POST https://hooks.microbadger.com/images/harshavardhanj/endlessh/$(cat ./microbadgerWebhook)"]
