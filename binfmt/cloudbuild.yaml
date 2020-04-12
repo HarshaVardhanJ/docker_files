@@ -24,7 +24,7 @@ steps:
   # tag the image with 'untested' and push to Docker Hub
   - name: 'harshavardhanj/docker-buildx:stable'
     id: "dockerBuildPush"
-    waitFor: ["getCredentials", "dockerLogin", "getEnv"]
+    waitFor: ["getCredentials", "dockerLogin"]
     entrypoint: "sh"
     args:
       - '-c'
