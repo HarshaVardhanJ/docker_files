@@ -13,34 +13,35 @@ steps:
     entrypoint: 'bash'
     args: ["-c", "docker login --username=$(cat ./UserID) --password=$(cat ./AccessToken)"]
 
-  # Get build arguments
+  # Get build arguments(get time value in RFC3399 format
   #  - name: 'alpine'
   #    id: "getEnv"
   #    waitFor: ["-"]
-  #    #args: ['sh', '-c', 'date --utc +"%Y-%m-%dT%H:%M:%SZ" > ./_DATE_TIME']
-  #    args: ['sh', '-c', 'cat ./VERSION" > ./_DATE_TIME']
+  #    entrypoint: "sh"
+  #    args: ['-c', 'date --utc +"%Y-%m-%dT%H:%M:%SZ" > ./_DATE_TIME']
 
   # Build from Dockerfile using the docker-buildx:stable image, and
   # tag the image with 'untested' and push to Docker Hub
   - name: 'harshavardhanj/docker-buildx:stable'
     id: "dockerBuildPush"
-    waitFor: ["getCredentials", "dockerLogin"]
-    entrypoint: 'sh'
-    #args: ["-c", "/usr/bin/entrypoint.sh build --build-arg BUILD_DATE=$(date --utc +%Y-%m-%dT%H:%M:%SZ)"]
+    waitFor: ["getCredentials", "dockerLogin", "getEnv"]
+    entrypoint: "sh"
     args:
       - '-c'
-      - '/usr/bin/entrypoint.sh'
-      - 'build'
-      - '--build-arg'
-      - 'BUILD_DATE=$(date --utc +%Y-%m-%dT%H:%M:%SZ)'
-      - '--build-arg'
-      - 'VCS_REF=$SHORT_SHA'
-      - '-t'
-      - 'harshavardhanj/binfmt:untested'
-      - '-f'
-      - './binfmt/Dockerfile'
-      - '--push'
-      - './binfmt/.'
+      - 'entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/binfmt:untested -f ./binfmt/Dockerfile --push ./binfmt/.'
+        #      - 'entrypoint.sh'
+        #      - 'build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/binfmt:untested -f ./binfmt/Dockerfile --push ./binfmt/.'
+        #      - 'build'
+        #      - '--build-arg'
+        #      - 'BUILD_DATE=$(date --utc +%Y-%m-%dT%H:%M:%SZ)'
+        #      - '--build-arg'
+        #      - 'VCS_REF=$SHORT_SHA'
+        #      - '-t'
+        #      - 'harshavardhanj/binfmt:untested'
+        #      - '-f'
+        #      - './binfmt/Dockerfile'
+        #      - '--push'
+        #      - './binfmt/.'
 
   # Test the container pushed in the previous step
   - name: "gcr.io/gcp-runtimes/container-structure-test"
