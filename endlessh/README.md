@@ -1,3 +1,22 @@
+# `endlessh` Docker Image
+
+[![](https://images.microbadger.com/badges/version/harshavardhanj/endlessh:stable.svg)](https://microbadger.com/images/harshavardhanj/endlessh:stable "Get your own version badge on microbadger.com")
+
+[![](https://images.microbadger.com/badges/commit/harshavardhanj/endlessh:stable.svg)](https://microbadger.com/images/harshavardhanj/endlessh:stable "Get your own commit badge on microbadger.com")
+
+![Docker Image Size (tag)](https://img.shields.io/docker/image-size/harshavardhanj/endlessh/stable)
+
+![MicroBadger Layers (tag)](https://img.shields.io/microbadger/layers/harshavardhanj/endlessh/stable)
+
+![Docker Pulls](https://img.shields.io/docker/pulls/harshavardhanj/endlessh)
+
+![GitHub](https://img.shields.io/github/license/HarshaVardhanJ/docker_files) AND ![GitHub](https://img.shields.io/github/license/skeeto/endlessh)
+
+
+In case you find this image to be useful, please consider clicking the link below to say thanks! Thank you.  
+[![saythanks](https://img.shields.io/badge/say-thanks-ff69b4.svg)](https://saythanks.io/to/vardhanharshaj%40gmail.com)
+
+
 # Supported tags and respective `Dockerfile` links
 
 - [`1.1`, `latest`(*Endlessh/Dockerfile*)](https://github.com/HarshaVardhanJ/docker_files/blob/master/endlessh/v1.1/Dockerfile)
@@ -17,6 +36,7 @@ Apart from the aforementioned images, there are other images that contain `untes
 
 - **Maintained by** : [HarshaVardhanJ](https://github.com/HarshaVardhanJ/docker_files/)
 - **Source of this description** : [README in `docker_files` repository](https://github.com/HarshaVardhanJ/docker_files/blob/master/endlessh/README.md)
+- **Submit issues on** : [GitHub Issues](https://github.com/HarshaVardhanJ/docker_files/issues)  ![GitHub Issues](https://img.shields.io/github/issues/HarshaVardhanJ/docker_files)
 - **Original author of `endlessh`** : [Christopher Wellons](https://github.com/skeeto/endlessh)
 
 
