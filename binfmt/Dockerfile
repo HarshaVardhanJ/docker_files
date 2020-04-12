@@ -38,7 +38,7 @@
 # ARG values for injecting image metadata during build time
 ARG BUILD_DATE
 ARG VCS_REF
-ARG VERSION
+ARG VERSION=1.0
 
 # Start with debian stretch slim image
 # Use Debian stretch until https://bugs.alpinelinux.org/issues/8131 is resolved.
