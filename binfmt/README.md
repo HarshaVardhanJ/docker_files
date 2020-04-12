@@ -1,8 +1,6 @@
 # `binfmt` Docker Image
 
-[![](https://images.microbadger.com/badges/version/harshavardhanj/binfmt.svg)](https://microbadger.com/images/harshavardhanj/binfmt "Get your own version badge on microbadger.com")[![](https://images.microbadger.com/badges/commit/harshavardhanj/binfmt.svg)](https://microbadger.com/images/harshavardhanj/binfmt "Get your own commit badge on microbadger.com") [![](https://images.microbadger.com/badges/license/harshavardhanj/binfmt.svg)](https://microbadger.com/images/harshavardhanj/binfmt "Get your own license badge on microbadger.com")
-
-
+[![](https://images.microbadger.com/badges/version/harshavardhanj/binfmt.svg)](https://microbadger.com/images/harshavardhanj/binfmt "Get your own version badge on microbadger.com") [![](https://images.microbadger.com/badges/commit/harshavardhanj/binfmt.svg)](https://microbadger.com/images/harshavardhanj/binfmt "Get your own commit badge on microbadger.com") [![](https://images.microbadger.com/badges/license/harshavardhanj/binfmt.svg)](https://microbadger.com/images/harshavardhanj/binfmt "Get your own license badge on microbadger.com")
 
 # Supported tags and respective `Dockerfile` links
 

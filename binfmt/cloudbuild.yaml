@@ -4,7 +4,7 @@ steps:
     id: "getCredentials"
     waitFor: ["-"]
     entrypoint: 'bash'
-    args: ["./docker-cloud-builder/getCredentials.sh"]
+    args: ["./binfmt/getCredentials.sh"]
 
   # Log in to Docker Hub using the credentials obtained in the previous steps
   - name: 'gcr.io/cloud-builders/docker'
@@ -17,7 +17,7 @@ steps:
   # tag the image with 'untested' and push to Docker Hub
   - name: 'harshavardhanj/docker-buildx:stable'
     id: "dockerBuildPush"
-    waitFor: ["getCredentials", "dockerLogin"]
+    waitFor: ["dockerLogin"]
     entrypoint: "sh"
     args:
       - '-c'
@@ -29,7 +29,7 @@ steps:
   # Test the container pushed in the previous step
   - name: "gcr.io/gcp-runtimes/container-structure-test"
     id: "containerTest"
-    waitFor: ["getCredentials", "dockerLogin", "dockerBuildPush"]
+    waitFor: ["dockerBuildPush"]
     args:
       - 'test'
       - '--pull'
@@ -50,7 +50,7 @@ steps:
   ###     below step can be run.
   - name: 'harshavardhanj/docker-buildx:stable'
     id: "dockerBuildxPush"
-    waitFor: ["getCredentials", "dockerLogin", "dockerBuildPush", "containerTest"]
+    waitFor: ["containerTest"]
     entrypoint: 'sh'
     args:
       - '-c'
@@ -59,4 +59,12 @@ steps:
         --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/binfmt:latest -t harshavardhanj/binfmt:stable \
         --platform linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386 \
         --cache-from harshavardhanj/binfmt:latest --pull --push -f ./binfmt/Dockerfile ./binfmt/.
+
+  # Calling the webhook on Micro Badger in order to update image metadata
+  # NOTE: I don't think it is necessary to secure the webhook URL as calling this
+  #       URL only prompts Micro Badger to update the image's metadata on their servers.
+  - name: 'gcr.io/cloud-builders/curl'
+    id: "microbadgerWebhook"
+    waitFor: ["dockerBuildxPush"]
+    args: ["-X", "POST", "https://hooks.microbadger.com/images/harshavardhanj/binfmt/C4-Jz3TXxmfo6hxOqEuFEgedKr8="]
 timeout: "3600s"
