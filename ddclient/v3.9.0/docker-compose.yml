@@ -1,0 +1,7 @@
+version: "3.4"
+services:
+	endlessh:
+		image: harshavardhanj/ddclient:3.9.0
+		volumes:
+      - "/path/to/config/file/on/host:/etc/ddclient/ddclient.conf:ro"
+		restart: always
