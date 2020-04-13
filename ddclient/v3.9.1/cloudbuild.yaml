@@ -39,23 +39,23 @@ steps:
       - './ddclient/v3.9.1/container-structure-test.yaml'
 
   # Scanning the image with Trivy
-  - name: 'aquasec/trivy'
-    id: "trivyScan"
-    waitFor: ["dockerBuildPush"]
-    args:
-      - '--severity'
-      - 'HIGH,CRITICAL'
-      - '--exit-code'
-      - '1'
-      - '--ignore-unfixed'
-      - '--light'
-      - '--no-progress'
-      - 'harshavardhanj/ddclient:untested-3.9.1'
+  #  - name: 'aquasec/trivy'
+  #    id: "trivyScan"
+  #    waitFor: ["dockerBuildPush"]
+  #    args:
+  #      - '--severity'
+  #      - 'HIGH,CRITICAL'
+  #      - '--exit-code'
+  #      - '1'
+  #      - '--ignore-unfixed'
+  #      - '--light'
+  #      - '--no-progress'
+  #      - 'harshavardhanj/ddclient:untested-3.9.1'
 
   # Pull buildx image from Docker Hub and build 'ddclient:latest' image with multi-arch support
   - name: 'harshavardhanj/docker-buildx:latest'
     id: "dockerBuildxPush"
-    waitFor: ["containerTest", "trivyScan"]
+    waitFor: ["containerTest"]
     entrypoint: "sh"
     args:
       - '-c'

@@ -1,10 +1,13 @@
 # `ddclient` Docker Image
 
-# [![](https://images.microbadger.com/badges/version/harshavardhanj/ddclient:stable.svg)](https://microbadger.com/images/harshavardhanj/ddclient:stable "Get your own version badge on microbadger.com")
-[![](https://images.microbadger.com/badges/commit/harshavardhanj/ddclient:stable.svg)](https://microbadger.com/images/harshavardhanj/ddclient:stable "Get your own commit badge on microbadger.com")
+
+[![](https://images.microbadger.com/badges/version/harshavardhanj/ddclient:stable.svg)](https://microbadger.com/images/harshavardhanj/ddclient:stable)
+[![](https://images.microbadger.com/badges/commit/harshavardhanj/ddclient:stable.svg)](https://microbadger.com/images/harshavardhanj/ddclient:stable)
 ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/harshavardhanj/ddclient/stable)
 ![MicroBadger Layers (tag)](https://img.shields.io/microbadger/layers/harshavardhanj/ddclient/stable)
 ![Docker Pulls](https://img.shields.io/docker/pulls/harshavardhanj/ddclient)
+
+
 ![GitHub](https://img.shields.io/github/license/HarshaVardhanJ/docker_files) AND [![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
 
 In case you find this image to be useful, please consider clicking the link below to say thanks! Thank you.  
@@ -43,25 +46,29 @@ Apart from the aforementioned images, there are other images that contain `untes
 * `perl-test-taint`
 * `perl-netaddr-ip`
 * `perl-net-ip`
-* `perl-yaml`
-* `perl-log-log4perl`
+* `perl-json`
 * `perl-io-socket-ssl`
+* `perl-io-socket-inet6`
 * `Data::Validate::IP`
+
+
 
 There are images with four tags currently - `latest`, `3.9.1`, `stable` , and `3.9.0`. All images are built on top of the `alpine` base image. Currently, the `latest` and `3.9.1` tag point to the same image. The `stable` and `3.9.0` tag point to the same image.
 
 # Supported Architectures
 
-* `amd64`
-* `arm64`
-* `arm32v7`
-* `arm32v6`
-* `i386`
-* `ppc64le`
+The name of the architecture is followed by the image tags which support that architecture
+
+* ![x86_64 Tag](https://img.shields.io/badge/x86--64-amd64-informational) ![Docker Image Version(tag)](https://img.shields.io/docker/v/harshavardhanj/ddclient/3.9.0) ![Docker Image Version(tag)](https://img.shields.io/docker/v/harshavardhanj/ddclient/stable) ![Docker Image Version(tag)](https://img.shields.io/docker/v/harshavardhanj/ddclient/3.9.1) ![Docker Image Version(tag)](https://img.shields.io/docker/v/harshavardhanj/ddclient/latest)
+* ![ARM64 Tag](https://img.shields.io/badge/ARM64-arm64-informational) ![Docker Image Version(tag)](https://img.shields.io/docker/v/harshavardhanj/ddclient/3.9.0) ![Docker Image Version(tag)](https://img.shields.io/docker/v/harshavardhanj/ddclient/stable) ![Docker Image Version(tag)](https://img.shields.io/docker/v/harshavardhanj/ddclient/3.9.1) ![Docker Image Version(tag)](https://img.shields.io/docker/v/harshavardhanj/ddclient/latest)
+* ![ARM32V7 Tag](https://img.shields.io/badge/ARM32-arm32v7-informational) ![Docker Image Version(tag)](https://img.shields.io/docker/v/harshavardhanj/ddclient/3.9.0) ![Docker Image Version(tag)](https://img.shields.io/docker/v/harshavardhanj/ddclient/stable) ![Docker Image Version(tag)](https://img.shields.io/docker/v/harshavardhanj/ddclient/3.9.1) ![Docker Image Version(tag)](https://img.shields.io/docker/v/harshavardhanj/ddclient/latest)
+* ![ARM32V6 Tag](https://img.shields.io/badge/ARM32-arm32v6-informational) ![Docker Image Version(tag)](https://img.shields.io/docker/v/harshavardhanj/ddclient/3.9.0) ![Docker Image Version(tag)](https://img.shields.io/docker/v/harshavardhanj/ddclient/stable) ![Docker Image Version(tag)](https://img.shields.io/docker/v/harshavardhanj/ddclient/3.9.1) ![Docker Image Version(tag)](https://img.shields.io/docker/v/harshavardhanj/ddclient/latest)
+* ![i386 Tag](https://img.shields.io/badge/386-i386-informational) ![Docker Image Version(tag)](https://img.shields.io/docker/v/harshavardhanj/ddclient/3.9.0) ![Docker Image Version(tag)](https://img.shields.io/docker/v/harshavardhanj/ddclient/stable) ![Docker Image Version(tag)](https://img.shields.io/docker/v/harshavardhanj/ddclient/3.9.1) ![Docker Image Version(tag)](https://img.shields.io/docker/v/harshavardhanj/ddclient/latest)
+* ![ppc64le Tag](https://img.shields.io/badge/PowerPC-ppc64le-informational) ![Docker Image Version(tag)](https://img.shields.io/docker/v/harshavardhanj/ddclient/3.9.0) ![Docker Image Version(tag)](https://img.shields.io/docker/v/harshavardhanj/ddclient/stable) ![Docker Image Version(tag)](https://img.shields.io/docker/v/harshavardhanj/ddclient/3.9.1) ![Docker Image Version(tag)](https://img.shields.io/docker/v/harshavardhanj/ddclient/latest)
 
 # Description of Tags
 
-## `latest`, `3.9.1`
+## `latest`, `3.9.1` ![Docker Image Version(tag)](https://img.shields.io/docker/v/harshavardhanj/ddclient/3.9.1) ![Docker Image Version(tag)](https://img.shields.io/docker/v/harshavardhanj/ddclient/latest)
 
 The image with this tag contains no software packages installed except for the `ddclient` executable and its dependencies. To use this image,  use  the `latest` tag, or no tag at all as follows
 
@@ -81,7 +88,7 @@ harshavardhanj/ddclient
 
 
 
-## `stable`, `3.9.0`
+## `stable`, `3.9.0` ![Docker Image Version(tag)](https://img.shields.io/docker/v/harshavardhanj/ddclient/3.9.0) ![Docker Image Version(tag)](https://img.shields.io/docker/v/harshavardhanj/ddclient/stable)
 
 Just like the `latest` image, this image contains only `ddclient` and its dependencies installed. To use this image, use the `stable` tag, or the `3.9.0` tag as follows
 

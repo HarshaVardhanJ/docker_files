@@ -53,12 +53,14 @@ RUN apk update -U --no-cache \
     && apk add --no-cache \
       perl \
       perl-utils \
-      perl-test-taint \
-      perl-netaddr-ip \
-      perl-net-ip \
-      perl-yaml \
-      perl-log-log4perl \
-      perl-io-socket-ssl \
+      perl-test-taint \         # Needed to check taintedness
+      perl-netaddr-ip \         # Needed by Data::Validate::IP
+      perl-net-ip \             # Needed for manipulating IP addresses
+#      perl-yaml \
+#      perl-log-log4perl \
+      perl-json \               # JSON::PP
+      perl-io-socket-ssl \      # IO::Socket::SSL
+      perl-io-socket-inet6 \    # IO::Socket:INET6
     # Configuring Perl for `ddclient`
     #
     && cpan Data::Validate::IP \
