@@ -38,34 +38,34 @@ steps:
       - '--config'
       - './ddclient/v3.9.1/container-structure-test.yaml'
 
- # Scanning the image with Trivy
- - name: 'aquasec/trivy'
-   id: "trivyScan"
-   waitFor: ["dockerBuildPush"]
-   args:
-     - '--severity'
-     - 'HIGH,CRITICAL'
-     - '--exit-code'
-     - '1'
-     - '--ignore-unfixed'
-     - '--light'
-     - '--no-progress'
-     - 'harshavardhanj/ddclient:untested-3.9.1'
+  # Scanning the image with Trivy
+  - name: 'aquasec/trivy'
+    id: "trivyScan"
+    waitFor: ["dockerBuildPush"]
+    args:
+      - '--severity'
+      - 'HIGH,CRITICAL'
+      - '--exit-code'
+      - '1'
+      - '--ignore-unfixed'
+      - '--light'
+      - '--no-progress'
+      - 'harshavardhanj/ddclient:untested-3.9.1'
 
- # Pull buildx image from Docker Hub and build 'ddclient:latest' image with multi-arch support
- - name: 'harshavardhanj/docker-buildx:latest'
-   id: "dockerBuildxPush"
-   waitFor: ["containerTest", "trivyScan"]
-   entrypoint: "sh"
-   args:
-     - '-c'
-     - |
-       entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
-       --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/ddclient:3.9.1 \
-       -t harshavardhanj/ddclient:latest \
-       --platform linux/amd64,linux/arm64,linux/386,linux/ppc64le,linux/arm/v7,linux/arm/v6 \
-       --cache-from harshavardhanj/ddclient:3.9.1 --pull -f ./ddclient/v3.9.1/Dockerfile \
-       --push ./ddclient/v3.9.1/.
+  # Pull buildx image from Docker Hub and build 'ddclient:latest' image with multi-arch support
+  - name: 'harshavardhanj/docker-buildx:latest'
+    id: "dockerBuildxPush"
+    waitFor: ["containerTest", "trivyScan"]
+    entrypoint: "sh"
+    args:
+      - '-c'
+      - |
+        entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
+        --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/ddclient:3.9.1 \
+        -t harshavardhanj/ddclient:latest \
+        --platform linux/amd64,linux/arm64,linux/386,linux/ppc64le,linux/arm/v7,linux/arm/v6 \
+        --cache-from harshavardhanj/ddclient:3.9.1 --pull -f ./ddclient/v3.9.1/Dockerfile \
+        --push ./ddclient/v3.9.1/.
 
   # Get unique URL which is used to prompt MicroBadger to update image metadata.
   # The token, which is a part of the unique URL, is stored with Secrets Manager.
