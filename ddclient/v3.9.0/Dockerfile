@@ -62,9 +62,6 @@ RUN apk update -U --no-cache \
     # Configuring Perl for `ddclient`
     #
     && cpan Data::Validate::IP \
-    && cpan IO::Socket::SSL \
-    && cpan JSON::PP \
-    && cpan IO::Socket:INET6 \
     # Download the latest version of `ddclient`
     #
     && wget -qc https://github.com/ddclient/ddclient/archive/v$VERSION.tar.gz -O ddclient.tar.gz \

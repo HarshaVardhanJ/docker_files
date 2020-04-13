@@ -47,9 +47,6 @@ Apart from the aforementioned images, there are other images that contain `untes
 * `perl-log-log4perl`
 * `perl-io-socket-ssl`
 * `Data::Validate::IP`
-* `IO::Socket::SSL`
-* `JSON::PP`
-* `IO::Socket:INET6`
 
 There are images with four tags currently - `latest`, `3.9.1`, `stable` , and `3.9.0`. All images are built on top of the `alpine` base image. Currently, the `latest` and `3.9.1` tag point to the same image. The `stable` and `3.9.0` tag point to the same image.
 
