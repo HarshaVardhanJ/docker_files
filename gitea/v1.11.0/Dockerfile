@@ -92,7 +92,7 @@ FROM alpine:3.11.5
 
 # Copy the Gitea binary from the builder step
 #COPY --from=gitea-build /go/src/code.gitea.io/gitea/gitea /usr/local/bin/gitea
-COPY --from=gitea-build /gitea/gitea /usr/local/bin/gitea
+COPY --from=gitea-build /go/gitea/gitea /usr/local/bin/gitea
 
 # Install dependencies for Gitea
 RUN apk add --no-cache --virtual .gitea-deps \
