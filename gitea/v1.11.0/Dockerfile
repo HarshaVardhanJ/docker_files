@@ -49,6 +49,7 @@ ARG BUILD_TAGS="bindata sqlite sqlite_unlock_notify pam"
 
 # Environment variable(setting GOPATH)
 ENV GOPATH="/go"
+ENV PATH="${GOPATH//://bin:}:${PATH}"
 
 # Install dependencies for building Gitea
 RUN apk add --no-cache --virtual .go-deps \
@@ -59,9 +60,6 @@ RUN apk add --no-cache --virtual .go-deps \
       musl-dev \
       nodejs=$NODEJS_VERSION \
       npm=$NPM_VERSION \
-    # Adding GOPATH to PATH
-    #
-    export PATH=$PATH:${GOPATH//://bin:}/bin \
     # Cloning the Gitea repository
     #
     && git clone https://github.com/go-gitea/gitea \
