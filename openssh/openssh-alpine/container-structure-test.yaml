@@ -1,0 +1,72 @@
+# Container Structure Test for 'endlessh:alpine' image
+#
+schemaVersion: 2.0.0
+
+metadataTest:
+  labels:
+    - key: 'org.opencontainers.image.vendor'
+      value: 'Harsha Vardhan J'
+    - key: 'org.opencontainers.image.authors'
+      value: 'https://github.com/HarshaVardhanJ'
+    - key: 'org.opencontainers.image.title'
+      value: 'openssh'
+    - key: 'org.opencontainers.image.licenses'
+      value: 'MIT'
+    - key: 'org.opencontainers.image.url'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/tree/master/openssh'
+    - key: 'org.label-schema.vcs-url'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/tree/master/openssh'
+    - key: 'org.opencontainers.image.documentation'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/blob/master/openssh/README.md'
+    - key : 'org.opencontainers.image.source'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/blob/master/openssh/openssh-alpine/Dockerfile'
+    - key: 'org.opencontainers.image.version'
+      value: '1.0'
+    - key: 'org.label-schema.version'
+      value: '1.0'
+    - key: 'org.label-schema.schema-version'
+      value: '1.0'
+  entrypoint: ["/usr/local/bin/entrypoint.sh"]
+  cmd: ["ssh"]
+  exposedPorts: ["22"]
+
+# As arguments to the entrypoint script as obtained from environment variables, it is sufficient
+# to declare them here. Calling the entrypoint script will be sufficient.
+globalEnvVars:
+  - key: "USER"
+    value: "test"
+  - key: "PASSWORD"
+    value: "testpwd"
+  - key: "SSH_PUBKEY"
+    value: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMYv/mA/ZusCbM8EgMZ4Wq5mm14ewq4CoCDr2xu7YgHB Test SSH Key used for testing purposes"
+
+commandTests:
+  - name: "Check user id"
+    setup: [["/usr/local/bin/entrypoint.sh"]]
+    command: "id"
+    args: ["-u", "${USER}"]
+    expectedOutput: ["1000"]
+    exitCode: 0
+
+  - name: "Check if 'authorized_keys' file exists"
+    setup: [["/usr/local/bin/entrypoint.sh"]]
+    command: "ls"
+    args: ["/home/${USER}/.ssh/authorized_keys"]
+    expectedOutput: [".*authorized_keys.*"]
+    exitCode: 0
+
+  - name: "Check contents of 'authorized_keys' file"
+    setup: [["/usr/local/bin/entrypoint.sh"]]
+    command: "cat"
+    args: ["/home/${USER}/.ssh/authorized_keys"]
+    expectedOutput: [".*ssh-ed25519.*purposes"]
+    exitCode: 0
+
+fileExistenceTests:
+  - name: "Check if 'sshd_config' exists"
+    path: "/etc/ssh/sshd_config"
+    shouldExist: true
+    permissions: '-rw-r--r--'
+    uid: 0
+    gid: 0
+

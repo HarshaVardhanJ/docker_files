@@ -1,7 +1,7 @@
-## Dockerfile for dockerization of SSHD service on Debian Jessie.  ##
+########## Dockerfile for OpenSSH server on Debian Stretch ##########
 #                                                                   #
 #####################################################################
-#       DOCKERISED SSH SERVICE BUILT ON TOP OF DEBIAN JESSIE        #
+#   CONTAINERISED OPENSSH SERVER BUILT ON TOP OF DEBIAN STRETCH     #
 #-------------------------------------------------------------------#
 #                   Built and maintained by                         #
 #                       Harsha Vardhan J                            #
@@ -10,9 +10,9 @@
 #                                                                   #
 # This Dockerfile does the following:                               #
 #                                                                   #
-#    1. Imports the latest base image of Debian Stretch.             #
+#    1. Imports the latest base image of Debian Stretch Slim.       #
 #    2. Updates the repositories via the package manager.           #
-#    3. Installs the OpenSSH server.                                #
+#    3. Installs the OpenSSH server, and cleans up after.           #
 #    5. Sets some configuration values in '/etc/sshd_config'.       #
 #    6. Create /var/run/sshd directory. This needs to be done       #
 #       due to a bug in OpenSSH package in Debian Jessie.           #
@@ -27,25 +27,15 @@
 #        wish to access the SSH server and log in to it.            #
 #                                                                   #
 #####################################################################
+
 # Using a base image of debian:stretch-slim
 FROM debian:stretch-slim
 
-# Maintainer information
-LABEL maintainer="Harsha Vardhan J" \
-      github.account="https://github.com/HarshaVardhanJ" \
-      dockerfile.github.page="https://github.com/HarshaVardhanJ/docker_files\
-/blob/master/openssh/openssh-debian/Dockerfile" \
-      description="This Dockerfile creates an OpenSSH server listening on \
-port 22. By default, the user created is 'docker' with the same password. \
-This can be changed by passing environment variables during container run \
-time. USER can be passed for changing the default user, PASSWORD can be \
-passed for setting the password of the user. Also, an SSH public key can be \
-added via the SSH_PUBKEY variable which will enable the user to log in using \
-public-key authentication." \
-      version="1.0"
-
 # Defining ARG and ENV variables
 ARG CONFIG=/etc/ssh/sshd_config
+ARG BUILD_DATE
+ARG VCS_REF
+ARG VERSION=1.0
 
 # Installing bash and OpenSSH server and cleanup
 RUN apt-get update ; apt-get install -y --no-install-recommends \
@@ -84,3 +74,27 @@ EXPOSE 22
 # Any command given to the 'docker container run' will override the CMD below which
 # will result in the SSH server not being set up. 
 CMD ["ssh"]
+
+# Labels
+LABEL org.opencontainers.image.vendor="Harsha Vardhan J" \
+      org.opencontainers.image.title="openssh" \
+      org.opencontainers.image.authors="https://github.com/HarshaVardhanJ" \
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.url="https://github.com/HarshaVardhanJ/docker_files/tree/master/openssh" \
+      org.label-schema.vcs-url="https://github.com/HarshaVardhanJ/docker_files/tree/master/openssh" \
+      org.opencontainers.image.documentation="https://github.com/HarshaVardhanJ/docker_files/blob/master/openssh/README.md" \
+      org.opencontainers.image.source="https://github.com/HarshaVardhanJ/docker_files/blob/master/openssh/openssh-debian/Dockerfile" \
+      org.opencontainers.image.description="This Dockerfile creates an OpenSSH server listening on \
+      port 22. By default, the user created is 'docker' with the same password. \
+      This can be changed by passing environment variables during container run \
+      time. USER can be passed for changing the default user, PASSWORD can be \
+      passed for setting the password of the user. Also, an SSH public key can be \
+      added via the SSH_PUBKEY variable which will enable the user to log in using \
+      public-key authentication." \
+      org.opencontainers.image.created=$BUILD_DATE \
+      org.label-schema.build-date=$BUILD_DATE \
+      org.opencontainers.image.revision=$VCS_REF \
+      org.label-schema.vcs-ref=$VCS_REF \
+      org.opencontainers.image.version=$VERSION \
+      org.label-schema.version=$VERSION \
+      org.label-schema.schema-version="1.0"

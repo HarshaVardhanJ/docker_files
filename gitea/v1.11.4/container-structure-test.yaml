@@ -1,0 +1,55 @@
+# Container Structure Test for 'gitea:1.11.4' image
+#
+schemaVersion: 2.0.0
+
+metadataTest:
+  labels:
+    - key: 'org.opencontainers.image.vendor'
+      value: 'Harsha Vardhan J'
+    - key: 'org.opencontainers.image.authors'
+      value: 'https://github.com/HarshaVardhanJ'
+    - key: 'org.opencontainers.image.title'
+      value: 'gitea'
+    - key: 'org.opencontainers.image.licenses'
+      value: 'MIT'
+    - key: 'org.opencontainers.image.url'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/tree/master/gitea'
+    - key: 'org.label-schema.vcs-url'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/tree/master/gitea'
+    - key: 'org.opencontainers.image.documentation'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/blob/master/gitea/README.md'
+    - key : 'org.opencontainers.image.source'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/blob/master/gitea/v1.11.4/Dockerfile'
+    - key: 'org.opencontainers.image.version'
+      value: '1.11.4'
+    - key: 'org.label-schema.version'
+      value: '1.11.4'
+    - key: 'org.label-schema.schema-version'
+      value: '1.0'
+    - key: 'software.author.github.page'
+      value: 'https://github.com/go-gitea/gitea'
+    - key: 'software.release.version'
+      value: '1.11.4'
+  entrypoint: ["gitea"]
+  cmd: ["web"]
+  volumes: ["/data"]
+  exposedPorts: ["22", "3000"]
+
+fileExistenceTests:
+  - name: "Check if 'data' directory exists"
+    path: "/data"
+    uid: 1000
+    gid: 1000
+    shouldExist: true
+
+commandTests:
+  - name: "Check if running as user 'git'"
+    command: "whoami"
+    expectedOutput: ["git"]
+    exitCode: 0
+
+  - name: "Check if 'git' user exists"
+    command: "id"
+    args: ["-u", "git"]
+    expectedOutput: ["1000"]
+    exitCode: 0

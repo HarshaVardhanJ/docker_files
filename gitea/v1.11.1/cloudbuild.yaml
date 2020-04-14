@@ -4,7 +4,7 @@ steps:
     id: 'getCredentials'
     waitFor: ["-"]
     entrypoint: "bash"
-    args: ["./openssh/getCredentials.sh"]
+    args: ["./gitea/getCredentials.sh"]
 
   # Log in to Docker Hub using the credentials obtained in the previous steps
   - name: 'gcr.io/cloud-builders/docker'
@@ -13,7 +13,7 @@ steps:
     entrypoint: "bash"
     args: ["-c", "docker login --username=$(cat ./UserID) --password=$(cat ./AccessToken)"]
 
-  # Build 'untested' image using 'docker-buildx:stable' and push to Docker Hub
+  # Build image with 'untested' tag using 'docker-buildx:stable' and push to Docker Hub
   - name: 'harshavardhanj/docker-buildx:stable'
     id: 'dockerBuildPush'
     waitFor: ["dockerLogin"]
@@ -22,9 +22,9 @@ steps:
       - '-c'
       - |
         entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
-        --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/openssh:untested-alpine \
-        --cache-from harshavardhanj/openssh:untested-alpine --pull \
-        --push -f ./openssh/openssh-alpine/Dockerfile ./openssh/openssh-alpine/.
+        --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/gitea:untested-1.11.1 \
+        --cache-from harshavardhanj/gitea-untested-1.11.1 --pull \
+        --push -f ./gitea/v1.11.1/Dockerfile ./gitea/v1.11.1/.
 
   # Test the container pushed in the previous step
   - name: "gcr.io/gcp-runtimes/container-structure-test"
@@ -34,39 +34,37 @@ steps:
       - 'test'
       - '--pull'
       - '--image'
-      - 'harshavardhanj/openssh:untested-alpine'
+      - 'harshavardhanj/gitea:untested-1.11.1'
       - '--config'
-      - './openssh/openssh-alpine/container-structure-test.yaml'
+      - './gitea/v1.11.1/container-structure-test.yaml'
 
-  ########## Have removed Trivy scan as it seems to fail while scanning this particular image
   # Scanning the image with Trivy
-  #  - name: 'aquasec/trivy'
-  #    id: "trivyScan"
-  #    waitFor: ["dockerBuildPush"]
-  #    args:
-  #      - '--severity'
-  #      - 'HIGH,CRITICAL'
-  #      - '--exit-code'
-  #      - '1'
-  #      - '--ignore-unfixed'
-  #      - '--light'
-  #      - '--no-progress'
-  #      - 'harshavardhanj/openssh:untested-alpine' 
+  - name: 'aquasec/trivy'
+    id: "trivyScan"
+    waitFor: ["dockerBuildPush"]
+    args:
+      - '--severity'
+      - 'HIGH,CRITICAL'
+      - '--exit-code'
+      - '1'
+      - '--ignore-unfixed'
+      - '--light'
+      - '--no-progress'
+      - 'harshavardhanj/gitea:untested-1.11.1'
 
-  # Pull buildx image from Docker Hub and build 'endlessh:alpine' image with multi-arch support
+  # Pull buildx image from Docker Hub and build 'gitea:1.11.1' image with multi-arch support
   - name: 'harshavardhanj/docker-buildx:latest'
     id: "dockerBuildxPush"
-    waitFor: ["containerTest"]
+    waitFor: ["containerTest", "trivyScan"]
     entrypoint: "sh"
     args:
       - '-c'
       - |
         entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
-        --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/openssh:alpine \
-        -t harshavardhanj/endlessh:stable-alpine -t harshavardhanj/openssh:latest \
-        --platform linux/amd64,linux/arm64,linux/386,linux/ppc64le,linux/arm/v7,linux/arm/v6 \
-        --cache-from harshavardhanj/openssh:alpine --pull -f ./openssh/openssh-alpine/Dockerfile \
-        --push ./openssh/openssh-alpine/.
+        --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/gitea:1.11.1 \
+        --platform linux/amd64,linux/arm64,linux/arm/v7 \
+        --cache-from harshavardhanj/gitea:1.11.1 --pull -f ./gitea/v1.11.1/Dockerfile \
+        --push ./gitea/v1.11.1/.
 
   # Get unique URL which is used to prompt MicroBadger to update image metadata.
   # The token, which is a part of the unique URL, is stored with Secrets Manager.
@@ -75,12 +73,14 @@ steps:
     id: 'webhookSecret'
     waitFor: ["dockerBuildxPush"]
     entrypoint: 'sh'
-    args: ["-c", "gcloud beta secrets versions access 1 --secret=openssh-microbadger-webhook >./microbadgerWebhook"]
+    args: ["-c", "gcloud beta secrets versions access 1 --secret=gitea-microbadger-webhook >./microbadgerWebhook"]
 
   # Calling the webhook on Micro Badger in order to update image metadata
   - name: 'gcr.io/cloud-builders/curl'
     id: "microbadgerWebhook"
     waitFor: ["webhookSecret"]
     entrypoint: 'sh'
-    args: ["-c", "curl -X POST https://hooks.microbadger.com/images/harshavardhanj/openssh/$(cat ./microbadgerWebhook)"]
-
+    args: ["-c", "curl -X POST https://hooks.microbadger.com/images/harshavardhanj/gitea/$(cat ./microbadgerWebhook)"]
+timeout: "9000s"
+options:
+  machineType: 'N1_HIGHCPU_8'
