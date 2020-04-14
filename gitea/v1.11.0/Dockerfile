@@ -45,7 +45,7 @@ ARG NPM_VERSION=12.15.0-r1
 ARG GITEA_VERSION=1.11.0
 
 # Setting build tags for Gitea
-ARG BUILD_TAGS="bindata sqlite sqlite_unlock_notify pam"
+ARG BUILD_TAGS="bindata sqlite sqlite_unlock_notify"
 
 # Environment variable(setting GOPATH)
 ENV GOPATH="/go"
