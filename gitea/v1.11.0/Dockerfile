@@ -49,7 +49,7 @@ ARG BUILD_TAGS="bindata sqlite sqlite_unlock_notify pam"
 
 # Environment variable(setting GOPATH)
 ENV GOPATH="/go"
-ENV PATH="${GOPATH//://bin:}:${PATH}"
+ENV PATH="${GOPATH//://bin:}/bin:${PATH}"
 
 # Install dependencies for building Gitea
 RUN apk add --no-cache --virtual .go-deps \
