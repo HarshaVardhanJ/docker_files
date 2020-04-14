@@ -1,0 +1,15 @@
+# docker-compose.yaml file for Gitea
+#
+version: "3.4"
+services:
+  gitea:
+    image: harshavardhanj/gitea:1.11.0
+    restart: always
+    ports:
+      - "8080:3000"
+      - "2222:22"
+    volumes:
+      - gitea:/data
+volumes:
+  gitea:
+    driver: local
