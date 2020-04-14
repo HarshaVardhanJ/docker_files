@@ -82,5 +82,5 @@ steps:
     entrypoint: 'sh'
     args: ["-c", "curl -X POST https://hooks.microbadger.com/images/harshavardhanj/gitea/$(cat ./microbadgerWebhook)"]
 timeout: "9000s"
-options:
-  machineType: 'N1_HIGHCPU_8'
+#options:
+#  machineType: 'N1_HIGHCPU_8'
