@@ -38,8 +38,6 @@ metadataTest:
 fileExistenceTests:
   - name: "Check if 'data' directory exists"
     path: "/data"
-    uid: 1000
-    gid: 1000
     shouldExist: true
 
 commandTests:
