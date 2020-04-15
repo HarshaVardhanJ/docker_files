@@ -3,9 +3,11 @@
 version: "3.7"
 services:
   gitea:
-    user: root
     image: harshavardhanj/gitea:1.11.0
     restart: always
+    environment:
+      USER_UID: 1000
+      USER_GID: 1000
     ports:
       - "8080:3000"
       - "2222:22"
@@ -15,4 +17,3 @@ services:
         target: /data
 volumes:
   gitea:
-    driver: local

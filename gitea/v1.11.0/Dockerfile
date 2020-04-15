@@ -105,6 +105,7 @@ RUN apk add --no-cache --virtual .gitea-deps \
 
 # Setting environment variables for Gitea
 ENV USER=git
+ENV USERNAME=git
 ENV GITEA_CUSTOM=/data/gitea GITEA_WORK_DIR=/data/gitea
 ENV GODEBUG=netdns=go
 
