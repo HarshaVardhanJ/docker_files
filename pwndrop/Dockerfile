@@ -26,10 +26,11 @@
 #       daemon/service.                                             #
 #   12. Installs the 'pwndrop' exectable and checks if the service  #
 #       can be started and stopped.                                 #
-#   13. Sets the ports to be exposed.                               #
-#   14. Sets the volume where data for 'pwndrop' will be stored.    #
-#   15. Starts the 'pwndrop' executable as the main command.        #
-#   16. Sets the arguments to the 'pwndrop' executable.             #
+#   13. Cleans up by removing installation files and packages.      #
+#   14. Sets the ports to be exposed.                               #
+#   15. Sets the volume where data for 'pwndrop' will be stored.    #
+#   16. Starts the 'pwndrop' executable as the main command.        #
+#   17. Sets the arguments to the 'pwndrop' executable.             #
 #                                                                   #
 # Note : Do not forget to bind-mount a directory to the container   #
 #        at the path declared by the VOLUME directive. This is      #
@@ -90,7 +91,6 @@ RUN apk update --no-cache \
     # Install necessary packages
     #
     && apk add --no-cache openrc \
-    #&& cd /pwndrop \
     # Install 'pwndrop'
     #
     && ./pwndrop install \
@@ -98,7 +98,11 @@ RUN apk update --no-cache \
     #
     && ./pwndrop start \
     && ./pwndrop status \
-    && ./pwndrop stop
+    && ./pwndrop stop \
+    # Cleanup after installation
+    #
+    && rm -rf /pwndrop \
+    && rm -rf /lib/apk/db
 
 # Expose HTTP and HTTPS ports
 EXPOSE 80 443
