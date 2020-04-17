@@ -8,3 +8,6 @@ services:
     ports:
       - "8000:80"
       - "8443:443"
+    volumes:
+      - "/path/to/dir/on/host:/usr/local/pwndrop/data"
+      - "/path/to/pwndrop.ini:/usr/local/pwndrop/pwndrop.ini"
