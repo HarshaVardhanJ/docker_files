@@ -55,7 +55,7 @@ steps:
   # Pull buildx image from Docker Hub and build 'ddclient:stable' image with multi-arch support
   - name: 'harshavardhanj/docker-buildx:latest'
     id: "dockerBuildxPush"
-    waitFor: ["containerTest"]
+    waitFor: ["containerTest", "trivyScan"]
     entrypoint: "sh"
     args:
       - '-c'
