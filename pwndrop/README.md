@@ -1,7 +1,7 @@
 # `pwndrop`
 
-[![](https://images.microbadger.com/badges/version/harshavardhanj/pwndrop.svg)](https://microbadger.com/images/harshavardhanj/gitea "Get your own version badge on microbadger.com")
-[![](https://images.microbadger.com/badges/commit/harshavardhanj/pwndrop.svg)](https://microbadger.com/images/harshavardhanj/gitea "Get your own commit badge on microbadger.com")
+[![](https://images.microbadger.com/badges/version/harshavardhanj/pwndrop.svg)](https://microbadger.com/images/harshavardhanj/pwndrop "Get your own version badge on microbadger.com")
+[![](https://images.microbadger.com/badges/commit/harshavardhanj/pwndrop.svg)](https://microbadger.com/images/harshavardhanj/pwndrop "Get your own commit badge on microbadger.com")
 ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/harshavardhanj/pwndrop/1.0.0)
 ![MicroBadger Layers (tag)](https://img.shields.io/microbadger/layers/harshavardhanj/pwndrop/1.0.0)
 ![Docker Pulls](https://img.shields.io/docker/pulls/harshavardhanj/pwndrop)
