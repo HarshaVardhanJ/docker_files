@@ -24,7 +24,7 @@ steps:
       - |
         entrypoint.sh build --build-arg BUILD_DATE$(date -u +%Y-%m-%dT%H:%M:%SZ) \
         --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/ddclient:untested-3.9.1 \
-        --push -f ./ddclient/v3.9.0/Dockerfile ./ddclient/v3.9.1/.
+        --push -f ./ddclient/v3.9.1/Dockerfile ./ddclient/v3.9.1/.
 
   # Test the container pushed in the previous step
   - name: "gcr.io/gcp-runtimes/container-structure-test"
