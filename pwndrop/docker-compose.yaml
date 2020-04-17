@@ -1,0 +1,10 @@
+# Docker Compose file for 'pwndrop'
+#
+version: "3.4"
+services:
+  pwndrop:
+    image: harshavardhanj/pwndrop:latest-nonroot
+    restart: always
+    ports:
+      - "8000:8080"
+      - "8443:8443"
