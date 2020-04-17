@@ -70,17 +70,17 @@ steps:
   # Get unique URL which is used to prompt MicroBadger to update image metadata.
   # The token, which is a part of the unique URL, is stored with Secrets Manager.
   # This step retrieves that secret and saves it to a file.
-  #  - name: 'gcr.io/cloud-builders/gcloud'
-  #    id: 'webhookSecret'
-  #    waitFor: ["dockerBuildxPush"]
-  #    entrypoint: 'sh'
-  #    args: ["-c", "gcloud beta secrets versions access 1 --secret=ddclient-microbadger-webhook >./microbadgerWebhook"]
-  #
-  #  # Calling the webhook on Micro Badger in order to update image metadata
-  #  - name: 'gcr.io/cloud-builders/curl'
-  #    id: "microbadgerWebhook"
-  #    waitFor: ["webhookSecret"]
-  #    entrypoint: 'sh'
-  #    args: ["-c", "curl -X POST https://hooks.microbadger.com/images/harshavardhanj/ddclient/$(cat ./microbadgerWebhook)"]
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: 'webhookSecret'
+    waitFor: ["dockerBuildxPush"]
+    entrypoint: 'sh'
+    args: ["-c", "gcloud beta secrets versions access 1 --secret=pwndrop-microbadger-webhook >./microbadgerWebhook"]
+
+  # Calling the webhook on Micro Badger in order to update image metadata
+  - name: 'gcr.io/cloud-builders/curl'
+    id: "microbadgerWebhook"
+    waitFor: ["webhookSecret"]
+    entrypoint: 'sh'
+    args: ["-c", "curl -X POST https://hooks.microbadger.com/images/harshavardhanj/ddclient/$(cat ./microbadgerWebhook)"]
 
 timeout: "1320s"
