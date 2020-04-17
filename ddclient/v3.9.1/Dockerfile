@@ -62,8 +62,6 @@ RUN apk update -U --no-cache \
       # Needed for manipulating IP addresses
       #
       perl-net-ip \
-#      perl-yaml \
-#      perl-log-log4perl \
       # JSON::PP
       #
       perl-json \
@@ -89,8 +87,7 @@ RUN apk update -U --no-cache \
     && apk del --no-cache --purge .removable \
     && rm -rf /tmp/cpan* \
     && rm -rf /root/.cpan \
-    && rm -rf /lib/apk/db \
-    && rm -rf /etc/apk/world \
+    && rm -rf /lib/apk/db/scripts.tar \
     && rm -rf /usr/local/share/man \
     # Create directories for `ddclient` and creating config file
     #

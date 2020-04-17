@@ -22,9 +22,9 @@ steps:
     args:
       - '-c'
       - |
-        entrypoint.sh build --build-arg BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
-        --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/ddclient:untested-3.9.1 --push \
-        ./ddclient/v3.9.1/.
+        entrypoint.sh build --build-arg BUILD_DATE$(date -u +%Y-%m-%dT%H:%M:%SZ) \
+        --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/ddclient:untested-3.9.1 \
+        --push -f ./ddclient/v3.9.0/Dockerfile ./ddclient/v3.9.1/.
 
   # Test the container pushed in the previous step
   - name: "gcr.io/gcp-runtimes/container-structure-test"
@@ -39,23 +39,23 @@ steps:
       - './ddclient/v3.9.1/container-structure-test.yaml'
 
   # Scanning the image with Trivy
-  #  - name: 'aquasec/trivy'
-  #    id: "trivyScan"
-  #    waitFor: ["dockerBuildPush"]
-  #    args:
-  #      - '--severity'
-  #      - 'HIGH,CRITICAL'
-  #      - '--exit-code'
-  #      - '1'
-  #      - '--ignore-unfixed'
-  #      - '--light'
-  #      - '--no-progress'
-  #      - 'harshavardhanj/ddclient:untested-3.9.1'
+  - name: 'aquasec/trivy'
+    id: "trivyScan"
+    waitFor: ["dockerBuildPush"]
+    args:
+      - '--severity'
+      - 'HIGH,CRITICAL'
+      - '--exit-code'
+      - '1'
+      - '--ignore-unfixed'
+      - '--light'
+      - '--no-progress'
+      - 'harshavardhanj/ddclient:untested-3.9.1'
 
   # Pull buildx image from Docker Hub and build 'ddclient:latest' image with multi-arch support
   - name: 'harshavardhanj/docker-buildx:latest'
     id: "dockerBuildxPush"
-    waitFor: ["containerTest"]
+    waitFor: ["containerTest", "trivyScan"]
     entrypoint: "sh"
     args:
       - '-c'
