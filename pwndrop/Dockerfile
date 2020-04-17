@@ -26,9 +26,10 @@
 #       daemon/service.                                             #
 #   12. Installs the 'pwndrop' exectable and checks if the service  #
 #       can be started and stopped.                                 #
-#   13. Sets the volume where data for 'pwndrop' will be stored.    #
-#   14. Starts the 'pwndrop' executable as the main command.        #
-#   15. Sets the arguments to the 'pwndrop' executable.             #
+#   13. Sets the ports to be exposed.                               #
+#   14. Sets the volume where data for 'pwndrop' will be stored.    #
+#   15. Starts the 'pwndrop' executable as the main command.        #
+#   16. Sets the arguments to the 'pwndrop' executable.             #
 #                                                                   #
 # Note : Do not forget to bind-mount a directory to the container   #
 #        at the path declared by the VOLUME directive. This is      #
@@ -37,7 +38,6 @@
 #        on which 'pwndrop' listens(port 80 and 443).               #
 #                                                                   #
 #####################################################################
-
 
 # Start with golang:1.13-alpine base image
 # as 1.13 is the minimum version required
@@ -100,6 +100,9 @@ RUN apk update --no-cache \
     && ./pwndrop status \
     && ./pwndrop stop
 
+# Expose HTTP and HTTPS ports
+EXPOSE 80 443
+
 # Setting the volume where data is stored
 VOLUME ["/usr/local/pwndrop/data"]
 
@@ -112,7 +115,7 @@ CMD ["-config", "/usr/local/pwndrop/pwndrop.ini", "-debug", "-no-autocert", "sta
 # Labels
 LABEL org.opencontainers.image.vendor="Harsha Vardhan J" \
       org.opencontainers.image.authors="https://github.com/HarshaVardhanJ" \
-      org.opencontainers.image.title="" \
+      org.opencontainers.image.title="pwndrop" \
       org.opencontainers.image.licenses="GPLv3 AND MIT" \
       org.opencontainers.image.url="https://github.com/HarshaVardhanJ/docker_files/tree/master/pwndrop" \
       org.label-schema.vcs-url="https://github.com/HarshaVardhanJ/docker_files/tree/master/pwndrop" \

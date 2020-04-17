@@ -1,0 +1,47 @@
+# Container Structure Test for '' image
+#
+schemaVersion: 2.0.0
+metadataTest:
+  labels:
+    - key: 'org.opencontainers.image.vendor'
+      value: 'Harsha Vardhan J'
+    - key: 'org.opencontainers.image.title'
+      value: 'pwndrop'
+    - key: 'org.opencontainers.image.authors'
+      value: 'https://github.com/HarshaVardhanJ'
+    - key: 'org.opencontainers.image.url'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/tree/master/pwndrop'
+    - key: 'org.label-schema.vcs-url'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/tree/master/pwndrop'
+    - key: 'org.opencontainers.image.documentation'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/README.md'
+    - key: 'org.opencontainers.image.source'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/Dockerfile'
+    - key: 'org.opencontainers.image.licenses'
+      value: 'GPLv3 AND MIT'
+    - key: 'org.opencontainers.image.version'
+      value: '1.0'
+    - key: 'org.label-schema.version'
+      value: '1.0'
+    - key: 'org.label-schema.schema-version'
+      value: '1.0'
+    - key: 'software.author.repository'
+      value: 'https://github.com/kgretzky/pwndrop'
+  entrypoint: ["pwndrop"]
+  cmd: ["-config", "/usr/local/pwndrop/pwndrop.ini", "-debug", "-no-autocert", "start"]
+  volumes: ["/usr/local/pwndrop/data"]
+  exposedPorts: ["80", "443"]
+  workdir: '/pwndrop'
+fileExistenceTests:
+  - name: '/usr/local/pwndrop/pwndrop.ini'
+    path: '/usr/local/pwndrop/pwndrop.ini'
+    shouldExist: true
+    permissions: '-rw-r--r--'
+    uid: 0
+    gid: 0
+commandTests:
+  - name: 'Check pwndrop status'
+    command: "pwndrop"
+    args: ["status"]
+    exitCode: 0
+
