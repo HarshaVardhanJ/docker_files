@@ -11,6 +11,15 @@
 
 
 
+From Pwndrop's GitHub page
+
+> pwndrop is a self-deployable file hosting service for sending out red teaming payloads or securely sharing your private files over HTTP and WebDAV.
+
+For more information, please visit the software author's(Kuba Gretzky) [GitHub page](https://github.com/kgretzky/pwndrop).
+
+
+
+
 In case you find this image to be useful, please consider clicking the link below to say thanks! Thank you.  
 [![saythanks](https://img.shields.io/badge/say-thanks-ff69b4.svg)](https://saythanks.io/to/vardhanharshaj%40gmail.com)
 
@@ -79,7 +88,7 @@ Also, in order to access the login page, you will need to navigate to a specific
 
 ## ... via [`docker stack deploy`](https://docs.docker.com/engine/reference/commandline/stack_deploy/) or [`docker-compose`](https://github.com/docker/compose)
 
-Example `stack.yaml`/`docker-compose.yaml` for Gitea:
+Example `stack.yaml`/`docker-compose.yaml` for Pwndrop:
 
 ```yaml
 version: "3.4"
@@ -91,15 +100,16 @@ services:
       - "8000:80"
       - "8443:443"
     volumes:
-      - ./pwndrop-data:/usr/local/pwndrop/data
-      - ./pwndrop.ini:/usr/local/pwndrop/pwndrop.ini
+    	- "/path/to/host/dir:/usr/local/pwndrop/data"
 ```
 
 [![Try in ‘Play With Docker’](https://github.com/play-with-docker/stacks/raw/cff22438cb4195ace27f9b15784bbb497047afa7/assets/images/button.png)](https://labs.play-with-docker.com?stack=https://raw.githubusercontent.com/HarshaVardhanJ/docker_files/master/pwndrop/docker-compose.yaml)
 
-**NOTE: The above Play With Docker example does not work. This has something to do with not being able to create volumes on the host.**
 
-The above YAML file should be sufficient to set up a basic instance of Gitea. For more information, visit the [official Pwndrop documentation page](https://github.com/kgretzky/pwndrop).
+
+**NOTE: The above Play With Docker link does not work as PWD uses port 80 and 443. These ports are required to be free by `pwndrop`. Therefore, this will not work on Play With Docker.**
+
+The above YAML file should be sufficient to set up a basic instance of Pwndrop. For more information, visit the [official Pwndrop documentation page](https://github.com/kgretzky/pwndrop).
 
 
 
