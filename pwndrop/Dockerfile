@@ -14,8 +14,8 @@
 #       first stage of the build.                                   #
 #    2. Updates package repository information.                     #
 #    3. Installs packages necessary for building 'pwndrop'.         # 
-#    5. Clones the repository that contains the source code of      #
-#       'pwndrop'.                                                  #
+#    5. Downloads a pinned-version of the release of 'pwndrop' and  #
+#       extracts the tar ball.                                      #
 #    6. Builds the binary from the source code.                     #
 #    7. Starts with a pinned-version of Alpine for the final stage. #
 #    8. Copies the necessary files from the first stage.            #
@@ -36,16 +36,17 @@
 #        at the path declared by the VOLUME directive. This is      #
 #        where the data will be stored.                             #
 #        Also, do not forget to expose ports on the host machine    #
-#        on which 'pwndrop' listens(port 80 and 443).               #
+#        on which 'pwndrop' listens(port 53, 80, 443).              #
 #                                                                   #
 #####################################################################
 
-# Start with golang:1.13-alpine base image
-# as 1.13 is the minimum version required
+# Start with golang:1.13-alpine as Go version 1.13 
+# is the minimum version required by 'pwndrop'
 FROM golang:1.13-alpine AS builder
 
 # ARG value for link to repository which will be cloned
 ARG REPO_LINK="https://github.com/kgretzky/pwndrop.git"
+ARG PWNDROP_VERSION=1.0.0
 
 # Update repo info
 #
@@ -53,12 +54,15 @@ RUN apk update --no-cache \
     # Install the packages needed to build 'pwndrop'
     #
     && apk add --no-cache \
-      git \
       gcc \
       make \
-    # Clone the 'pwndrop' repository
+    # Download the pinned release of 'pwndrop'
     #
-    && git clone $REPO_LINK \
+    && wget https://github.com/kgretzky/pwndrop/archive/$PWNDROP_VERSION.tar.gz -O pwndrop.tar.gz \
+    # Extract the tarball
+    #
+    && tar -xzf pwndrop.tar.gz \
+    && mv pwndrop-* pwndrop \
     && cd pwndrop \
     # Build the binary
     #
@@ -77,7 +81,7 @@ COPY --from=builder /go/pwndrop/build /pwndrop
 #       lifetime of the stage that they're declared in.
 ARG BUILD_DATE
 ARG VCS_REF
-ARG VERSION=1.0
+ARG VERSION=1.0.0
 
 # Setting PATH variable to include the installation path of 'pwndrop'
 ENV PATH="/usr/local/pwndrop:${PATH}"
@@ -102,10 +106,10 @@ RUN apk update --no-cache \
     # Cleanup after installation
     #
     && rm -rf /pwndrop \
-    && rm -rf /lib/apk/db
+    && rm -rf /lib/apk/db/scripts.tar
 
-# Expose HTTP and HTTPS ports
-EXPOSE 80 443
+# Expose DNS, HTTP, HTTPS ports
+EXPOSE 53 80 443
 
 # Setting the volume where data is stored
 VOLUME ["/usr/local/pwndrop/data"]
@@ -125,7 +129,8 @@ LABEL org.opencontainers.image.vendor="Harsha Vardhan J" \
       org.label-schema.vcs-url="https://github.com/HarshaVardhanJ/docker_files/tree/master/pwndrop" \
       org.opencontainers.image.documentation="https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/README.md" \
       org.opencontainers.image.source="https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/Dockerfile" \
-      org.opencontainers.image.description="" \
+      org.opencontainers.image.description="Self-deployable file hosting service for red teamers, allowing to easily upload \
+      and share payloads over HTTP and WebDAV." \
       org.opencontainers.image.created=$BUILD_DATE \
       org.label-schema.build-date=$BUILD_DATE \
       org.opencontainers.image.revision=$VCS_REF \
@@ -133,4 +138,5 @@ LABEL org.opencontainers.image.vendor="Harsha Vardhan J" \
       org.opencontainers.image.version=$VERSION \
       org.label-schema.version=$VERSION \
       org.label-schema.schema-version="1.0" \
-      software.author.repository="https://github.com/kgretzky/pwndrop"
+      software.author.repository="https://github.com/kgretzky/pwndrop" \
+      software.release.version=$VERSION

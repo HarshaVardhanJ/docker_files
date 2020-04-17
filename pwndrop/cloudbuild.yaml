@@ -22,7 +22,7 @@ steps:
     args:
       - '-c'
       - |
-        entrypoint.sh build --build-arg BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
+        entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
         --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/pwndrop:untested \
         --push -f ./pwndrop/Dockerfile ./pwndrop/.
 
@@ -38,19 +38,19 @@ steps:
       - '--config'
       - './pwndrop/container-structure-test.yaml'
 
-        #  # Scanning the image with Trivy
-        #  - name: 'aquasec/trivy'
-        #    id: "trivyScan"
-        #    waitFor: ["dockerBuildPush"]
-        #    args:
-        #      - '--severity'
-        #      - 'HIGH,CRITICAL'
-        #      - '--exit-code'
-        #      - '1'
-        #      - '--ignore-unfixed'
-        #      - '--light'
-        #      - '--no-progress'
-        #      - 'harshavardhanj/pwndrop:untested'
+  # Scanning the image with Trivy
+  - name: 'aquasec/trivy'
+    id: "trivyScan"
+    waitFor: ["dockerBuildPush"]
+    args:
+      - '--severity'
+      - 'HIGH,CRITICAL'
+      - '--exit-code'
+      - '1'
+      - '--ignore-unfixed'
+      - '--light'
+      - '--no-progress'
+      - 'harshavardhanj/pwndrop:untested'
 
   # Pull buildx image from Docker Hub and build 'ddclient:stable' image with multi-arch support
   - name: 'harshavardhanj/docker-buildx:latest'
@@ -81,6 +81,6 @@ steps:
     id: "microbadgerWebhook"
     waitFor: ["webhookSecret"]
     entrypoint: 'sh'
-    args: ["-c", "curl -X POST https://hooks.microbadger.com/images/harshavardhanj/ddclient/$(cat ./microbadgerWebhook)"]
+    args: ["-c", "curl -X POST https://hooks.microbadger.com/images/harshavardhanj/pwndrop/$(cat ./microbadgerWebhook)"]
 
-timeout: "1320s"
+timeout: "1500s"

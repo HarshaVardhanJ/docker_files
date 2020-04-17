@@ -20,19 +20,29 @@ metadataTest:
     - key: 'org.opencontainers.image.licenses'
       value: 'GPLv3 AND MIT'
     - key: 'org.opencontainers.image.version'
-      value: '1.0'
+      value: '1.0.0'
     - key: 'org.label-schema.version'
-      value: '1.0'
+      value: '1.0.0'
     - key: 'org.label-schema.schema-version'
       value: '1.0'
     - key: 'software.author.repository'
       value: 'https://github.com/kgretzky/pwndrop'
+    - key: 'software.release.version'
+      value: '1.0.0'
   entrypoint: ["pwndrop"]
   cmd: ["-config", "/usr/local/pwndrop/pwndrop.ini", "-debug", "-no-autocert", "start"]
   volumes: ["/usr/local/pwndrop/data"]
-  exposedPorts: ["80", "443"]
+  exposedPorts: ["53", "80", "443"]
   workdir: '/pwndrop'
+
 fileExistenceTests:
+  - name: 'Check if admin folder is present'
+    path: '/usr/local/pwndrop/admin'
+    shouldExist: true
+    permissions: 'drwxr-xr-x'
+    uid: 0
+    gid: 0
+
   - name: 'Check if pwndrop is available'
     path: '/usr/local/pwndrop/pwndrop'
     shouldExist: true
