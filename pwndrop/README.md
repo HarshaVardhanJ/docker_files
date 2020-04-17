@@ -27,9 +27,11 @@ Apart from the aforementioned images, there are other images that contain `untes
 
 # Quick Reference
 
-- **Maintained by** : [HarshaVardhanJ](https://github.com/HarshaVardhanJ/docker_files/)
+- **Image maintained by** : [HarshaVardhanJ](https://github.com/HarshaVardhanJ/docker_files/)
 - **Source of this description** : [README in `docker_files` repository](https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/README.md)
-- **Submit issues on** : [GitHub Issues](https://github.com/HarshaVardhanJ/docker_files/issues)  ![GitHub Issues](https://img.shields.io/github/issues/HarshaVardhanJ/docker_files)
+- **Submit issues with image on** : [GitHub Issues](https://github.com/HarshaVardhanJ/docker_files/issues)  ![GitHub Issues](https://img.shields.io/github/issues/HarshaVardhanJ/docker_files)
+- **Submit issues with `pwndrop` on** : [GitHub Issues](https://github.com/kgretzky/pwndrop/issues) ![GitHub Issues](https://img.shields.io/github/issues/kgretzky/pwndrop)
+- **Creator of `pwndrop`** : [Kuba Gretzky](https://github.com/kgretzky/pwndrop)
 
 
 
