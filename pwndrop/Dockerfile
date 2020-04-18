@@ -16,6 +16,8 @@
 #    3. Installs packages necessary for building 'pwndrop'.         # 
 #    5. Downloads a pinned-version of the release of 'pwndrop' and  #
 #       extracts the tar ball.                                      #
+#    6. Changes the 'go build' command in the 'build.sh' file in    #
+#       order to build for different architectures.                 #
 #    6. Builds the binary from the source code.                     #
 #    7. Starts with a pinned-version of Alpine for the final stage. #
 #    8. Copies the necessary files from the first stage.            #
@@ -38,7 +40,21 @@
 #        Also, do not forget to expose ports on the host machine    #
 #        on which 'pwndrop' listens(port 53, 80, 443).              #
 #                                                                   #
+#        One line in the build script is being modified in order    #
+#        to build the Go code for different architectures rather    #
+#        than the default 'amd64'. Now, making use of the GOOS and  #
+#        GOARCH environment variables, the Go binary can be built   #
+#        for different platforms without having to hard-code the    #
+#        value in the build script.                                 #
+#                                                                   #
+#        When the image is being built using 'buildx', some         #
+#        variables are made available, such as TARGETOS and         #
+#        TARGETPLATFORM. These can be set as environment variables  #
+#        and be used to build the Go binary for that specific       #
+#        platform and architecture.                                 #
+#                                                                   #
 #####################################################################
+
 
 # Start with golang:1.13-alpine as Go version 1.13 
 # is the minimum version required by 'pwndrop'
@@ -64,6 +80,9 @@ RUN apk update --no-cache \
     && tar -xzf pwndrop.tar.gz \
     && mv pwndrop-* pwndrop \
     && cd pwndrop \
+    # Replacing a line in the 'build.sh' file
+    #
+    && sed -ri 's/GOARCH=amd64(.*)/GOOS=\$\{TARGETOS:-linux\}\ GOARCH=\$\{TARGETARCH:-amd64\}\1/g' ./build.sh \
     # Build the binary
     #
     && make
