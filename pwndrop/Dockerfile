@@ -23,27 +23,30 @@
 #       'pwndrop' will be installed.                                #
 #   10. Updates package repository information.                     #
 #   11. Installs package necessary for installing 'pwndrop' as a    #
-#       daemon/service.                                             #
+#       daemon/service, and another package for allowing a process  #
+#       to bind to privileged ports with the container.             #
 #   12. Adds an unprivileged user and group account which can be    #
 #       used to run as the primary user in the container, and to    #
 #       run the 'pwndrop' daemon/service.                           #
 #   13. Changes passwords of root user and previously created       #
 #       unprivileged user account.                                  #
-#   13. Changes ownership of the '/usr/local/pwndrop' directory to  #
-#       the previously created unprivileged user and group.         #
-#   12. Installs the 'pwndrop' exectable and checks if the service  #
+#   14. Installs the 'pwndrop' exectable and checks if the service  #
 #       can be started and stopped.                                 #
-#   13. Cleans up by removing installation files and packages.      #
-#   14. Sets the ports to be exposed.                               #
-#   15. Sets the volume where data for 'pwndrop' will be stored.    #
-#   16. Starts the 'pwndrop' executable as the main command.        #
-#   17. Sets the arguments to the 'pwndrop' executable.             #
+#   15. Changes ownership of the '/usr/local/pwndrop' directory to  #
+#       the previously created unprivileged user and group.         #
+#   16. Runs a command that allows the 'pwndrop' executable to bind #
+#       to privileged ports(<1024).                                 #
+#   17. Cleans up by removing installation files and packages.      #
+#   18. Sets the ports to be exposed.                               #
+#   19. Sets the volume where data for 'pwndrop' will be stored.    #
+#   20. Starts the 'pwndrop' executable as the main command.        #
+#   21. Sets the arguments to the 'pwndrop' executable.             #
 #                                                                   #
 # Note : Do not forget to bind-mount a directory to the container   #
 #        at the path declared by the VOLUME directive. This is      #
 #        where the data will be stored.                             #
 #        Also, do not forget to expose ports on the host machine    #
-#        on which 'pwndrop' listens(port 53, 8080, 8443).           #
+#        on which 'pwndrop' listens(port 53, 80, 443).              #
 #                                                                   #
 #####################################################################
 
@@ -91,7 +94,8 @@ ARG VCS_REF
 ARG VERSION=1.0.0
 
 # Setting PATH variable to include the installation path of 'pwndrop'
-ENV PATH="/usr/local/pwndrop:${PATH}"
+#ENV PATH="/usr/local/pwndrop:${PATH}"
+ENV PATH="/pwndrop:${PATH}"
 
 # Set the working directory
 WORKDIR /pwndrop
@@ -101,7 +105,7 @@ WORKDIR /pwndrop
 RUN apk update --no-cache \
     # Install necessary packages
     #
-    && apk add --no-cache openrc \
+    && apk add --no-cache openrc libcap \
     # Create non-root user and group
     #
     && addgroup -S -g 1000 pwndrop \
@@ -111,37 +115,41 @@ RUN apk update --no-cache \
     && set -euo pipefail ; \
     echo "root:$(head -c 32 /dev/urandom | base64)" | chpasswd ; \
     echo "pwndrop:$(head -c 32 /dev/urandom | base64)" | chpasswd ; \
-    # Install 'pwndrop'
+    # Install 'pwndrop' as daemon
     #
-    ./pwndrop install \
+    #./pwndrop install \
     # Check if 'pwndrop' starts
     #
-    && ./pwndrop start \
-    && ./pwndrop status \
-    && ./pwndrop stop \
+    #&& ./pwndrop start \
+    #&& ./pwndrop status \
+    #&& ./pwndrop stop \
     # Changing ownership of pwndrop directory
     #
-    && chown -R pwndrop:pwndrop /usr/local/pwndrop \
+    chown -R pwndrop:pwndrop /pwndrop \
+    #&& chown -R pwndrop:pwndrop /pwndrop \
+    #&& chown -R pwndrop:pwndrop /usr/local/pwndrop \
+    # Giving the 'pwndrop' process access to privileged ports
+    #
+    && setcap 'cap_net_bind_service=+ep' /pwndrop/pwndrop \
     # Cleanup after installation
     #
-    && rm -rf /pwndrop \
+    #&& rm -rf /pwndrop \
     && rm -rf /lib/apk/db/scripts.tar
 
 # Run as user 'pwndrop' inside container
 USER pwndrop
 
-# Expose HTTP, HTTPS ports
-EXPOSE 8080 8443
+# Expose DNS, HTTP, HTTPS ports
+EXPOSE 53 80 443
 
 # Setting the volume where data is stored
-VOLUME ["/usr/local/pwndrop/data"]
-#VOLUME ["/home/pwndrop/data"]
+VOLUME ["/pwndrop/data"]
 
 # Entrypoint command which will be executed when container runs
-ENTRYPOINT ["/usr/local/pwndrop/pwndrop"]
+ENTRYPOINT ["pwndrop"]
 
 # Arguments to the entrypoint command
-CMD ["-config", "/usr/local/pwndrop/pwndrop.ini", "-debug", "-no-autocert", "start"]
+CMD ["-config", "/pwndrop/pwndrop.ini", "-debug", "-no-autocert", "start"]
 
 # Labels
 LABEL org.opencontainers.image.vendor="Harsha Vardhan J" \
