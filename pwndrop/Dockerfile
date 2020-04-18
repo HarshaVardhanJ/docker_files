@@ -14,33 +14,32 @@
 #       first stage of the build.                                   #
 #    2. Updates package repository information.                     #
 #    3. Installs packages necessary for building 'pwndrop'.         # 
-#    5. Downloads a pinned-version of the release of 'pwndrop' and  #
+#    4. Downloads a pinned-version of the release of 'pwndrop' and  #
 #       extracts the tar ball.                                      #
+#    5. Changes the 'go build' command in the 'build.sh' file in    #
+#       order to build for different architectures.                 #
 #    6. Builds the binary from the source code.                     #
 #    7. Starts with a pinned-version of Alpine for the final stage. #
 #    8. Copies the necessary files from the first stage.            #
 #    9. Updates the PATH variable to include the path under which   #
 #       'pwndrop' will be installed.                                #
 #   10. Updates package repository information.                     #
-#   11. Installs package necessary for installing 'pwndrop' as a    #
-#       daemon/service, and another package for allowing a process  #
-#       to bind to privileged ports with the container.             #
+#   11. Installs package necessary for allowing a process to bind   #
+#       to privileged ports within the container.                   #
 #   12. Adds an unprivileged user and group account which can be    #
 #       used to run as the primary user in the container, and to    #
-#       run the 'pwndrop' daemon/service.                           #
+#       run the 'pwndrop' executable.                               #
 #   13. Changes passwords of root user and previously created       #
 #       unprivileged user account.                                  #
-#   14. Installs the 'pwndrop' exectable and checks if the service  #
-#       can be started and stopped.                                 #
-#   15. Changes ownership of the '/usr/local/pwndrop' directory to  #
-#       the previously created unprivileged user and group.         #
-#   16. Runs a command that allows the 'pwndrop' executable to bind #
+#   14. Changes ownership of the '/pwndrop' directory to the        #
+#       previously created unprivileged user and group.             #
+#   15. Runs a command that allows the 'pwndrop' executable to bind #
 #       to privileged ports(<1024).                                 #
-#   17. Cleans up by removing installation files and packages.      #
-#   18. Sets the ports to be exposed.                               #
-#   19. Sets the volume where data for 'pwndrop' will be stored.    #
-#   20. Starts the 'pwndrop' executable as the main command.        #
-#   21. Sets the arguments to the 'pwndrop' executable.             #
+#   16. Cleans up by removing installation files and packages.      #
+#   17. Sets the ports to be exposed.                               #
+#   18. Sets the volume where data for 'pwndrop' will be stored.    #
+#   19. Starts the 'pwndrop' executable as the main command.        #
+#   20. Sets the arguments to the 'pwndrop' executable.             #
 #                                                                   #
 # Note : Do not forget to bind-mount a directory to the container   #
 #        at the path declared by the VOLUME directive. This is      #
@@ -48,7 +47,21 @@
 #        Also, do not forget to expose ports on the host machine    #
 #        on which 'pwndrop' listens(port 53, 80, 443).              #
 #                                                                   #
+#        One line in the build script is being modified in order    #
+#        to build the Go code for different architectures rather    #
+#        than the default 'amd64'. Now, making use of the GOOS and  #
+#        GOARCH environment variables, the Go binary can be built   #
+#        for different platforms without having to hard-code the    #
+#        value in the build script.                                 #
+#                                                                   #
+#        When the image is being built using 'buildx', some         #
+#        variables are made available, such as TARGETOS and         #
+#        TARGETPLATFORM. These can be set as environment variables  #
+#        and be used to build the Go binary for that specific       #
+#        platform and architecture.                                 #
+#                                                                   #
 #####################################################################
+
 
 # Start with golang:1.13-alpine as Go version 1.13 
 # is the minimum version required by 'pwndrop'
@@ -57,6 +70,14 @@ FROM golang:1.13-alpine AS builder
 # ARG value for link to repository which will be cloned
 ARG REPO_LINK="https://github.com/kgretzky/pwndrop.git"
 ARG PWNDROP_VERSION=1.0.0
+
+# ARG values that can be used to inject OS and arch information during build time
+ARG TARGETOS
+ARG TARGETARCH
+
+# Setting environment variables that can be used by scripts running in the container
+ENV TARGETOS=$TARGETOS
+ENV TARGETARCH=$TARGETARCH
 
 # Update repo info
 #
@@ -74,6 +95,9 @@ RUN apk update --no-cache \
     && tar -xzf pwndrop.tar.gz \
     && mv pwndrop-* pwndrop \
     && cd pwndrop \
+    # Replacing a line in the 'build.sh' file
+    #
+    && sed -ri 's/GOARCH=amd64(.*)/GOOS=\$\{TARGETOS:-linux\}\ GOARCH=\$\{TARGETARCH:-amd64\}\1/g' ./build.sh \
     # Build the binary
     #
     && make
@@ -105,35 +129,24 @@ WORKDIR /pwndrop
 RUN apk update --no-cache \
     # Install necessary packages
     #
-    && apk add --no-cache openrc libcap \
+    && apk add --no-cache libcap \
     # Create non-root user and group
     #
     && addgroup -S -g 1000 pwndrop \
-    && adduser -H -h /usr/local/pwndrop -g "User account for pwndrop" -s /bin/nologin -G pwndrop -u 1000 -S -D pwndrop \
+    && adduser -H -h /pwndrop -g "User account for pwndrop" -s /bin/nologin -G pwndrop -u 1000 -S -D pwndrop \
     # Change passwords of root and non-root user
     #
     && set -euo pipefail ; \
     echo "root:$(head -c 32 /dev/urandom | base64)" | chpasswd ; \
     echo "pwndrop:$(head -c 32 /dev/urandom | base64)" | chpasswd ; \
-    # Install 'pwndrop' as daemon
-    #
-    #./pwndrop install \
-    # Check if 'pwndrop' starts
-    #
-    #&& ./pwndrop start \
-    #&& ./pwndrop status \
-    #&& ./pwndrop stop \
     # Changing ownership of pwndrop directory
     #
     chown -R pwndrop:pwndrop /pwndrop \
-    #&& chown -R pwndrop:pwndrop /pwndrop \
-    #&& chown -R pwndrop:pwndrop /usr/local/pwndrop \
     # Giving the 'pwndrop' process access to privileged ports
     #
     && setcap 'cap_net_bind_service=+ep' /pwndrop/pwndrop \
     # Cleanup after installation
     #
-    #&& rm -rf /pwndrop \
     && rm -rf /lib/apk/db/scripts.tar
 
 # Run as user 'pwndrop' inside container
