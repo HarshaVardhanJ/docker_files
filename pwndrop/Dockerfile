@@ -14,25 +14,20 @@
 #       first stage of the build.                                   #
 #    2. Updates package repository information.                     #
 #    3. Installs packages necessary for building 'pwndrop'.         # 
-#    5. Downloads a pinned-version of the release of 'pwndrop' and  #
+#    4. Downloads a pinned-version of the release of 'pwndrop' and  #
 #       extracts the tar ball.                                      #
-#    6. Changes the 'go build' command in the 'build.sh' file in    #
+#    5. Changes the 'go build' command in the 'build.sh' file in    #
 #       order to build for different architectures.                 #
 #    6. Builds the binary from the source code.                     #
 #    7. Starts with a pinned-version of Alpine for the final stage. #
 #    8. Copies the necessary files from the first stage.            #
 #    9. Updates the PATH variable to include the path under which   #
-#       'pwndrop' will be installed.                                #
-#   10. Updates package repository information.                     #
-#   11. Installs package necessary for installing 'pwndrop' as a    #
-#       daemon/service.                                             #
-#   12. Installs the 'pwndrop' exectable and checks if the service  #
-#       can be started and stopped.                                 #
-#   13. Cleans up by removing installation files and packages.      #
-#   14. Sets the ports to be exposed.                               #
-#   15. Sets the volume where data for 'pwndrop' will be stored.    #
-#   16. Starts the 'pwndrop' executable as the main command.        #
-#   17. Sets the arguments to the 'pwndrop' executable.             #
+#       'pwndrop' is present.                                       #
+#   10. Cleans up by removing installation files and packages.      #
+#   11. Sets the ports to be exposed.                               #
+#   12. Sets the volume where data for 'pwndrop' will be stored.    #
+#   13. Starts the 'pwndrop' executable as the main command.        #
+#   14. Sets the arguments to the 'pwndrop' executable.             #
 #                                                                   #
 # Note : Do not forget to bind-mount a directory to the container   #
 #        at the path declared by the VOLUME directive. This is      #
@@ -60,9 +55,16 @@
 # is the minimum version required by 'pwndrop'
 FROM golang:1.13-alpine AS builder
 
-# ARG value for link to repository which will be cloned
-ARG REPO_LINK="https://github.com/kgretzky/pwndrop.git"
+# ARG value for version-pinning pwndrop release
 ARG PWNDROP_VERSION=1.0.0
+
+# Defining ARG values for OS and arch that will be injected during build time
+ARG TARGETOS
+ARG TARGETARCH
+
+# Setting environment variables that can be used by scripts within the container
+ENV TARGETOS=$TARGETOS
+ENV TARGETARCH=$TARGETARCH
 
 # Update repo info
 #
@@ -103,41 +105,25 @@ ARG VCS_REF
 ARG VERSION=1.0.0
 
 # Setting PATH variable to include the installation path of 'pwndrop'
-ENV PATH="/usr/local/pwndrop:${PATH}"
+ENV PATH="/pwndrop:${PATH}"
 
 # Set the working directory
 WORKDIR /pwndrop
 
-# Update repo info
-#
-RUN apk update --no-cache \
-    # Install necessary packages
-    #
-    && apk add --no-cache openrc \
-    # Install 'pwndrop'
-    #
-    && ./pwndrop install \
-    # Check if 'pwndrop' starts
-    #
-    && ./pwndrop start \
-    && ./pwndrop status \
-    && ./pwndrop stop \
-    # Cleanup after installation
-    #
-    && rm -rf /pwndrop \
-    && rm -rf /lib/apk/db/scripts.tar
+# Cleanup
+RUN rm -rf /lib/apk/db/scripts.tar
 
 # Expose DNS, HTTP, HTTPS ports
 EXPOSE 53 80 443
 
 # Setting the volume where data is stored
-VOLUME ["/usr/local/pwndrop/data"]
+VOLUME ["/pwndrop/data"]
 
 # Entrypoint command which will be executed when container runs
 ENTRYPOINT ["pwndrop"]
 
 # Arguments to the entrypoint command
-CMD ["-config", "/usr/local/pwndrop/pwndrop.ini", "-debug", "-no-autocert", "start"]
+CMD ["-config", "/pwndrop/pwndrop.ini", "-debug", "-no-autocert", "start"]
 
 # Labels
 LABEL org.opencontainers.image.vendor="Harsha Vardhan J" \
