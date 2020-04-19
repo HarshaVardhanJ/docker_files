@@ -1,0 +1,10 @@
+# Docker Compose file for 'pwndrop'
+#
+version: "3.4"
+services:
+  pwndrop:
+    image: harshavardhanj/pwndrop:busybox
+    restart: always
+    ports:
+      - "8000:80"
+      - "8443:443"
