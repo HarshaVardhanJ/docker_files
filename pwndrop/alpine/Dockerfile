@@ -16,8 +16,8 @@
 #    3. Installs packages necessary for building 'pwndrop'.         # 
 #    4. Downloads a pinned-version of the release of 'pwndrop' and  #
 #       extracts the tar ball.                                      #
-#    5. Changes the 'go build' command in the 'build.sh' file in    #
-#       order to build for different architectures.                 #
+#    5. Changes the 'go build' command in the 'build.sh' file and   #
+#       Makefile in order to build for different architectures.     #
 #    6. Builds the binary from the source code.                     #
 #    7. Starts with a pinned-version of Alpine for the final stage. #
 #    8. Copies the necessary files from the first stage.            #
@@ -82,12 +82,13 @@ RUN apk update --no-cache \
     && tar -xzf pwndrop.tar.gz \
     && mv pwndrop-* pwndrop \
     && cd pwndrop \
-    # Replacing a line in the 'build.sh' file
+    # Replacing a line in 'build.sh' and Makefile
     #
-    && sed -ri 's/GOARCH=amd64(.*)/GOOS=\$\{TARGETOS:-linux\}\ GOARCH=\$\{TARGETARCH:-amd64\}\1/g' ./build.sh \
+    && sed -ri "s/GOARCH=amd64(.*)/GOOS=\${TARGETOS:-linux}\ GOARCH=\${TARGETARCH:-amd64}\1/g" ./build.sh ; \
+    sed -ri "s/(\t+)@GOARCH=amd64(.*)/\1@GOOS=\${TARGETOS:-linux}\ GOARCH=\${TARGETARCH:-amd64}\2/g" ./Makefile ; \
     # Build the binary
     #
-    && make
+    make
 
 
 # Using Alpine for final stage
@@ -123,7 +124,7 @@ VOLUME ["/pwndrop/data"]
 ENTRYPOINT ["pwndrop"]
 
 # Arguments to the entrypoint command
-CMD ["-config", "/pwndrop/pwndrop.ini", "-debug", "-no-autocert", "start"]
+CMD ["-config", "/pwndrop/pwndrop.ini", "-debug", "-no-autocert"]
 
 # Labels
 LABEL org.opencontainers.image.vendor="Harsha Vardhan J" \
@@ -133,7 +134,7 @@ LABEL org.opencontainers.image.vendor="Harsha Vardhan J" \
       org.opencontainers.image.url="https://github.com/HarshaVardhanJ/docker_files/tree/master/pwndrop" \
       org.label-schema.vcs-url="https://github.com/HarshaVardhanJ/docker_files/tree/master/pwndrop" \
       org.opencontainers.image.documentation="https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/README.md" \
-      org.opencontainers.image.source="https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/Dockerfile" \
+      org.opencontainers.image.source="https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/alpine/Dockerfile" \
       org.opencontainers.image.description="Self-deployable file hosting service for red teamers, allowing to easily upload \
       and share payloads over HTTP and WebDAV." \
       org.opencontainers.image.created=$BUILD_DATE \
