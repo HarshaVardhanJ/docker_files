@@ -63,7 +63,7 @@ steps:
         entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
         --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/pwndrop:alpine-1.0.0 \
         -t harshavardhanj/pwndrop:alpine -t harshavardhanj/pwndrop:alpine-latest \
-        -t harshavardhanj/pwndrop:latest \
+        -t harshavardhanj/pwndrop:latest -t harshavardhanj/pwndrop:stable \
         --platform linux/amd64,linux/arm64,linux/386,linux/ppc64le,linux/s390x,linux/arm/v6 \
         --cache-from harshavardhanj/pwndrop:alpine --pull -f ./pwndrop/alpine/Dockerfile \
         --push ./pwndrop/alpine/.

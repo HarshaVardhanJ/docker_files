@@ -26,7 +26,10 @@ In case you find this image to be useful, please consider clicking the link belo
 
 # Supported tags and respective `Dockerfile` links
 
-* [`latest`, `1.0.0`, `stable`](https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/Dockerfile)
+* [`latest`, `alpine`,`alpine-1.0.0`, `alpine-latest`, `stable`](https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/alpine/Dockerfile)
+* [`busybox`, `busybox-1.0.0`, `buysbox-latest`](https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/busybox/Dockerfile)
+* [`scratch`, `scratch-1.0.0`, `scratch-latest`](https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/scratch/Dockerfile)
+* [`nonroot`, `1.0.0-nonroot`, `latest-nonroot`, `stable-nonroot`](https://github.com/HarshaVardhanJ/docker_files/blob/non-root/pwndrop/Dockerfile)
 
 ### NOTE:
 
@@ -46,11 +49,11 @@ Apart from the aforementioned images, there are other images that contain `untes
 
 # Software Packages Installed
 
-The container image contains the following software packages installed as a dependency for `pwndrop`, apart from the `pwndrop` binary itself  
+The container image does not contain any other software packages installed except for the ones that come with the base image that it is built on, and the `pwndrop` executable.
 
-* `openrc`
+The `nonroot` variant contains `libpcap` installed in order to allow the non-root user to bind to privileged ports.
 
-which is used for installing `pwndrop` as a service/daemon. Apart from this, no other packages are installed.
+The `scratch`, `busybox`, and `alpine` images do not contain any extra packages installed.
 
 
 
@@ -67,6 +70,50 @@ Given below is a list of architectures for which Gitea has been built. In the ne
 
 
 
+# Description of tags
+
+### `latest`, `alpine`, `alpine-1.0.0`, `alpine-latest`, `stable` ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/harshavardhanj/pwndrop/latest) ![MicroBadger Layers (tag)](https://img.shields.io/microbadger/layers/harshavardhanj/pwndrop/latest) 
+
+The images with this tag are built on top of Alpine Linux. There are no additional packages installed over the base Alpine image except for the `pwndrop` executable. To use this image,  use the `alpine` tag as follows:
+
+```shell
+$ docker run -d --name pwndrop -p 8000:80 -p 8443:443 -v /full/path/to/host/dir:/pwndrop/data harshavardhanj/pwndrop:alpine
+```
+
+
+
+### `busybox`, `busybox-1.0.0`, `busybox-latest` ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/harshavardhanj/pwndrop/busybox) ![MicroBadger Layers (tag)](https://img.shields.io/microbadger/layers/harshavardhanj/pwndrop/busybox)
+
+The images with this tag are built on top of Busybox. Similiar to the `alpine` tag, this image does not contain any other additional packages other the `pwndrop` executable. This image is smaller in size when compared to the `alpine` image. To use this image, use the `busybox` tag as follows:
+
+```shell
+$ docker run -d --name pwndrop -p 8000:80 -p 8443:443 -v /full/path/to/host/dir:/pwndrop/data harshavardhanj/pwndrop:busybox
+```
+
+
+
+### `scratch`, `scratch-1.0.0`, `scratch-latest` ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/harshavardhanj/pwndrop/scratch) ![MicroBadger Layers (tag)](https://img.shields.io/microbadger/layers/harshavardhanj/pwndrop/scratch) 
+
+The images with this tag are built on top of Scratch(essentially, a blank slate). It goes without saying that no other packages can be installed on this. Only the `pwndrop` executable exists in this image. Since the image is built on scratch, this image is the smallest in size(a little over 6 MB). If you’re looking for the image with the smallest storage footprint, this is the one. To use this image, use the `scratch` tag as follows:
+
+```shell
+$ docker run -d --name pwndrop -p 8000:80 -p 8443:443 -v /full/path/to/host/dir:/pwndrop/data harshavardhanj/pwndrop:scratch
+```
+
+
+
+### `nonroot`, `nonroot-1.0.0`  ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/harshavardhanj/pwndrop/nonroot)  ![MicroBadger Layers (tag)](https://img.shields.io/microbadger/layers/harshavardhanj/pwndrop/nonroot) 
+
+The image with this tag, as the name states, is built with security in mind. The ‘run-as’ user in the container is a non-root user. The `pwndrop` process is also started by this user. If you prefer running containers which run processes as non-root users, this is the image for you. To use this image, use the `nonroot` tag as follows:
+
+```shell
+$ docker run -d --name pwndrop -p 8000:80 -p 8443:443 -v /full/path/to/host/dir:/pwndrop/data harshavardhanj/pwndrop:nonroot
+```
+
+
+
+
+
 # How to use this image
 
 ## Start a `pwndrop` instance
@@ -75,7 +122,7 @@ Given below is a list of architectures for which Gitea has been built. In the ne
 A basic instance can be set up with the following one-liner command
 
 ```shell
-$ docker container run -d --name pwndrop -p 8000:80 -p 8443:443 -v /full/path/to/host/dir:/usr/local/pwndrop/data harshavardhanj/pwndrop:stable
+$ docker container run -d --name pwndrop -p 8000:80 -p 8443:443 -v /full/path/to/host/dir:/pwndrop/data harshavardhanj/pwndrop:latest
 ```
 
 This will set up a basic instance of pwndrop on your machine. Port 8000 has been connected to port 80 on the container, and port 8443 to port 443 on the container. So, in order to access the web server, you will need to open the URL `http://localhost:8000/` in order to access the installation screen. Also, create an empty directory so you can bind-mount it to `pwndrop`. 
@@ -100,7 +147,7 @@ services:
       - "8000:80"
       - "8443:443"
     volumes:
-    	- "/path/to/host/dir:/usr/local/pwndrop/data"
+    	- "/path/to/host/dir:/pwndrop/data"
 ```
 
 [![Try in ‘Play With Docker’](https://github.com/play-with-docker/stacks/raw/cff22438cb4195ace27f9b15784bbb497047afa7/assets/images/button.png)](https://labs.play-with-docker.com?stack=https://raw.githubusercontent.com/HarshaVardhanJ/docker_files/master/pwndrop/docker-compose.yaml)
