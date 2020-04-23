@@ -14,7 +14,7 @@ steps:
     args: ["-c", "docker login --username=$(cat ./UserID) --password=$(cat ./AccessToken)"]
 
   # Build from Dockerfile using the docker-buildx:stable image, and
-  # tag the image with 'untested-nonroot' and push to Docker Hub
+  # tag the image with 'alpine-untested-nonroot' and push to Docker Hub
   - name: 'harshavardhanj/docker-buildx:stable'
     id: 'dockerBuildPush'
     waitFor: ["dockerLogin"]
@@ -23,8 +23,8 @@ steps:
       - '-c'
       - |
         entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
-        --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/pwndrop:untested-nonroot \
-        --push -f ./pwndrop/Dockerfile ./pwndrop/.
+        --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/pwndrop:alpine-untested-nonroot-1.0.0 \
+        --push -f ./pwndrop/alpine/Dockerfile ./pwndrop/alpine/.
 
   # Test the container pushed in the previous step
   - name: "gcr.io/gcp-runtimes/container-structure-test"
@@ -34,9 +34,9 @@ steps:
       - 'test'
       - '--pull'
       - '--image'
-      - 'harshavardhanj/pwndrop:untested-nonroot'
+      - 'harshavardhanj/pwndrop:alpine-untested-nonroot-1.0.0'
       - '--config'
-      - './pwndrop/container-structure-test.yaml'
+      - './pwndrop/alpine/container-structure-test.yaml'
 
   # Scanning the image with Trivy
   - name: 'aquasec/trivy'
@@ -50,23 +50,22 @@ steps:
       - '--ignore-unfixed'
       - '--light'
       - '--no-progress'
-      - 'harshavardhanj/pwndrop:untested-nonroot'
+      - 'harshavardhanj/pwndrop:alpine-untested-nonroot-1.0.0'
 
-  # Pull buildx image from Docker Hub and build 'pwndrop:stable-nonroot' image with multi-arch support
+  # Pull buildx image from Docker Hub and build 'pwndrop:alpine-nonroot' image with multi-arch support
   - name: 'harshavardhanj/docker-buildx:latest'
     id: "dockerBuildxPush"
-    waitFor: ["containerTest"]
+    waitFor: ["containerTest", "trivyScan"]
     entrypoint: "sh"
     args:
       - '-c'
       - |
         entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
-        --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/pwndrop:1.0.0-nonroot \
-        -t harshavardhanj/pwndrop:nonroot -t harshavardhanj/pwndrop:stable-nonroot \
-        -t harshavardhanj/pwndrop:latest-nonroot \
+        --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/pwndrop:alpine-nonroot-1.0.0 \
+        -t harshavardhanj/pwndrop:alpine-nonroot -t harshavardhanj/pwndrop:alpine-nonroot-latest \
         --platform linux/amd64,linux/arm64,linux/386,linux/ppc64le,linux/s390x,linux/arm/v6 \
-        --cache-from harshavardhanj/pwndrop:1.0.0-nonroot --pull -f ./pwndrop/Dockerfile \
-        --push ./pwndrop/.
+        --cache-from harshavardhanj/pwndrop:alpine-nonroot-1.0.0 --pull -f ./pwndrop/alpine/Dockerfile \
+        --push ./pwndrop/alpine/.
 
   # Get unique URL which is used to prompt MicroBadger to update image metadata.
   # The token, which is a part of the unique URL, is stored with Secrets Manager.

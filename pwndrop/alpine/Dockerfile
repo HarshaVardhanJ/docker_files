@@ -13,33 +13,31 @@
 #    1. Starts with a pinned-version of Golang Alpine for the       # 
 #       first stage of the build.                                   #
 #    2. Updates package repository information.                     #
-#    3. Installs packages necessary for building 'pwndrop'.         # 
+#    3. Installs packages necessary for building 'pwndrop', and for #
+#       granting the 'pwndrop' executable access to privileged      #
+#       ports(<1024).                                               #
 #    4. Downloads a pinned-version of the release of 'pwndrop' and  #
 #       extracts the tar ball.                                      #
-#    5. Changes the 'go build' command in the 'build.sh' file in    #
+#    5. Changes the 'go build' command in the 'Makefile' file in    #
 #       order to build for different architectures.                 #
 #    6. Builds the binary from the source code.                     #
-#    7. Starts with a pinned-version of Alpine for the final stage. #
-#    8. Copies the necessary files from the first stage.            #
-#    9. Updates the PATH variable to include the path under which   #
+#    7. Grant access to privileged ports to 'pwndrop' executable.   #
+#    8. Add non-root user and group which will be used to run as    #
+#       primary user in container and to run 'pwndrop'.             #
+#    9. Create 'data' directory for 'pwndrop'.                      #
+#   10. Starts with a pinned-version of Alpine for the final stage. #
+#   11. Copies the necessary files from the first stage.            #
+#   12. Updates the PATH variable to include the path under which   #
 #       'pwndrop' will be installed.                                #
-#   10. Updates package repository information.                     #
-#   11. Installs package necessary for allowing a process to bind   #
-#       to privileged ports within the container.                   #
-#   12. Adds an unprivileged user and group account which can be    #
-#       used to run as the primary user in the container, and to    #
-#       run the 'pwndrop' executable.                               #
-#   13. Changes passwords of root user and previously created       #
+#   13. Updates package repository information and installs package #
+#       necessary for granting access to privileged ports.          #
+#   14. Changes passwords of root user and previously created       #
 #       unprivileged user account.                                  #
-#   14. Changes ownership of the '/pwndrop' directory to the        #
-#       previously created unprivileged user and group.             #
-#   15. Runs a command that allows the 'pwndrop' executable to bind #
-#       to privileged ports(<1024).                                 #
-#   16. Cleans up by removing installation files and packages.      #
-#   17. Sets the ports to be exposed.                               #
-#   18. Sets the volume where data for 'pwndrop' will be stored.    #
-#   19. Starts the 'pwndrop' executable as the main command.        #
-#   20. Sets the arguments to the 'pwndrop' executable.             #
+#   15. Cleans up by removing installation files and packages.      #
+#   16. Sets the ports to be exposed.                               #
+#   17. Sets the volume where data for 'pwndrop' will be stored.    #
+#   18. Starts the 'pwndrop' executable as the main command.        #
+#   19. Sets the arguments to the 'pwndrop' executable.             #
 #                                                                   #
 # Note : Do not forget to bind-mount a directory to the container   #
 #        at the path declared by the VOLUME directive. This is      #
@@ -47,28 +45,14 @@
 #        Also, do not forget to expose ports on the host machine    #
 #        on which 'pwndrop' listens(port 53, 80, 443).              #
 #                                                                   #
-#        One line in the build script is being modified in order    #
-#        to build the Go code for different architectures rather    #
-#        than the default 'amd64'. Now, making use of the GOOS and  #
-#        GOARCH environment variables, the Go binary can be built   #
-#        for different platforms without having to hard-code the    #
-#        value in the build script.                                 #
-#                                                                   #
-#        When the image is being built using 'buildx', some         #
-#        variables are made available, such as TARGETOS and         #
-#        TARGETPLATFORM. These can be set as environment variables  #
-#        and be used to build the Go binary for that specific       #
-#        platform and architecture.                                 #
-#                                                                   #
 #####################################################################
 
 
-# Start with golang:1.13-alpine as Go version 1.13 
+# Start with golang:1.13-alpine as Go version 1.13
 # is the minimum version required by 'pwndrop'
 FROM golang:1.13-alpine AS builder
 
 # ARG value for link to repository which will be cloned
-ARG REPO_LINK="https://github.com/kgretzky/pwndrop.git"
 ARG PWNDROP_VERSION=1.0.0
 
 # ARG values that can be used to inject OS and arch information during build time
@@ -82,11 +66,13 @@ ENV TARGETARCH=$TARGETARCH
 # Update repo info
 #
 RUN apk update --no-cache \
-    # Install the packages needed to build 'pwndrop'
+    # Install the packages needed to build 'pwndrop', and to grant the pwndrop executable
+    # the permission to bind to privileged ports(<1024)
     #
     && apk add --no-cache \
       gcc \
       make \
+      libcap \
     # Download the pinned release of 'pwndrop'
     #
     && wget https://github.com/kgretzky/pwndrop/archive/$PWNDROP_VERSION.tar.gz -O pwndrop.tar.gz \
@@ -95,19 +81,29 @@ RUN apk update --no-cache \
     && tar -xzf pwndrop.tar.gz \
     && mv pwndrop-* pwndrop \
     && cd pwndrop \
-    # Replacing a line in the 'build.sh' file
+    # Replacing a line in Makefile
     #
-    && sed -ri 's/GOARCH=amd64(.*)/GOOS=\$\{TARGETOS:-linux\}\ GOARCH=\$\{TARGETARCH:-amd64\}\1/g' ./build.sh \
+    && sed -ri "s/(\t+)@GOARCH=amd64(.*)/\1@GOOS=\${TARGETOS:-linux}\ GOARCH=\${TARGETARCH:-amd64}\2/g" ./Makefile \
     # Build the binary
     #
-    && make
+    && make \
+    # Giving the 'pwndrop' process access to privileged ports
+    #
+    && setcap 'cap_net_bind_service=+ep' ./build/pwndrop \
+    # Create non-root user and group
+    #
+    && addgroup -S -g 1000 pwndrop \
+    && adduser -H -h /pwndrop -g "User account for pwndrop" -s /bin/nologin -G pwndrop -u 1000 -S -D pwndrop \
+    && mkdir ./build/data
 
 
 # Using Alpine for final stage
 FROM alpine:3.11.5
 
 # Copy required files from build stage
-COPY --from=builder /go/pwndrop/build /pwndrop
+COPY --from=builder /etc/passwd /etc/passwd
+COPY --from=builder /etc/group /etc/group
+COPY --chown=pwndrop:pwndrop --from=builder /go/pwndrop/build /pwndrop/
 
 # ARG values for injecting metadata during build time
 # NOTE: When using ARGS in a multi-stage build, remember to redeclare
@@ -118,36 +114,21 @@ ARG VCS_REF
 ARG VERSION=1.0.0
 
 # Setting PATH variable to include the installation path of 'pwndrop'
-#ENV PATH="/usr/local/pwndrop:${PATH}"
 ENV PATH="/pwndrop:${PATH}"
 
 # Set the working directory
 WORKDIR /pwndrop
 
-# Update repo info
-#
-RUN apk update --no-cache \
-    # Install necessary packages
-    #
-    && apk add --no-cache libcap \
-    # Create non-root user and group
-    #
-    && addgroup -S -g 1000 pwndrop \
-    && adduser -H -h /pwndrop -g "User account for pwndrop" -s /bin/nologin -G pwndrop -u 1000 -S -D pwndrop \
-    # Change passwords of root and non-root user
-    #
-    && set -euo pipefail ; \
+# Changing the passwords of root and non-root user
+RUN set -euo pipefail ; \
     echo "root:$(head -c 32 /dev/urandom | base64)" | chpasswd ; \
     echo "pwndrop:$(head -c 32 /dev/urandom | base64)" | chpasswd ; \
-    # Changing ownership of pwndrop directory
+    # Installing 'libcap' package
     #
-    chown -R pwndrop:pwndrop /pwndrop \
-    # Giving the 'pwndrop' process access to privileged ports
-    #
-    && setcap 'cap_net_bind_service=+ep' /pwndrop/pwndrop \
-    # Cleanup after installation
-    #
-    && rm -rf /lib/apk/db/scripts.tar
+    apk update --no-cache \
+    && apk add --no-cache libcap \
+    # Clean up
+    && rm -f /lib/apk/db/scripts.tar /lib/apk/db/triggers
 
 # Run as user 'pwndrop' inside container
 USER pwndrop
@@ -162,7 +143,7 @@ VOLUME ["/pwndrop/data"]
 ENTRYPOINT ["pwndrop"]
 
 # Arguments to the entrypoint command
-CMD ["-config", "/pwndrop/pwndrop.ini", "-debug", "-no-autocert", "start"]
+CMD ["-config", "/pwndrop/pwndrop.ini", "-debug", "-no-autocert"]
 
 # Labels
 LABEL org.opencontainers.image.vendor="Harsha Vardhan J" \
@@ -172,7 +153,7 @@ LABEL org.opencontainers.image.vendor="Harsha Vardhan J" \
       org.opencontainers.image.url="https://github.com/HarshaVardhanJ/docker_files/tree/non-root/pwndrop" \
       org.label-schema.vcs-url="https://github.com/HarshaVardhanJ/docker_files/tree/non-root/pwndrop" \
       org.opencontainers.image.documentation="https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/README.md" \
-      org.opencontainers.image.source="https://github.com/HarshaVardhanJ/docker_files/blob/non-root/pwndrop/Dockerfile" \
+      org.opencontainers.image.source="https://github.com/HarshaVardhanJ/docker_files/blob/non-root/pwndrop/alpine/Dockerfile" \
       org.opencontainers.image.description="Self-deployable file hosting service for red teamers, allowing to easily upload \
       and share payloads over HTTP and WebDAV." \
       org.opencontainers.image.created=$BUILD_DATE \

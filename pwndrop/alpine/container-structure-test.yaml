@@ -16,7 +16,7 @@ metadataTest:
     - key: 'org.opencontainers.image.documentation'
       value: 'https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/README.md'
     - key: 'org.opencontainers.image.source'
-      value: 'https://github.com/HarshaVardhanJ/docker_files/blob/non-root/pwndrop/Dockerfile'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/blob/non-root/pwndrop/alpine/Dockerfile'
     - key: 'org.opencontainers.image.licenses'
       value: 'GPLv3 AND MIT'
     - key: 'org.opencontainers.image.version'
@@ -30,7 +30,7 @@ metadataTest:
     - key: 'software.release.version'
       value: '1.0.0'
   entrypoint: ["pwndrop"]
-  cmd: ["-config", "/pwndrop/pwndrop.ini", "-debug", "-no-autocert", "start"]
+  cmd: ["-config", "/pwndrop/pwndrop.ini", "-debug", "-no-autocert"]
   volumes: ["/pwndrop/data"]
   exposedPorts: ["53", "80", "443"]
   workdir: '/pwndrop'
