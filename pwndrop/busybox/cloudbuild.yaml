@@ -24,7 +24,7 @@ steps:
       - |
         entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
         --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/pwndrop:busybox-untested-nonroot-1.0.0 \
-        --push -f ./pwndrop/busybox/Dockerfile ./pwndrop/busybox/.
+        -f ./pwndrop/busybox/Dockerfile --push ./pwndrop/busybox/.
 
   # Test the container pushed in the previous step
   - name: "gcr.io/gcp-runtimes/container-structure-test"
