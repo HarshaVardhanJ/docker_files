@@ -24,7 +24,7 @@ steps:
       - |
         entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
         --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/pwndrop:busybox-untested-nonroot-1.0.0 \
-        -f ./pwndrop/busybox/Dockerfile --push ./pwndrop/busybox/.
+        -f ./pwndrop/busybox/Dockerfile --push ./pwndrop/.
 
   # Test the container pushed in the previous step
   - name: "gcr.io/gcp-runtimes/container-structure-test"
@@ -51,7 +51,7 @@ steps:
         -t harshavardhanj/pwndrop:busybox-nonroot -t harshavardhanj/pwndrop:busybox-nonroot-latest \
         --platform linux/amd64,linux/arm64,linux/386,linux/ppc64le,linux/s390x,linux/arm/v6 \
         --cache-from harshavardhanj/pwndrop:busybox-nonroot-1.0.0 --pull -f ./pwndrop/busybox/Dockerfile \
-        --push ./pwndrop/busybox/.
+        --push ./pwndrop/.
 
   # Get unique URL which is used to prompt MicroBadger to update image metadata.
   # The token, which is a part of the unique URL, is stored with Secrets Manager.
