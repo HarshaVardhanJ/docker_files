@@ -98,7 +98,7 @@ RUN apk update --no-cache \
 
 
 # Using Alpine for final stage
-FROM alpine:3.11.5
+FROM alpine:3.11.6
 
 # Copy required files from build stage
 COPY --from=builder /etc/passwd /etc/passwd
