@@ -120,7 +120,7 @@ COPY --from=builder /etc/group /etc/group
 COPY --chown=pwndrop:pwndrop --from=builder /go/pwndrop/build /pwndrop/
 
 # Copy default config file from the host
-COPY --chown=pwndrop:pwndrop /workspace/pwndrop/busybox/pwndrop.ini /pwndrop/pwndrop.ini
+COPY --chown=pwndrop:pwndrop ./pwndrop/busybox/pwndrop.ini /pwndrop/pwndrop.ini
 
 # Setting PATH variable to include the installation path of 'pwndrop'
 ENV PATH="/pwndrop:${PATH}" 
