@@ -18,6 +18,7 @@ steps:
   - name: 'harshavardhanj/docker-buildx:stable'
     id: 'dockerBuildPush'
     waitFor: ["dockerLogin"]
+    dir: '/workspace'
     entrypoint: "sh"
     args:
       - '-c'
@@ -42,6 +43,7 @@ steps:
   - name: 'harshavardhanj/docker-buildx:latest'
     id: "dockerBuildxPush"
     waitFor: ["containerTest"]
+    dir: '/workspace'
     entrypoint: "sh"
     args:
       - '-c'
