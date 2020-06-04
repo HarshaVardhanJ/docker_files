@@ -106,7 +106,7 @@ COPY --from=builder /etc/group /etc/group
 COPY --chown=pwndrop:pwndrop --from=builder /go/pwndrop/build /pwndrop/
 
 # Copy config file from host
-COPY --chown=pwndrop:pwndrop ./pwndrop.ini /pwndrop/pwndrop.ini
+COPY --chown=pwndrop:pwndrop pwndrop.ini /pwndrop/pwndrop.ini
 
 # Setting PATH variable to include the installation path of 'pwndrop'
 ENV PATH="/pwndrop:${PATH}" 
