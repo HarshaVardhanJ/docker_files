@@ -57,11 +57,6 @@ fileExistenceTests:
     uid: 1000
     gid: 1000
 commandTests:
-  - name: 'Check if pwndrop is installed as daemon'
-    command: "pwndrop"
-    args: ["status"]
-    exitCode: 1
-
   - name: 'Check is pwndrop is in PATH'
     command: 'which'
     args: ["pwndrop"]
