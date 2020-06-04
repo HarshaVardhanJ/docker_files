@@ -53,7 +53,7 @@ fileExistenceTests:
   - name: 'Check if pwndrop.ini config file is available'
     path: '/pwndrop/pwndrop.ini'
     shouldExist: true
-    permissions: '-rw-r--r--'
+    permissions: '-rw-rw-r--'
     uid: 1000
     gid: 1000
 commandTests:
