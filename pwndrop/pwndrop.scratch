@@ -1,0 +1,12 @@
+[pwndrop]
+# The external IP of your pwndrop instance (must be set if you want to use the nameserver feature)
+listen_ip  = 0.0.0.0
+# Listening port for HTTP and WebDAV
+http_port  = 8080
+# Listening port for HTTPS
+https_port = 8443
+# Directory path where data storage will reside (relative paths are from executable directory path)
+data_dir   = /pwndrop/data
+# Directory path where the admin panel files reside (relative paths are from executable directory path)
+admin_dir  = /pwndrop/admin
+
