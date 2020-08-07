@@ -37,7 +37,7 @@ commandTests:
     setup: [["entrypoint.sh", "init"]]
     command: "docker"
     args: ["--version"]
-    expectedOutput: ["Docker version 19.03.5"]
+    expectedOutput: ["Docker version 19.03.12"]
     exitCode: 0
 
   - name: "Check version of 'buildx' installed"

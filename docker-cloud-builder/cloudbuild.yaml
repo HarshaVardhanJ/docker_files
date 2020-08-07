@@ -48,9 +48,9 @@ steps:
   #    args:
   #      - 'build'
   #      - '-t'
-  #      - 'harshavardhanj/docker-buildx:19.03.5-r0'
+  #      - 'harshavardhanj/docker-buildx:19.03.12-r0'
   #      - '-t'
-  #      - 'harshavardhanj/docker-buildx:19.03.5'
+  #      - 'harshavardhanj/docker-buildx:19.03.12'
   #      - '-t'
   #      - 'harshavardhanj/docker-buildx:19.03'
   #      - '-t'
@@ -76,9 +76,9 @@ steps:
     args:
       - 'build'
       - '-t'
-      - 'harshavardhanj/docker-buildx:19.03.5-r0'
+      - 'harshavardhanj/docker-buildx:19.03.12-r0'
       - '-t'
-      - 'harshavardhanj/docker-buildx:19.03.5'
+      - 'harshavardhanj/docker-buildx:19.03.12'
       - '-t'
       - 'harshavardhanj/docker-buildx:19.03'
       - '-t'
@@ -94,8 +94,8 @@ steps:
       - './docker-cloud-builder/.'
 
         #images:
-        #  - 'harshavardhanj/docker-buildx:19.03.5-r0'
-        #  - 'harshavardhanj/docker-buildx:19.03.5'
+        #  - 'harshavardhanj/docker-buildx:19.03.12-r0'
+        #  - 'harshavardhanj/docker-buildx:19.03.12'
         #  - 'harshavardhanj/docker-buildx:19.03'
         #  - 'harshavardhanj/docker-buildx:stable' 
         #  - 'harshavardhanj/docker-buildx'

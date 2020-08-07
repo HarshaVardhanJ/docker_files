@@ -11,7 +11,7 @@
 #                                                                   #
 # This Dockerfile does the following:                               #
 #                                                                   #
-#    1. Imports the 3.11.3 base image of Alpine Linux.              #
+#    1. Imports a pinned version of Alpine Linux.                   #
 #    2. Adds the Community repository which contains Docker.        #
 #    3. Downloads a specific version of Docker and sets a flag to   #
 #       enable experimental features(buildx) in Docker.             #
@@ -32,13 +32,13 @@
 #####################################################################
 
 # Starting with the base image of Alpine Linux version 3.11.3
-FROM alpine:3.11.3
+FROM alpine:3.12.0
 
 # Version number of `docker buildx`
 ARG buildxVersion=0.3.1
 
 # Version number of the Docker Engine
-ARG dockerVersion=19.03.5-r0
+ARG dockerVersion=19.03.12-r0
 
 # Setting working directory to '/'
 WORKDIR /
