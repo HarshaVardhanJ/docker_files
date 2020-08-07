@@ -1,0 +1,63 @@
+# Container Structure Test for 'pwndrop:busybox' image
+#
+schemaVersion: 2.0.0
+metadataTest:
+  labels:
+    - key: 'org.opencontainers.image.vendor'
+      value: 'Harsha Vardhan J'
+    - key: 'org.opencontainers.image.title'
+      value: 'pwndrop'
+    - key: 'org.opencontainers.image.authors'
+      value: 'https://github.com/HarshaVardhanJ'
+    - key: 'org.opencontainers.image.url'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/tree/master/pwndrop'
+    - key: 'org.label-schema.vcs-url'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/tree/master/pwndrop'
+    - key: 'org.opencontainers.image.documentation'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/README.md'
+    - key: 'org.opencontainers.image.source'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/v1.0.0/busybox/Dockerfile'
+    - key: 'org.opencontainers.image.licenses'
+      value: 'GPLv3 AND MIT'
+    - key: 'org.opencontainers.image.version'
+      value: '1.0.0'
+    - key: 'org.label-schema.version'
+      value: '1.0.0'
+    - key: 'org.label-schema.schema-version'
+      value: '1.0'
+    - key: 'software.author.repository'
+      value: 'https://github.com/kgretzky/pwndrop'
+    - key: 'software.release.version'
+      value: '1.0.0'
+      #workdir: "/pwndrop"
+  entrypoint: ["pwndrop"]
+  cmd: ["-debug", "-no-autocert", "-config", "/pwndrop/pwndrop.ini"]
+  volumes: ["/pwndrop/data"]
+  exposedPorts: ["53", "80", "443"]
+
+fileExistenceTests:
+  - name: 'Check if admin folder is present'
+    path: '/pwndrop/admin'
+    shouldExist: true
+    permissions: 'drwxr-xr-x'
+    uid: 0
+    gid: 0
+
+  - name: 'Check if pwndrop is available'
+    path: '/pwndrop/pwndrop'
+    shouldExist: true
+    permissions: '-rwx------'
+    uid: 0
+    gid: 0
+commandTests:
+  - name: 'Check if pwndrop is not installed as a daemon'
+    command: "/pwndrop/pwndrop"
+    args: ["status"]
+    exitCode: 1
+
+  - name: 'Check if running as root user'
+    command: "id"
+    args: ["-u"]
+    exitCode: 0
+    expectedOutput: ["0"]
+

@@ -1,0 +1,10 @@
+# Docker Compose file for 'pwndrop'
+#
+version: "3.4"
+services:
+  pwndrop:
+    image: harshavardhanj/pwndrop:alpine-1.0.0
+    restart: always
+    ports:
+      - "8000:80"
+      - "8443:443"

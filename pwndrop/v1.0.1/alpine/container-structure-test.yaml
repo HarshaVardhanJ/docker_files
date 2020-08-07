@@ -1,0 +1,62 @@
+# Container Structure Test for '' image
+#
+schemaVersion: 2.0.0
+metadataTest:
+  labels:
+    - key: 'org.opencontainers.image.vendor'
+      value: 'Harsha Vardhan J'
+    - key: 'org.opencontainers.image.title'
+      value: 'pwndrop'
+    - key: 'org.opencontainers.image.authors'
+      value: 'https://github.com/HarshaVardhanJ'
+    - key: 'org.opencontainers.image.url'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/tree/master/pwndrop'
+    - key: 'org.label-schema.vcs-url'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/tree/master/pwndrop'
+    - key: 'org.opencontainers.image.documentation'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/README.md'
+    - key: 'org.opencontainers.image.source'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/v1.0.1/alpine/Dockerfile'
+    - key: 'org.opencontainers.image.licenses'
+      value: 'GPLv3 AND MIT'
+    - key: 'org.opencontainers.image.version'
+      value: '1.0.1'
+    - key: 'org.label-schema.version'
+      value: '1.0.1'
+    - key: 'org.label-schema.schema-version'
+      value: '1.0'
+    - key: 'software.author.repository'
+      value: 'https://github.com/kgretzky/pwndrop'
+    - key: 'software.release.version'
+      value: '1.0.1'
+  entrypoint: ["pwndrop"]
+  cmd: ["-config", "/pwndrop/pwndrop.ini", "-debug", "-no-autocert"]
+  volumes: ["/pwndrop/data"]
+  exposedPorts: ["53", "80", "443"]
+  workdir: '/pwndrop'
+
+fileExistenceTests:
+  - name: 'Check if admin folder is present'
+    path: '/pwndrop/admin'
+    shouldExist: true
+    permissions: 'drwxr-xr-x'
+    uid: 0
+    gid: 0
+
+  - name: 'Check if pwndrop is available'
+    path: '/pwndrop/pwndrop'
+    shouldExist: true
+    permissions: '-rwx------'
+    uid: 0
+    gid: 0
+commandTests:
+  - name: 'Check if pwndrop is installed as service'
+    command: "pwndrop"
+    args: ["status"]
+    exitCode: 1
+
+  - name: 'Check is pwndrop is in PATH'
+    command: 'which'
+    args: ["pwndrop"]
+    exitCode: 0
+

@@ -56,7 +56,7 @@
 FROM golang:1.13-alpine AS builder
 
 # ARG value for version-pinning pwndrop release
-ARG PWNDROP_VERSION=1.0.0
+ARG PWNDROP_VERSION=1.0.1
 
 # Defining ARG values for OS and arch that will be injected during build time
 ARG TARGETOS
@@ -103,7 +103,7 @@ COPY --from=builder /go/pwndrop/build /pwndrop
 #       lifetime of the stage that they're declared in.
 ARG BUILD_DATE
 ARG VCS_REF
-ARG VERSION=1.0.0
+ARG VERSION=1.0.1
 
 # Setting PATH variable to include the installation path of 'pwndrop'
 ENV PATH="/pwndrop:${PATH}"
@@ -134,7 +134,7 @@ LABEL org.opencontainers.image.vendor="Harsha Vardhan J" \
       org.opencontainers.image.url="https://github.com/HarshaVardhanJ/docker_files/tree/master/pwndrop" \
       org.label-schema.vcs-url="https://github.com/HarshaVardhanJ/docker_files/tree/master/pwndrop" \
       org.opencontainers.image.documentation="https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/README.md" \
-      org.opencontainers.image.source="https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/alpine/Dockerfile" \
+      org.opencontainers.image.source="https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/v1.0.1/alpine/Dockerfile" \
       org.opencontainers.image.description="Self-deployable file hosting service for red teamers, allowing to easily upload \
       and share payloads over HTTP and WebDAV." \
       org.opencontainers.image.created=$BUILD_DATE \

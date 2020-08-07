@@ -1,0 +1,72 @@
+steps:
+  # Get the Docker Hub user ID from Secrets Manager and save it to a file
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: 'getCredentials'
+    waitFor: ["-"]
+    entrypoint: "bash"
+    args: ["./pwndrop/getCredentials.sh"]
+
+  # Log in to Docker Hub using the credentials obtained in the previous steps
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'dockerLogin'
+    waitFor: ["getCredentials"]
+    entrypoint: "bash"
+    args: ["-c", "docker login --username=$(cat ./UserID) --password=$(cat ./AccessToken)"]
+
+  # Build from Dockerfile using the docker-buildx:stable image, and
+  # tag the image with 'untested' and push to Docker Hub
+  - name: 'harshavardhanj/docker-buildx:stable'
+    id: 'dockerBuildPush'
+    waitFor: ["dockerLogin"]
+    entrypoint: "sh"
+    args:
+      - '-c'
+      - |
+        entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
+        --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/pwndrop:busybox-untested-1.0.0 \
+        --push -f ./pwndrop/v1.0.0/busybox/Dockerfile ./pwndrop/v1.0.0/busybox/.
+
+  # Test the container pushed in the previous step
+  - name: "gcr.io/gcp-runtimes/container-structure-test"
+    id: "containerTest"
+    waitFor: ["dockerBuildPush"]
+    args:
+      - 'test'
+      - '--pull'
+      - '--image'
+      - 'harshavardhanj/pwndrop:busybox-untested-1.0.0'
+      - '--config'
+      - './pwndrop/v1.0.0/busybox/container-structure-test.yaml'
+
+  # Pull buildx image from Docker Hub and build 'pwndrop:busybox' image with multi-arch support
+  - name: 'harshavardhanj/docker-buildx:latest'
+    id: "dockerBuildxPush"
+    waitFor: ["containerTest"]
+    entrypoint: "sh"
+    args:
+      - '-c'
+      - |
+        entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
+        --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/pwndrop:busybox-1.0.0 \
+        -t harshavardhanj/pwndrop:busybox \
+        --platform linux/amd64,linux/arm64,linux/386,linux/ppc64le,linux/s390x,linux/arm/v6 \
+        --cache-from harshavardhanj/pwndrop:busybox --pull -f ./pwndrop/v1.0.0/busybox/Dockerfile \
+        --push ./pwndrop/v1.0.0/busybox/.
+
+  # Get unique URL which is used to prompt MicroBadger to update image metadata.
+  # The token, which is a part of the unique URL, is stored with Secrets Manager.
+  # This step retrieves that secret and saves it to a file.
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: 'webhookSecret'
+    waitFor: ["dockerBuildxPush"]
+    entrypoint: 'sh'
+    args: ["-c", "gcloud beta secrets versions access 1 --secret=pwndrop-microbadger-webhook >./microbadgerWebhook"]
+
+  # Calling the webhook on Micro Badger in order to update image metadata
+  - name: 'gcr.io/cloud-builders/curl'
+    id: "microbadgerWebhook"
+    waitFor: ["webhookSecret"]
+    entrypoint: 'sh'
+    args: ["-c", "curl -X POST https://hooks.microbadger.com/images/harshavardhanj/pwndrop/$(cat ./microbadgerWebhook)"]
+
+timeout: "1800s"
