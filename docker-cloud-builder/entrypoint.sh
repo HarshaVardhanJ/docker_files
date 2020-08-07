@@ -22,12 +22,15 @@ buildxInitialise() {
 
   # Running the below command adds support for multi-arch
   # builds by setting up QEMU
+  echo "Downloading binfmt:"${binfmtVersion}" image"
   docker run --privileged harshavardhanj/binfmt:"${binfmtVersion}" || exit 1
+  echo "Downloading qemu-user-static image"
   docker run --rm --privileged multiarch/qemu-user-static --reset -p yes || exit 1
 
   # If the `buildx` executable is in PATH
   if [ -n "${buildxCommand}" ] ; then
     # Initialise a builder and switch to it
+    echo "Initialising and bootstrapping builder"
     "${buildxCommand}" create --driver docker-container --driver-opt image=moby/buildkit:master,network=host \
       --name multiarch-builder --use \
       && "${buildxCommand}" inspect --bootstrap
@@ -50,12 +53,15 @@ checkBuilderExistence() {
   if [ -n "${buildxCommand}" ] ; then
     # Variables that contain strings which are being searched for in the output
     # of the 'buildx inspect' command
+    echo "Checking if buildx builder exists"
     builderNameCheck="$("${buildxCommand}" inspect | grep "multiarch-builder")"
+    echo "Checking if buildx builder is running"
     builderStatusCheck="$("${buildxCommand}" inspect | grep "running")"
 
     # If either of the variables are not empty strings, meaning if
     # a builder instance has already been set up
     if [[ -n "${builderNameCheck}" || -n  "${builderStatusCheck}" ]] ; then
+      echo "Selecting pre-existing builder"
       "${buildxCommand}" use multiarch-builder \
         || exit 1
     else
