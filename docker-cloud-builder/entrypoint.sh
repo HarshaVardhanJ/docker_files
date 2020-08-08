@@ -60,7 +60,8 @@ checkBuilderExistence() {
 
     # If either of the variables are not empty strings, meaning if
     # a builder instance has already been set up
-    if [[ -n "${builderNameCheck}" || -n "${builderStatusCheck}" ]] ; then
+    #if [[ -n "${builderNameCheck}" || -n "${builderStatusCheck}" ]] ; then
+    if [[ -n "${builderNameCheck}" ]] ; then
       echo "Selecting pre-existing builder"
       "${buildxCommand}" use multiarch-builder \
         || exit 1
@@ -90,9 +91,11 @@ main() {
 
   # If the only arguments passed IS the string defined in ${initialisationArgument}
   if [[ $# -eq 1 && "$1" == "${initialisationArgument}" ]] ; then
-    checkBuilderExistence
+    #checkBuilderExistence
+    buildxInitialise
   elif [[ $# -ge 1 && "$1" != "${initialisationArgument}" ]] ; then
-    checkBuilderExistence \
+    #checkBuilderExistence \
+    buildxInitialise \
       && "${buildxCommand}" $@
   fi
 }
