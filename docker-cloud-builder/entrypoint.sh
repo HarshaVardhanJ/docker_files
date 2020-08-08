@@ -14,25 +14,28 @@
 
 # Function which initialises `buildx`
 buildxInitialise() {
-  # Variable that contains name of `buildx` executable
+  # Variable that contains name of `buildx` executable in PATH
   buildxCommand="$(command -v buildx)"
+
+  # Name of builder being initialised
+  builderName="multiarch-builder"
 
   # Variable that pins the binfmt image version
   binfmtVersion="latest"
 
   # Running the below command adds support for multi-arch
   # builds by setting up QEMU
-  echo "*****Downloading binfmt:"${binfmtVersion}*****" image"
+  printf '%s\n' "*****Downloading binfmt:"${binfmtVersion}*****" image"
   docker run --privileged harshavardhanj/binfmt:"${binfmtVersion}" || exit 1
-  echo "*****Downloading qemu-user-static image*****"
+  printf '%s\n' "*****Downloading qemu-user-static image*****"
   docker run --rm --privileged multiarch/qemu-user-static --reset -p yes || exit 1
 
   # If the `buildx` executable is in PATH
   if [ -n "${buildxCommand}" ] ; then
     # Initialise a builder and switch to it
-    echo "*****Initialising and bootstrapping builder*****"
+    printf '%s\n' "*****Initialising and bootstrapping builder "${builderName}"*****"
     "${buildxCommand}" create --driver docker-container --driver-opt image=moby/buildkit:master,network=host \
-      --name multiarch-builder --use \
+      --name "${builderName}" --use \
       && "${buildxCommand}" inspect --bootstrap
   else
     printf '%s\n' "*****The executable '${buildxCommand}' could not be found in the PATH.*****" \
@@ -45,27 +48,31 @@ buildxInitialise() {
 # Function used to check if the pre-configured builder already exists.
 # If it does, that builder is used. Else, the builder is reconfigured.
 checkBuilderExistence() {
-    # Name of buildx executable
-    buildxCommand="$(command -v buildx)"
+  # Name of buildx executable found in PATH
+  buildxCommand="$(command -v buildx)"
 
-    echo "*****Checking if buildx builder exists*****"
-    builderName="$("${buildxCommand}" inspect multiarch-builder 2>/dev/null)"
-    #builderStatus="$("${buildxCommand}" inspect multiarch-builder 2>/dev/null | grep -o "running")"
+  # Name of preconfigured builder.
+  # SHOULD BE THE SAME as the one in 'buildxInitialise' function
+  builderName="multiarch-builder"
 
-    #if [[ -n "${builderName}" && -n "${builderStatus}" ]] ; then
-    if [[ -n "${builderName}" ]] ; then
-      echo "*****Selecting multiarch-builder*****"
-      "${buildxCommand}" use --default multiarch-builder
-      
-      # If the builder could not be selected and used
-      if [[ $? -ne 0 ]] ; then
-        echo "*****Could not use multiarch-builder*****"
-        exit 1
-      fi
-    else
-      buildxInitialise \
-        exit 1
+  printf '%s\n' "*****Checking if "${builderName}" builder exists*****"
+  builderName="$("${buildxCommand}" inspect multiarch-builder 2>/dev/null)"
+
+  # If builder exists
+  if [[ -n "${builderName}" ]] ; then
+    printf '%s\n' "*****Selecting "${builderName}"*****"
+    "${buildxCommand}" use --default multiarch-builder
+    
+    # If the builder could not be selected and used
+    if [[ $? -ne 0 ]] ; then
+      printf '%s\n' "*****Could not use "${builderName}"*****"
+      exit 1
     fi
+  # If builder does not exist
+  else
+    buildxInitialise \
+      exit 1
+  fi
 }
 
 
@@ -75,7 +82,7 @@ checkBuilderExistence() {
 #     * Initialises 'buildx' and passes all input arguments to
 #       the 'docker' command
 main() {
-  # Name of buildx executable
+  # Name of buildx executable found in PATH
   buildxCommand="$(command -v buildx)"
 
   # Argument which, when passed, begins ONLY the docker-buildx init process
@@ -83,7 +90,7 @@ main() {
 
   # If the only argument passed is the string defined in ${initialisationArgument}
   if [[ $# -eq 1 && "$1" == "${initialisationArgument}" ]] ; then
-    # Initialise the buildx builder
+    # Check if builder exists. If it does not, initialise it
     checkBuilderExistence
   elif [[ $# -ge 1 && "$1" != "${initialisationArgument}" ]] ; then
     # Initialise the buildx builder and then pass all arguments

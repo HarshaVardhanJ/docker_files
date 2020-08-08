@@ -64,7 +64,7 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >> /etc/
     # Setting execute permission on the `buildx` executable
     && chmod a+x /usr/bin/buildx \
     # Cleaning up
-    && rm -r /lib/apk/db \
+    && rm -rf /lib/apk/db/scripts.tar \
     && rm -r /var/cache/apk
 
 
