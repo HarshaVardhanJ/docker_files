@@ -15,64 +15,50 @@ steps:
 
   # Build from Dockerfile using the docker-buildx:stable image, and
   # tag the image with 'untested' and push to Docker Hub
-  #  - name: 'harshavardhanj/docker-buildx:stable'
-  #    id: "dockerBuildPush"
-  #    waitFor: ["getCredentials", "dockerLogin"]
-  #    args:
-  #      - 'build'
-  #      - '-t'
-  #      - 'harshavardhanj/docker-buildx:untested'
-  #      - '-f'
-  #      - './docker-cloud-builder/Dockerfile'
-  #      - '--push'
-  #      - './docker-cloud-builder/.'
-  #
-  #  # Test the container pushed in the previous step
-  #  - name: "gcr.io/gcp-runtimes/container-structure-test"
-  #    id: "containerTest"
-  #    waitFor: ["getCredentials", "dockerLogin", "dockerBuildPush"]
-  #    args: 
-  #      - 'test' 
-  #      - '--pull'
-  #      - '--image' 
-  #      - 'harshavardhanj/docker-buildx:untested'
-  #      - '--config'
-  #      - './docker-cloud-builder/container-structure-test.yaml'
-
-  # NOTE:
-  #     Do not use this block unless the 'stable' image
-  #     needs to be updated on Docker Hub
-  - name: 'gcr.io/cloud-builders/docker'
-    id: "dockerBuild"
+  - name: 'harshavardhanj/docker-buildx:stable'
+    id: "dockerBuildPush"
     waitFor: ["getCredentials", "dockerLogin"]
     args:
       - 'build'
       - '-t'
-      - 'harshavardhanj/docker-buildx:19.03.12-r0'
-      - '-t'
-      - 'harshavardhanj/docker-buildx:19.03.12'
-      - '-t'
-      - 'harshavardhanj/docker-buildx:19.03'
-      - '-t'
-      - 'harshavardhanj/docker-buildx:stable'
-      - '-t'
-      - 'harshavardhanj/docker-buildx'
+      - 'harshavardhanj/docker-buildx:untested'
       - '-f'
       - './docker-cloud-builder/Dockerfile'
+      - '--push'
       - './docker-cloud-builder/.'
 
-  # Pull buildx image from Docker Hub and build 'buildx' image with multi-arch support
-  ### NOTE:
-  ###     In the build step below, the `docker-buildx:latest` image is used to build
-  ###     the `docker-buildx:latest` image with multi-arch support. Therefore, since
-  ###     there is a cyclical dependency, before running this in Cloud Build, a working
-  ###     version of the `docker-buildx:latest` image will need to be present in the
-  ###     container registry(Docker Hub, in this case). The image will need to be built
-  ###     either locally or elsewhere and pushed to the registry before the below step
-  ###     can be run.
-  #  - name: 'harshavardhanj/docker-buildx:stable'
-  #    id: "dockerBuildxPush"
-  #    waitFor: ["getCredentials", "dockerLogin", "dockerBuildPush", "containerTest"]
+  # Test the container pushed in the previous step
+  - name: "gcr.io/gcp-runtimes/container-structure-test"
+    id: "containerTest"
+    waitFor: ["dockerBuildPush"]
+    args: 
+      - 'test' 
+      - '--pull'
+      - '--image' 
+      - 'harshavardhanj/docker-buildx:untested'
+      - '--config'
+      - './docker-cloud-builder/container-structure-test.yaml'
+
+  # Scanning the image with Trivy
+  - name: 'aquasec/trivy'
+    id: "trivyScan"
+    waitFor: ["dockerBuildPush"]
+    args:
+      - '--severity'
+      - 'HIGH,CRITICAL'
+      - '--exit-code'
+      - '1'
+      - '--ignore-unfixed'
+      - '--light'
+      - '--no-progress'
+      - 'harshavardhanj/docker-buildx:untested'
+
+  # NOTE:
+  #     Do not use this block unless the 'stable' image
+  #     needs to be updated on Docker Hub
+  #  - name: 'gcr.io/cloud-builders/docker'
+  #    id: "dockerBuild"
+  #    waitFor: ["getCredentials", "dockerLogin"]
   #    args:
   #      - 'build'
   #      - '-t'
@@ -85,20 +71,48 @@ steps:
   #      - 'harshavardhanj/docker-buildx:stable'
   #      - '-t'
   #      - 'harshavardhanj/docker-buildx'
-  #      - '--pull'
-  #      - '--platform'
-  #      - 'linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6'
   #      - '-f'
   #      - './docker-cloud-builder/Dockerfile'
-  #      - '--push'
   #      - './docker-cloud-builder/.'
 
-images:
-  - 'harshavardhanj/docker-buildx:19.03.12-r0'
-  - 'harshavardhanj/docker-buildx:19.03.12'
-  - 'harshavardhanj/docker-buildx:19.03'
-  - 'harshavardhanj/docker-buildx:stable' 
-  - 'harshavardhanj/docker-buildx'
+  # Pull buildx image from Docker Hub and build 'buildx' image with multi-arch support
+  ### NOTE:
+  ###     In the build step below, the `docker-buildx:latest` image is used to build
+  ###     the `docker-buildx:latest` image with multi-arch support. Therefore, since
+  ###     there is a cyclical dependency, before running this in Cloud Build, a working
+  ###     version of the `docker-buildx:latest` image will need to be present in the
+  ###     container registry(Docker Hub, in this case). The image will need to be built
+  ###     either locally or elsewhere and pushed to the registry before the below step
+  ###     can be run.
+  - name: 'harshavardhanj/docker-buildx:stable'
+    id: "dockerBuildxPush"
+    waitFor: ["getCredentials", "dockerLogin", "dockerBuildPush", "containerTest", "trivyScan"]
+    args:
+      - 'build'
+      - '-t'
+      - 'harshavardhanj/docker-buildx:19.03.12-r0'
+      - '-t'
+      - 'harshavardhanj/docker-buildx:19.03.12'
+      - '-t'
+      - 'harshavardhanj/docker-buildx:19.03'
+      - '-t'
+      - 'harshavardhanj/docker-buildx:stable'
+      - '-t'
+      - 'harshavardhanj/docker-buildx'
+      - '--pull'
+      - '--platform'
+      - 'linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6'
+      - '-f'
+      - './docker-cloud-builder/Dockerfile'
+      - '--push'
+      - './docker-cloud-builder/.'
+
+        #images:
+        #  - 'harshavardhanj/docker-buildx:19.03.12-r0'
+        #  - 'harshavardhanj/docker-buildx:19.03.12'
+        #  - 'harshavardhanj/docker-buildx:19.03'
+        #  - 'harshavardhanj/docker-buildx:stable' 
+        #  - 'harshavardhanj/docker-buildx'
 timeout: "1500s"
-#options:
-#  machineType: 'N1_HIGHCPU_8'
+options:
+  machineType: 'N1_HIGHCPU_8'
