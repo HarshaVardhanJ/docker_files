@@ -50,9 +50,9 @@
 #####################################################################
 
 
-# Start with golang:1.13-alpine as Go version 1.13 
+# Start with golang:1.14-alpine3.12 as Go version 1.13 
 # is the minimum version required by 'pwndrop'
-FROM golang:1.13-alpine AS builder
+FROM golang:1.14-alpine3.12 AS builder
 
 # ARG value for link to repository which will be cloned
 ARG REPO_LINK="https://github.com/kgretzky/pwndrop.git"

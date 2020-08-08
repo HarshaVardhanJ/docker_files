@@ -51,9 +51,9 @@
 #####################################################################
 
 
-# Start with golang:1.13-alpine as Go version 1.13 
+# Start with golang:1.14-alpine3.12 as Go version 1.13 
 # is the minimum version required by 'pwndrop'
-FROM golang:1.13-alpine AS builder
+FROM golang:1.14-alpine3.12 AS builder
 
 # ARG value for version-pinning pwndrop release
 ARG PWNDROP_VERSION=1.0.1
@@ -92,7 +92,7 @@ RUN apk update --no-cache \
 
 
 # Using Alpine for final stage
-FROM alpine:3.11.5
+FROM alpine:3.12.0
 
 # Copy required files from build stage
 COPY --from=builder /go/pwndrop/build /pwndrop
