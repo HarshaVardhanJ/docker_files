@@ -54,13 +54,13 @@ checkBuilderExistence() {
     # Variables that contain strings which are being searched for in the output
     # of the 'buildx inspect' command
     echo "Checking if buildx builder exists"
-    builderNameCheck="$("${buildxCommand}" inspect | grep "multiarch-builder")"
+    builderNameCheck="$("${buildxCommand}" inspect 2>/dev/null | grep -o "multiarch-builder")"
     echo "Checking if buildx builder is running"
-    builderStatusCheck="$("${buildxCommand}" inspect | grep "running")"
+    builderStatusCheck="$("${buildxCommand}" inspect 2>/dev/null | grep -o "running")"
 
     # If either of the variables are not empty strings, meaning if
     # a builder instance has already been set up
-    if [[ -n "${builderNameCheck}" || -n  "${builderStatusCheck}" ]] ; then
+    if [[ -n "${builderNameCheck}" || -n "${builderStatusCheck}" ]] ; then
       echo "Selecting pre-existing builder"
       "${buildxCommand}" use multiarch-builder \
         || exit 1

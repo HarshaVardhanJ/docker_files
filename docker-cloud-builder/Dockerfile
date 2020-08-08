@@ -35,7 +35,7 @@
 FROM alpine:3.12.0
 
 # Version number of `docker buildx`
-ARG buildxVersion=0.3.1
+ARG buildxVersion=0.4.0
 
 # Version number of the Docker Engine
 ARG dockerVersion=19.03.12-r0
