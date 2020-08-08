@@ -64,7 +64,7 @@ steps:
         --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/pwndrop:alpine-1.0.0 \
         -t harshavardhanj/pwndrop:alpine -t harshavardhanj/pwndrop:stable \
         --platform linux/amd64,linux/arm64,linux/386,linux/ppc64le,linux/s390x,linux/arm/v6 \
-        --cache-from harshavardhanj/pwndrop:alpine --pull -f ./pwndrop/v1.0.0/alpine/Dockerfile \
+        --cache-from harshavardhanj/pwndrop:alpine -f ./pwndrop/v1.0.0/alpine/Dockerfile \
         --push ./pwndrop/v1.0.0/alpine/.
 
   # Get unique URL which is used to prompt MicroBadger to update image metadata.
