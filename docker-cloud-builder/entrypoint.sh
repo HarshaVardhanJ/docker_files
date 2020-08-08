@@ -3,7 +3,7 @@
 #: Title        : entrypoint.sh 
 #: Date         :	13-Feb-2020
 #: Author       :	"Harsha Vardhan J" <vardhanharshaj@gmail.com>
-#: Version      : 0.1
+#: Version      : 0.2
 #: Description  : Used to initialise a Docker image with support
 #                 for `buildx` added.
 #: Options      : None
@@ -22,58 +22,50 @@ buildxInitialise() {
 
   # Running the below command adds support for multi-arch
   # builds by setting up QEMU
-  echo "Downloading binfmt:"${binfmtVersion}" image"
+  echo "*****Downloading binfmt:"${binfmtVersion}*****" image"
   docker run --privileged harshavardhanj/binfmt:"${binfmtVersion}" || exit 1
-  echo "Downloading qemu-user-static image"
+  echo "*****Downloading qemu-user-static image*****"
   docker run --rm --privileged multiarch/qemu-user-static --reset -p yes || exit 1
 
   # If the `buildx` executable is in PATH
   if [ -n "${buildxCommand}" ] ; then
     # Initialise a builder and switch to it
-    echo "Initialising and bootstrapping builder"
+    echo "*****Initialising and bootstrapping builder*****"
     "${buildxCommand}" create --driver docker-container --driver-opt image=moby/buildkit:master,network=host \
       --name multiarch-builder --use \
       && "${buildxCommand}" inspect --bootstrap
   else
-    printf '%s\n' "The executable '${buildxCommand}' could not be found in the PATH." \
+    printf '%s\n' "*****The executable '${buildxCommand}' could not be found in the PATH.*****" \
       && exit 1
   fi
 
 }
 
 
-# Function which checks if a builder instance has already been set up.
-# If it has, that instance is used. Else, buildxInitialise function is
-# called.
+# Function used to check if the pre-configured builder already exists.
+# If it does, that builder is used. Else, the builder is reconfigured.
 checkBuilderExistence() {
-  # Variable that contains the path to the buildx executable
-  buildxCommand="$(command -v buildx)"
+    # Name of buildx executable
+    buildxCommand="$(command -v buildx)"
 
-  # If the variable is not an empty string
-  if [ -n "${buildxCommand}" ] ; then
-    # Variables that contain strings which are being searched for in the output
-    # of the 'buildx inspect' command
-    echo "Checking if buildx builder exists"
-    builderNameCheck="$("${buildxCommand}" inspect 2>/dev/null | grep -o "multiarch-builder")"
-    echo "Checking if buildx builder is running"
-    builderStatusCheck="$("${buildxCommand}" inspect 2>/dev/null | grep -o "running")"
+    echo "*****Checking if buildx builder exists*****"
+    builderName="$("${buildxCommand}" inspect multiarch-builder 2>/dev/null)"
+    #builderStatus="$("${buildxCommand}" inspect multiarch-builder 2>/dev/null | grep -o "running")"
 
-    # If either of the variables are not empty strings, meaning if
-    # a builder instance has already been set up
-    #if [[ -n "${builderNameCheck}" || -n "${builderStatusCheck}" ]] ; then
-    if [[ -n "${builderNameCheck}" ]] ; then
-      echo "Selecting pre-existing builder"
-      "${buildxCommand}" use multiarch-builder \
-        || exit 1
+    #if [[ -n "${builderName}" && -n "${builderStatus}" ]] ; then
+    if [[ -n "${builderName}" ]] ; then
+      echo "*****Selecting multiarch-builder*****"
+      "${buildxCommand}" use --default multiarch-builder
+      
+      # If the builder could not be selected and used
+      if [[ $? -ne 0 ]] ; then
+        echo "*****Could not use multiarch-builder*****"
+        exit 1
+      fi
     else
       buildxInitialise \
-        || exit 1
+        exit 1
     fi
-  # If buildx executable could not be found in PATH
-  else
-    printf '%s\n' "Could not find buildx executable." \
-      && exit 1
-  fi
 }
 
 
@@ -83,19 +75,20 @@ checkBuilderExistence() {
 #     * Initialises 'buildx' and passes all input arguments to
 #       the 'docker' command
 main() {
-  # Name of docker executable
+  # Name of buildx executable
   buildxCommand="$(command -v buildx)"
 
   # Argument which, when passed, begins ONLY the docker-buildx init process
   initialisationArgument="init"
 
-  # If the only arguments passed IS the string defined in ${initialisationArgument}
+  # If the only argument passed is the string defined in ${initialisationArgument}
   if [[ $# -eq 1 && "$1" == "${initialisationArgument}" ]] ; then
-    #checkBuilderExistence
-    buildxInitialise
+    # Initialise the buildx builder
+    checkBuilderExistence
   elif [[ $# -ge 1 && "$1" != "${initialisationArgument}" ]] ; then
-    #checkBuilderExistence \
-    buildxInitialise \
+    # Initialise the buildx builder and then pass all arguments
+    # to the buildx command
+    checkBuilderExistence \
       && "${buildxCommand}" $@
   fi
 }
