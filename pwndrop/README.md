@@ -26,10 +26,31 @@ In case you find this image to be useful, please consider clicking the link belo
 
 # Supported tags and respective `Dockerfile` links
 
-* [`latest`, `alpine`,`alpine-1.0.0`, `alpine-latest`, `stable`](https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/alpine/Dockerfile)
-* [`busybox`, `busybox-1.0.0`, `buysbox-latest`](https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/busybox/Dockerfile)
-* [`scratch`, `scratch-1.0.0`, `scratch-latest`](https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/scratch/Dockerfile)
-* [`nonroot`, `1.0.0-nonroot`, `latest-nonroot`, `stable-nonroot`](https://github.com/HarshaVardhanJ/docker_files/blob/non-root/pwndrop/Dockerfile)
+* [`alpine-1.0.0`](https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/v1.0.0/alpine/Dockerfile)
+
+* [`latest`, `alpine`,`alpine-1.0.1`, `alpine-latest`, `stable`](https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/v1.0.1/alpine/Dockerfile)
+
+* [ `busybox-1.0.0`](https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/v1.0.0/busybox/Dockerfile)
+
+* [`busybox`, `busybox-1.0.1`, `busybox-latest`](https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/v1.0.1/busybox/Dockerfile)
+
+* [`scratch-1.0.0`](https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/v1.0.0/scratch/Dockerfile)
+
+* [`scratch`, `scratch-1.0.1`, `scratch-latest`](https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/v1.0.1/scratch/Dockerfile)
+
+* [`alpine-nonroot-1.0.0`](https://github.com/HarshaVardhanJ/docker_files/blob/non-root/pwndrop/v1.0.0/alpine/Dockerfile)
+
+* [`alpine-nonroot-1.0.1`, `alpine-nonroot-latest`, `latest-nonroot`, `stable-nonroot`, `nonroot`](https://github.com/HarshaVardhanJ/docker_files/blob/non-root/pwndrop/v1.0.1/alpine/Dockerfile)
+
+* [`busybox-nonroot-1.0.0`](https://github.com/HarshaVardhanJ/docker_files/blob/non-root/pwndrop/v1.0.0/busybox/Dockerfile)
+
+* [`busybox-nonroot-1.0.1`, `busybox-nonroot`,`busybox-nonroot-latest`](https://github.com/HarshaVardhanJ/docker_files/blob/non-root/pwndrop/v1.0.1/busybox/Dockerfile)
+
+* [`scratch-nonroot-1.0.0`](https://github.com/HarshaVardhanJ/docker_files/blob/non-root/pwndrop/v1.0.0/scratch/Dockerfile)
+
+* [`scratch-nonroot-1.0.1`, `scratch-nonroot`,`scratch-nonroot-latest`](https://github.com/HarshaVardhanJ/docker_files/blob/non-root/pwndrop/v1.0.1/scratch/Dockerfile)
+
+  
 
 ### NOTE:
 
@@ -72,7 +93,7 @@ Given below is a list of architectures for which Gitea has been built. In the ne
 
 # Description of tags
 
-### `latest`, `alpine`, `alpine-1.0.0`, `alpine-latest`, `stable` ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/harshavardhanj/pwndrop/latest) ![MicroBadger Layers (tag)](https://img.shields.io/microbadger/layers/harshavardhanj/pwndrop/latest) 
+### `latest`, `alpine`, `alpine-1.0.0`,  `alpine-1.0.1` `alpine-latest`, `stable` ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/harshavardhanj/pwndrop/latest) ![MicroBadger Layers (tag)](https://img.shields.io/microbadger/layers/harshavardhanj/pwndrop/latest)
 
 The images with this tag are built on top of Alpine Linux. There are no additional packages installed over the base Alpine image except for the `pwndrop` executable. To use this image,  use the `alpine` tag as follows:
 
@@ -82,7 +103,7 @@ $ docker run -d --name pwndrop -p 8000:80 -p 8443:443 -v /full/path/to/host/dir:
 
 
 
-### `busybox`, `busybox-1.0.0`, `busybox-latest` ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/harshavardhanj/pwndrop/busybox) ![MicroBadger Layers (tag)](https://img.shields.io/microbadger/layers/harshavardhanj/pwndrop/busybox)
+### `busybox`, `busybox-1.0.0`, `busybox-1.0.1`,  `busybox-latest` ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/harshavardhanj/pwndrop/busybox) ![MicroBadger Layers (tag)](https://img.shields.io/microbadger/layers/harshavardhanj/pwndrop/busybox)
 
 The images with this tag are built on top of Busybox. Similiar to the `alpine` tag, this image does not contain any other additional packages other the `pwndrop` executable. This image is smaller in size when compared to the `alpine` image. To use this image, use the `busybox` tag as follows:
 
@@ -92,7 +113,7 @@ $ docker run -d --name pwndrop -p 8000:80 -p 8443:443 -v /full/path/to/host/dir:
 
 
 
-### `scratch`, `scratch-1.0.0`, `scratch-latest` ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/harshavardhanj/pwndrop/scratch) ![MicroBadger Layers (tag)](https://img.shields.io/microbadger/layers/harshavardhanj/pwndrop/scratch) 
+### `scratch`, `scratch-1.0.0`, `scratch-1.0.1`, `scratch-latest` ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/harshavardhanj/pwndrop/scratch) ![MicroBadger Layers (tag)](https://img.shields.io/microbadger/layers/harshavardhanj/pwndrop/scratch)
 
 The images with this tag are built on top of Scratch(essentially, a blank slate). It goes without saying that no other packages can be installed on this. Only the `pwndrop` executable exists in this image. Since the image is built on scratch, this image is the smallest in size(a little over 6 MB). If you’re looking for the image with the smallest storage footprint, this is the one. To use this image, use the `scratch` tag as follows:
 
@@ -104,7 +125,7 @@ $ docker run -d --name pwndrop -p 8000:80 -p 8443:443 -v /full/path/to/host/dir:
 
 ### `nonroot`, `nonroot-1.0.0`  ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/harshavardhanj/pwndrop/nonroot)  ![MicroBadger Layers (tag)](https://img.shields.io/microbadger/layers/harshavardhanj/pwndrop/nonroot) 
 
-The image with this tag, as the name states, is built with security in mind. The ‘run-as’ user in the container is a non-root user. The `pwndrop` process is also started by this user. If you prefer running containers which run processes as non-root users, this is the image for you. To use this image, use the `nonroot` tag as follows:
+The images with this tag, as the name states, is built with security in mind. The ‘run-as’ user in the container is a non-root user. The `pwndrop` process is also started by this user. If you prefer running containers which run processes as non-root users, this is the image for you. To use this image, use the `nonroot` tag as follows:
 
 ```shell
 $ docker run -d --name pwndrop -p 8000:80 -p 8443:443 -v /full/path/to/host/dir:/pwndrop/data harshavardhanj/pwndrop:nonroot
@@ -141,11 +162,11 @@ Example `stack.yaml`/`docker-compose.yaml` for Pwndrop:
 version: "3.4"
 services:
   pwndrop:
-    image: harshavardhanj/pwndrop:latest
+    image: harshavardhanj/pwndrop:busybox-nonroot
     restart: always
     ports:
-      - "8000:80"
-      - "8443:443"
+      - "8000:8080"
+      - "8443:8443"
     volumes:
     	- "/path/to/host/dir:/pwndrop/data"
 ```

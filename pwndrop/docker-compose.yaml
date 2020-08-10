@@ -3,7 +3,7 @@
 version: "3.4"
 services:
   pwndrop:
-    image: harshavardhanj/pwndrop:scratch-nonroot
+    image: harshavardhanj/pwndrop:busybox-nonroot
     restart: always
     ports:
       - "8080:8080"
