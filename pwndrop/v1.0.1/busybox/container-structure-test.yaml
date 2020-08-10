@@ -1,0 +1,76 @@
+# Container Structure Test for '' image
+#
+schemaVersion: 2.0.0
+metadataTest:
+  labels:
+    - key: 'org.opencontainers.image.vendor'
+      value: 'Harsha Vardhan J'
+    - key: 'org.opencontainers.image.title'
+      value: 'pwndrop'
+    - key: 'org.opencontainers.image.authors'
+      value: 'https://github.com/HarshaVardhanJ'
+    - key: 'org.opencontainers.image.url'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/tree/non-root/pwndrop'
+    - key: 'org.label-schema.vcs-url'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/tree/non-root/pwndrop'
+    - key: 'org.opencontainers.image.documentation'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/README.md'
+    - key: 'org.opencontainers.image.source'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/blob/non-root/pwndrop/v1.0.1/busybox/Dockerfile'
+    - key: 'org.opencontainers.image.licenses'
+      value: 'GPLv3 AND MIT'
+    - key: 'org.opencontainers.image.version'
+      value: '1.0.1'
+    - key: 'org.label-schema.version'
+      value: '1.0.1'
+    - key: 'org.label-schema.schema-version'
+      value: '1.0'
+    - key: 'software.author.repository'
+      value: 'https://github.com/kgretzky/pwndrop'
+    - key: 'software.release.version'
+      value: '1.0.1'
+  entrypoint: ["pwndrop"]
+  cmd: ["-debug", "-no-autocert", "-config", "/pwndrop/pwndrop.ini", "-no-dns"]
+  volumes: ["/pwndrop/data"]
+  exposedPorts: ["8080", "8443"]
+  workdir: '/pwndrop'
+
+fileExistenceTests:
+  - name: 'Check if admin folder is present'
+    path: '/pwndrop/admin'
+    shouldExist: true
+    permissions: 'drwxr-xr-x'
+    uid: 1000
+    gid: 1000
+
+  - name: 'Check if pwndrop is available'
+    path: '/pwndrop/pwndrop'
+    shouldExist: true
+    permissions: '-rwx------'
+    uid: 1000
+    gid: 1000
+
+  - name: 'Check if pwndrop.ini config file is available'
+    path: '/pwndrop/pwndrop.ini'
+    shouldExist: true
+    permissions: '-rw-rw-r--'
+    uid: 1000
+    gid: 1000
+commandTests:
+  - name: 'Check is pwndrop is in PATH'
+    command: 'which'
+    args: ["pwndrop"]
+    exitCode: 0
+
+  - name: 'Check if running an non-root user'
+    command: 'id'
+    args: ["-u"]
+    exitCode: 0
+    expectedOutput: ["1000"]
+
+  - name: 'Check non-root group'
+    command: 'id'
+    args: ["-g"]
+    exitCode: 0
+    expectedOutput: ["1000"]
+

@@ -63,12 +63,12 @@
 #####################################################################
 
 
-# Start with golang:1.13-alpine as Go version 1.13 
+# Start with golang:1.14-alpine3.12 as Go version 1.13 
 # is the minimum version required by 'pwndrop'
-FROM golang:1.13-alpine AS builder
+FROM golang:1.14-alpine3.12 AS builder
 
 # ARG value for link to repository which will be cloned
-ARG PWNDROP_VERSION=1.0.0
+ARG PWNDROP_VERSION=1.0.1
 
 # ARG values about OS and arch that will be available to buildx during build time
 ARG TARGETOS
@@ -86,6 +86,8 @@ RUN apk update --no-cache \
     #
     && apk add --no-cache \
       gcc \
+      libc-dev \
+      libc6-compat \
       make \
     # Download the pinned release of 'pwndrop'
     #
@@ -131,7 +133,7 @@ ENV PATH="/pwndrop:${PATH}"
 #       lifetime of the stage that they're declared in.
 ARG BUILD_DATE
 ARG VCS_REF
-ARG VERSION=1.0.0
+ARG VERSION=1.0.1
 
 # Setting working directory
 WORKDIR /pwndrop
@@ -171,7 +173,7 @@ LABEL org.opencontainers.image.vendor="Harsha Vardhan J" \
       org.opencontainers.image.url="https://github.com/HarshaVardhanJ/docker_files/tree/non-root/pwndrop" \
       org.label-schema.vcs-url="https://github.com/HarshaVardhanJ/docker_files/tree/non-root/pwndrop" \
       org.opencontainers.image.documentation="https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/README.md" \
-      org.opencontainers.image.source="https://github.com/HarshaVardhanJ/docker_files/blob/non-root/pwndrop/busybox/Dockerfile" \
+      org.opencontainers.image.source="https://github.com/HarshaVardhanJ/docker_files/blob/non-root/pwndrop/v1.0.1/busybox/Dockerfile" \
       org.opencontainers.image.description="Self-deployable file hosting service for red teamers, allowing to easily upload \
       and share payloads over HTTP and WebDAV." \
       org.opencontainers.image.created=$BUILD_DATE \

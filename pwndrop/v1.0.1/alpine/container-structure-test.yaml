@@ -16,23 +16,23 @@ metadataTest:
     - key: 'org.opencontainers.image.documentation'
       value: 'https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/README.md'
     - key: 'org.opencontainers.image.source'
-      value: 'https://github.com/HarshaVardhanJ/docker_files/blob/non-root/pwndrop/busybox/Dockerfile'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/blob/non-root/pwndrop/v1.0.1/alpine/Dockerfile'
     - key: 'org.opencontainers.image.licenses'
       value: 'GPLv3 AND MIT'
     - key: 'org.opencontainers.image.version'
-      value: '1.0.0'
+      value: '1.0.1'
     - key: 'org.label-schema.version'
-      value: '1.0.0'
+      value: '1.0.1'
     - key: 'org.label-schema.schema-version'
       value: '1.0'
     - key: 'software.author.repository'
       value: 'https://github.com/kgretzky/pwndrop'
     - key: 'software.release.version'
-      value: '1.0.0'
+      value: '1.0.1'
   entrypoint: ["pwndrop"]
-  cmd: ["-debug", "-no-autocert", "-config", "/pwndrop/pwndrop.ini", "-no-dns"]
+  cmd: ["-config", "/pwndrop/pwndrop.ini", "-debug", "-no-autocert"]
   volumes: ["/pwndrop/data"]
-  exposedPorts: ["8080", "8443"]
+  exposedPorts: ["53", "80", "443"]
   workdir: '/pwndrop'
 
 fileExistenceTests:
@@ -49,14 +49,12 @@ fileExistenceTests:
     permissions: '-rwx------'
     uid: 1000
     gid: 1000
-
-  - name: 'Check if pwndrop.ini config file is available'
-    path: '/pwndrop/pwndrop.ini'
-    shouldExist: true
-    permissions: '-rw-rw-r--'
-    uid: 1000
-    gid: 1000
 commandTests:
+  - name: 'Check if pwndrop is installed as daemon'
+    command: "pwndrop"
+    args: ["status"]
+    exitCode: 1
+
   - name: 'Check is pwndrop is in PATH'
     command: 'which'
     args: ["pwndrop"]

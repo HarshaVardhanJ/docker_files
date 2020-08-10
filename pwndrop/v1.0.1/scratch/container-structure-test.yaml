@@ -16,24 +16,23 @@ metadataTest:
     - key: 'org.opencontainers.image.documentation'
       value: 'https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/README.md'
     - key: 'org.opencontainers.image.source'
-      value: 'https://github.com/HarshaVardhanJ/docker_files/blob/non-root/pwndrop/alpine/Dockerfile'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/blob/non-root/pwndrop/v1.0.1/scratch/Dockerfile'
     - key: 'org.opencontainers.image.licenses'
       value: 'GPLv3 AND MIT'
     - key: 'org.opencontainers.image.version'
-      value: '1.0.0'
+      value: '1.0.1'
     - key: 'org.label-schema.version'
-      value: '1.0.0'
+      value: '1.0.1'
     - key: 'org.label-schema.schema-version'
       value: '1.0'
     - key: 'software.author.repository'
       value: 'https://github.com/kgretzky/pwndrop'
     - key: 'software.release.version'
-      value: '1.0.0'
+      value: '1.0.1'
   entrypoint: ["pwndrop"]
-  cmd: ["-config", "/pwndrop/pwndrop.ini", "-debug", "-no-autocert"]
+  cmd: ["-debug", "-no-autocert", "-config", "/pwndrop/pwndrop.ini", "-no-dns"]
   volumes: ["/pwndrop/data"]
-  exposedPorts: ["53", "80", "443"]
-  workdir: '/pwndrop'
+  exposedPorts: ["8080", "8443"]
 
 fileExistenceTests:
   - name: 'Check if admin folder is present'
@@ -49,26 +48,3 @@ fileExistenceTests:
     permissions: '-rwx------'
     uid: 1000
     gid: 1000
-commandTests:
-  - name: 'Check if pwndrop is installed as daemon'
-    command: "pwndrop"
-    args: ["status"]
-    exitCode: 1
-
-  - name: 'Check is pwndrop is in PATH'
-    command: 'which'
-    args: ["pwndrop"]
-    exitCode: 0
-
-  - name: 'Check if running an non-root user'
-    command: 'id'
-    args: ["-u"]
-    exitCode: 0
-    expectedOutput: ["1000"]
-
-  - name: 'Check non-root group'
-    command: 'id'
-    args: ["-g"]
-    exitCode: 0
-    expectedOutput: ["1000"]
-

@@ -16,7 +16,7 @@ metadataTest:
     - key: 'org.opencontainers.image.documentation'
       value: 'https://github.com/HarshaVardhanJ/docker_files/blob/master/pwndrop/README.md'
     - key: 'org.opencontainers.image.source'
-      value: 'https://github.com/HarshaVardhanJ/docker_files/blob/non-root/pwndrop/scratch/Dockerfile'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/blob/non-root/pwndrop/v1.0.0/busybox/Dockerfile'
     - key: 'org.opencontainers.image.licenses'
       value: 'GPLv3 AND MIT'
     - key: 'org.opencontainers.image.version'
@@ -33,6 +33,7 @@ metadataTest:
   cmd: ["-debug", "-no-autocert", "-config", "/pwndrop/pwndrop.ini", "-no-dns"]
   volumes: ["/pwndrop/data"]
   exposedPorts: ["8080", "8443"]
+  workdir: '/pwndrop'
 
 fileExistenceTests:
   - name: 'Check if admin folder is present'
@@ -48,3 +49,28 @@ fileExistenceTests:
     permissions: '-rwx------'
     uid: 1000
     gid: 1000
+
+  - name: 'Check if pwndrop.ini config file is available'
+    path: '/pwndrop/pwndrop.ini'
+    shouldExist: true
+    permissions: '-rw-rw-r--'
+    uid: 1000
+    gid: 1000
+commandTests:
+  - name: 'Check is pwndrop is in PATH'
+    command: 'which'
+    args: ["pwndrop"]
+    exitCode: 0
+
+  - name: 'Check if running an non-root user'
+    command: 'id'
+    args: ["-u"]
+    exitCode: 0
+    expectedOutput: ["1000"]
+
+  - name: 'Check non-root group'
+    command: 'id'
+    args: ["-g"]
+    exitCode: 0
+    expectedOutput: ["1000"]
+
