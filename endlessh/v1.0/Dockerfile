@@ -53,6 +53,7 @@ RUN wget -qc https://github.com/skeeto/endlessh/archive/$VERSION.tar.gz -O endle
     && apk update --no-cache && apk add --no-cache \
         gcc \
         libc-dev \
+        libc6-compat \
         libgcc \
         libstdc++ \
         make \
