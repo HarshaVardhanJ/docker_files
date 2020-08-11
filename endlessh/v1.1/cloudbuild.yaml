@@ -49,8 +49,8 @@ steps:
       - |
         entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
         --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/endlessh:1.1 -t harshavardhanj/endlessh:latest \
-        --platform linux/amd64,linux/arm64,linux/386,linux/arm/v7,linux/arm/v6 \
-        --cache-from harshavardhanj/endlessh:latest --pull -f ./endlessh/v1.1/Dockerfile \
+        --platform linux/amd64,linux/arm64,linux/386,linux/ppc64le,linux/s390x,linux/arm/v7,linux/arm/v6 \
+        --cache-from harshavardhanj/endlessh:latest --f ./endlessh/v1.1/Dockerfile \
         --push ./endlessh/v1.1/.
 
   # Get unique URL which is used to prompt MicroBadger to update image metadata.
