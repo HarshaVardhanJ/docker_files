@@ -53,6 +53,7 @@ RUN apt-get update \
     && mv qemu-i386-static qemu-i386 \
     && mv qemu-ppc64le-static qemu-ppc64le \
     && mv qemu-s390x-static qemu-s390x \
+    && mv qemu-riscv64-static qemu-riscv64 \
     # Removing other unused qemu binaries
     && rm -f qemu-*static
 
