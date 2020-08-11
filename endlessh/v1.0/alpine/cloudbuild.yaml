@@ -24,7 +24,7 @@ steps:
       - |
         entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
         --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/endlessh:untested-alpine \
-        --cache-from harshavardhanj/endlessh:untested-alpine --pull \
+        --cache-from harshavardhanj/endlessh:untested-alpine \
         -f ./endlessh/v1.0/alpine/Dockerfile --push ./endlessh/v1.0/alpine/.
 
   # Test the container pushed in the previous step
@@ -65,7 +65,7 @@ steps:
         --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/endlessh:alpine \
         -t harshavardhanj/endlessh:1.0-alpine -t harshavardhanj/endlessh:stable-alpine \
         --platform linux/amd64,linux/arm64,linux/386,linux/s390x,linux/ppc64le,linux/arm/v7,linux/arm/v6 \
-        --cache-from harshavardhanj/endlessh:alpine --pull -f ./endlessh/v1.0/alpine/Dockerfile \
+        --cache-from harshavardhanj/endlessh:alpine -f ./endlessh/v1.0/alpine/Dockerfile \
         --push ./endlessh/v1.0/alpine/.
 
   # Get unique URL which is used to prompt MicroBadger to update image metadata.

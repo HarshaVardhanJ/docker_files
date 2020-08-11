@@ -48,6 +48,7 @@ RUN wget -qc https://github.com/skeeto/endlessh/archive/$VERSION.tar.gz -O endle
     && apk update --no-cache && apk add --no-cache \
       gcc \
       libc-dev \
+      libc6-compat \
       libgcc \
       libstdc++ \
       make \
@@ -59,7 +60,7 @@ RUN wget -qc https://github.com/skeeto/endlessh/archive/$VERSION.tar.gz -O endle
       && mv endlessh ../
 
 # Start with base image of Alpine Linux (pinned version 3.11.5)
-FROM alpine:3.11.5
+FROM alpine:3.12.0
 
 # ARG values used for injecting metadata during build time
 ARG BUILD_DATE
