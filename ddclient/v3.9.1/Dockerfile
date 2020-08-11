@@ -36,7 +36,7 @@
 #####################################################################
 
 # Use pinned version of Alpine Linux as base
-FROM alpine:3.11.5
+FROM alpine:3.12.0
 
 # Setting the working directory to '/'
 WORKDIR /
@@ -49,6 +49,9 @@ ARG VERSION=3.9.1
 # Install dependencies for `ddclient`
 RUN apk update -U --no-cache \
 		&& apk add --no-cache --virtual .removable \
+      gcc \
+      libc-dev \
+      libc6-compat \
       make \
     && apk add --no-cache \
       perl \
