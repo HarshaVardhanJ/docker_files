@@ -76,6 +76,7 @@ RUN apk update --no-cache \
       gcc \
       libc-dev \
       libc6-compat \
+      libgcc \
       make \
     # Download the pinned release of 'pwndrop'
     #
