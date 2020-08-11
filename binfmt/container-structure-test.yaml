@@ -31,7 +31,7 @@ metadataTest:
 fileContentTests:
   - name: 'Check content of linuxkit.conf file'
     path: '/etc/binfmt.d/00_linuxkit.conf'
-    expectedContents: ["\n:qemu-aarch64:.*", "\n:qemu-arm:.*", "\n:qemu-armeb:.*", "\n:qemu-i386:.*", "\n:qemu-ppc64le:.*", "\n:qemu-s390x:.*", "\n:qemu-riscv64:.*"]
+    expectedContents: ["\n:qemu-aarch64:.*", "\n:qemu-arm:.*", "\n:qemu-armeb:.*", "\n:qemu-i386:.*", "\n:qemu-ppc64le:.*", "\n:qemu-s390x:.*"]
 fileExistenceTests:
   - name: 'Check if linuxkit.conf file exists'
     path: '/etc/binfmt.d/00_linuxkit.conf'
@@ -83,13 +83,6 @@ fileExistenceTests:
     isExecutableBy: 'any'
   - name: 'Check if qemu-s390x binary exists'
     path: '/usr/bin/qemu-s390x'
-    shouldExist: true
-    permissions: '-rwxr-xr-x'
-    uid: 0
-    gid: 0
-    isExecutableBy: 'any'
-  - name: 'Check if qemu-riscv64 binary exists'
-    path: '/usr/bin/qemu-riscv64'
     shouldExist: true
     permissions: '-rwxr-xr-x'
     uid: 0
