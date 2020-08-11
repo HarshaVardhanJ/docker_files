@@ -32,7 +32,7 @@ steps:
     waitFor: ["dockerBuildPush"]
     args:
       - 'test'
-      - ''
+      - '--pull'
       - '--image'
       - 'harshavardhanj/ddclient:untested-3.9.0'
       - '--config'
