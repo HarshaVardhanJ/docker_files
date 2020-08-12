@@ -1,0 +1,60 @@
+# Container Structure Test for 'upx:3.96' image
+#
+schemaVersion: 2.0.0
+metadataTest:
+  labels:
+    - key: 'org.opencontainers.image.vendor'
+      value: 'Harsha Vardhan J'
+    - key: 'org.opencontainers.image.title'
+      value: 'upx'
+    - key: 'org.opencontainers.image.authors'
+      value: 'https://github.com/HarshaVardhanJ'
+    - key: 'org.opencontainers.image.url'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/tree/master/upx'
+    - key: 'org.label-schema.vcs-url'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/tree/master/upx'
+    - key: 'org.opencontainers.image.documentation'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/blob/master/upx/README.md'
+    - key: 'org.opencontainers.image.source'
+      value: 'https://github.com/HarshaVardhanJ/docker_files/blob/master/upx/v3.96/busybox/Dockerfile'
+    - key: 'org.opencontainers.image.licenses'
+      value: 'GPL AND MIT'
+    - key: 'org.opencontainers.image.version'
+      value: '3.96'
+    - key: 'org.label-schema.version'
+      value: '3.96'
+    - key: 'org.label-schema.schema-version'
+      value: '1.0'
+  entrypoint: ["/usr/bin/upx", "--lzma", "--best", "-o"]
+  cmd: []
+  volumes: []
+  exposedPorts: []
+fileExistenceTests:
+  - name: 'Check if upx binary exists'
+    path: '/usr/bin/upx'
+    shouldExist: true
+    permissions: '-rwxr-xr-x'
+    uid: 0
+    gid: 0
+    isExecutableBy: 'any'
+commandTests:
+  - name: 'Check upx version number'
+    command: "/usr/bin/upx"
+    args: ["-V"]
+    expectedOutput: ["upx 3.96-git-d7ba31cab8ce"]
+    exitCode: 0
+  - name: 'Check compression ability'
+    setup: [["wget", "-q", "--no-check-certificate", "https://github.com/JonathanSalwan/binary-samples/raw/master/elf-Linux-x86-bash", "-O", "/testfile"], ["chmod", "+x", "/testfile"]]
+    command: "/usr/bin/upx"
+    args: ["--lzma", "--best", "-o", "/compressed", "/testfile"]
+    exitCode: 0
+  - name: 'Check compressed file'
+    setup: [["wget", "-q", "--no-check-certificate", "https://github.com/JonathanSalwan/binary-samples/raw/master/elf-Linux-x86-bash", "-O", "/testfile"], ["chmod", "+x", "/testfile"], ["/usr/bin/upx", "--best", "--lzma", "-o", "/compressed", "/testfile"]]
+    command: "/usr/bin/upx"
+    args: ["-t", "/compressed"]
+    exitCode: 0
+  - name: 'Unpack compressed file'
+    setup: [["wget", "-q", "--no-check-certificate", "https://github.com/JonathanSalwan/binary-samples/raw/master/elf-Linux-x86-bash", "-O", "/testfile"], ["chmod", "+x", "/testfile"], ["/usr/bin/upx", "--best", "--lzma", "-o", "/compressed", "/testfile"]]
+    command: "/usr/bin/upx"
+    args: ["-d", "/compressed"]
+    exitCode: 0

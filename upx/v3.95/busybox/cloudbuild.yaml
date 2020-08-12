@@ -1,0 +1,71 @@
+steps:
+  # Get the Docker Hub user ID from Secrets Manager and save it to a file
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: 'getCredentials'
+    waitFor: ["-"]
+    entrypoint: "bash"
+    args: ["./upx/getCredentials.sh"]
+
+  # Log in to Docker Hub using the credentials obtained in the previous steps
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'dockerLogin'
+    waitFor: ["getCredentials"]
+    entrypoint: "bash"
+    args: ["-c", "docker login --username=$(cat ./UserID) --password=$(cat ./AccessToken)"]
+
+  # Build from Dockerfile using the docker-buildx:stable image, and
+  # tag the image with 'untested' and push to Docker Hub
+  - name: 'harshavardhanj/docker-buildx:stable'
+    id: 'dockerBuildPush'
+    waitFor: ["dockerLogin"]
+    entrypoint: "sh"
+    args:
+      - '-c'
+      - |
+        entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
+        --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/upx:untested-3.95 \
+        --push -f ./upx/v3.95/busybox/Dockerfile ./upx/v3.95/busybox/.
+
+  # Test the container pushed in the previous step
+  - name: "gcr.io/gcp-runtimes/container-structure-test"
+    id: "containerTest"
+    waitFor: ["dockerBuildPush"]
+    args:
+      - 'test'
+      - '--pull'
+      - '--image'
+      - 'harshavardhanj/upx:untested-3.95'
+      - '--config'
+      - './upx/v3.95/busybox/container-structure-test.yaml'
+
+  # Pull buildx image from Docker Hub and build 'upx:stable' image with multi-arch support
+  - name: 'harshavardhanj/docker-buildx:latest'
+    id: "dockerBuildxPush"
+    waitFor: ["containerTest"]
+    entrypoint: "sh"
+    args:
+      - '-c'
+      - |
+        entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
+        --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/upx:3.95 -t harshavardhanj/upx:3.95-busybox \
+        --platform linux/amd64,linux/arm64,linux/386,linux/ppc64le,linux/s390x,linux/arm/v7,linux/arm/v6 \
+        --cache-from harshavardhanj/upx:3.95 -f ./upx/v3.95/busybox/Dockerfile \
+        --push ./upx/v3.95/busybox/.
+
+  # Get unique URL which is used to prompt MicroBadger to update image metadata.
+  # The token, which is a part of the unique URL, is stored with Secrets Manager.
+  # This step retrieves that secret and saves it to a file.
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: 'webhookSecret'
+    waitFor: ["dockerBuildxPush"]
+    entrypoint: 'sh'
+    args: ["-c", "gcloud beta secrets versions access 1 --secret=upx-microbadger-webhook >./microbadgerWebhook"]
+
+  # Calling the webhook on Micro Badger in order to update image metadata
+  - name: 'gcr.io/cloud-builders/curl'
+    id: "microbadgerWebhook"
+    waitFor: ["webhookSecret"]
+    entrypoint: 'sh'
+    args: ["-c", "curl -X POST https://hooks.microbadger.com/images/harshavardhanj/upx/$(cat ./microbadgerWebhook)"]
+
+timeout: "1320s"
