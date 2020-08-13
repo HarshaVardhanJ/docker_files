@@ -69,4 +69,4 @@ steps:
     entrypoint: 'sh'
     args: ["-c", "curl -X POST https://hooks.microbadger.com/images/harshavardhanj/pwndrop/$(cat ./microbadgerWebhook)"]
 
-timeout: "1800s"
+timeout: "3000s"

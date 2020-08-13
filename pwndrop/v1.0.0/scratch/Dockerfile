@@ -97,6 +97,9 @@ RUN apk update --no-cache \
 # Using Scratch for final stage
 FROM scratch
 
+# Seems to be necessary as per https://github.com/moby/moby/issues/37965
+RUN true
+
 # Copy required files from build stage
 COPY --from=builder /go/pwndrop/build /pwndrop/
 

@@ -96,6 +96,9 @@ RUN apk update --no-cache \
 # Using Alpine for final stage
 FROM alpine:3.12.0
 
+# Seems to be necessary as per https://github.com/moby/moby/issues/37965
+RUN true
+
 # Copy required files from build stage
 COPY --from=builder /go/pwndrop/build /pwndrop
 
