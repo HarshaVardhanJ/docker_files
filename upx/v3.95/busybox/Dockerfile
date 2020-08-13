@@ -63,16 +63,16 @@ RUN apt update && apt install -y git \
     #
     && apt install -y \
         g++ \
-#        gcc \
+        gcc \
 #        libgcc-s1-arm64-cross \
 #        libgcc-s1-armel-cross \
 #        libgcc-s1-armhf-cross \
 #        libgcc-s1-i386-cross \
 #        libgcc-s1-ppc64el-cross \
 #        libgcc-s1-s390x-cross \
-#        linux-libc-dev \
-#        libc6 \
-#        libc6-dev \
+        linux-libc-dev \
+        libc6 \
+        libc6-dev \
         zlib1g-dev \
         libucl-dev \
         make \
