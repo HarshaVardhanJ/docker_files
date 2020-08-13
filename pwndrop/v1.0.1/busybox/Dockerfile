@@ -74,6 +74,7 @@ RUN apk update --no-cache \
     #
     && apk add --no-cache \
       gcc \
+      libgcc \
       libc-dev \
       libc6-compat \
       make \
@@ -96,6 +97,9 @@ RUN apk update --no-cache \
 
 # Using busybox for final stage
 FROM busybox
+
+# Seems necessary as per https://github.com/moby/moby/issues/37965
+RUN true
 
 # Copy required files from build stage
 COPY --from=builder /go/pwndrop/build /pwndrop/
