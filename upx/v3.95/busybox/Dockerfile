@@ -10,7 +10,7 @@
 #                                                                   #
 # This Dockerfile does the following:                               #
 #                                                                   #
-#    1. Starts with a base image of Debian Bullseye Slim.           #
+#    1. Starts with a base image of Debian Buster Slim.             #
 #    2. Sets the '-static' build flag as an environment variable    #
 #       which is used to build a statically-linked binary.          #
 #    3. Downloads git and obtains a version-pinned release of UPX.  #
@@ -37,8 +37,8 @@
 #                                                                   #
 #####################################################################
 
-# Start with Debian Bullseye Slim as base for first stage
-FROM debian:bullseye-slim as intermediate
+# Start with Debian Buster Slim as base for first stage
+FROM debian:buster-slim as intermediate
 
 # ARG values for injecting metadata during build time
 # NOTE: When using ARGS in a multi-stage build, remember to redeclare
