@@ -65,7 +65,6 @@ RUN apt update && apt install -y git \
         g++ \
         gcc \
         linux-libc-dev \
-        libc6-dev-i386 \
         libc6 \
         libc6-dev \
         zlib1g-dev \
@@ -85,6 +84,9 @@ FROM busybox
 ARG BUILD_DATE
 ARG VCS_REF
 ARG VERSION=3.95
+
+# This might be needed to fix the 'unable to copy' error encountered during Cloud Build builds.
+RUN true
 
 # Copy the 'upx' binary from the first stage of the build
 COPY --from=intermediate /upx/upx /usr/bin/upx
