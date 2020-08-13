@@ -81,7 +81,7 @@ RUN apt update && apt install -y git \
     && make -j10 -C /upx/src upx.out CHECK_WHITESPACE= \
     # Compress the executable and save it to the specified location
     #
-    && /upx/src/upx.out --lzma --best --ultra-brute -o /usr/bin/upx /upx/src/upx.out
+    && /upx/src/upx.out --lzma --best -o /usr/bin/upx /upx/src/upx.out
 
 # Start with busybox for final base image
 FROM busybox
