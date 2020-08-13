@@ -81,7 +81,7 @@ RUN apt update && apt install -y git \
     && make -j10 -C /upx/src upx.out CHECK_WHITESPACE= \
     # Compress the executable and save it to the specified location
     #
-    && /upx/src/upx.out --lzma --best -o /usr/bin/upx /upx/src/upx.out
+    && /upx/src/upx.out --lzma --best -o /upx/upx /upx/src/upx.out
 
 # Start with busybox for final base image
 FROM busybox
@@ -92,7 +92,7 @@ ARG VCS_REF
 ARG VERSION=3.95
 
 # Copy the 'upx' binary from the first stage of the build
-COPY --from=intermediate /usr/bin/upx /usr/bin/upx
+COPY --from=intermediate /upx/upx /usr/bin/upx
 
 # System call signal that will be sent to the container to exit
 STOPSIGNAL SIGTERM
