@@ -63,10 +63,10 @@ RUN apt update && apt install -y git \
     #
     && apt install -y \
         g++ \
-        gcc \
-        linux-libc-dev \
-        libc6 \
-        libc6-dev \
+#        gcc \
+#        linux-libc-dev \
+#        libc6 \
+#        libc6-dev \
         zlib1g-dev \
         libucl-dev \
         make \
