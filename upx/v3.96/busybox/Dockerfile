@@ -81,6 +81,9 @@ ARG BUILD_DATE
 ARG VCS_REF
 ARG VERSION=3.96
 
+# This seems necessary as per an issue posted https://github.com/moby/moby/issues/37965
+RUN true
+
 # Copy the 'upx' binary from the first stage of the build
 COPY --from=intermediate /usr/bin/upx /usr/bin/upx
 
