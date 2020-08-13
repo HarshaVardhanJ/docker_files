@@ -10,7 +10,7 @@
 #                                                                   #
 # This Dockerfile does the following:                               #
 #                                                                   #
-#    1. Starts with a base image of Debian Stretch Slim.            #
+#    1. Starts with a base image of Debian Bullseye Slim.           #
 #    2. Sets the '-static' build flag as an environment variable    #
 #       which is used to build a statically-linked binary.          #
 #    3. Downloads git and obtains a version-pinned release of UPX.  #
@@ -37,8 +37,8 @@
 #                                                                   #
 #####################################################################
 
-# Start with Debian Stretch Slim as base for first stage
-FROM debian:stretch-slim as intermediate
+# Start with Debian Bullseye Slim as base for first stage
+FROM debian:bullseye-slim as intermediate
 
 # ARG values for injecting metadata during build time
 # NOTE: When using ARGS in a multi-stage build, remember to redeclare
@@ -63,6 +63,16 @@ RUN apt update && apt install -y git \
     #
     && apt install -y \
         g++ \
+#        gcc \
+#        libgcc-s1-arm64-cross \
+#        libgcc-s1-armel-cross \
+#        libgcc-s1-armhf-cross \
+#        libgcc-s1-i386-cross \
+#        libgcc-s1-ppc64el-cross \
+#        libgcc-s1-s390x-cross \
+#        linux-libc-dev \
+#        libc6 \
+#        libc6-dev \
         zlib1g-dev \
         libucl-dev \
         make \
