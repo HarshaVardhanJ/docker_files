@@ -43,18 +43,3 @@ commandTests:
     args: ["-V"]
     expectedOutput: ["upx 3.95-git-7a3637ff5a80\n"]
     exitCode: 0
-  - name: 'Check compression ability'
-    setup: [["wget", "-q", "--no-check-certificate", "https://github.com/JonathanSalwan/binary-samples/raw/master/elf-Linux-x86-bash", "-O", "/testfile"], ["chmod", "+x", "/testfile"]]
-    command: "/usr/bin/upx"
-    args: ["--lzma", "--best", "-o", "/compressed", "/testfile"]
-    exitCode: 0
-  - name: 'Check compressed file'
-    setup: [["wget", "-q", "--no-check-certificate", "https://github.com/JonathanSalwan/binary-samples/raw/master/elf-Linux-x86-bash", "-O", "/testfile"], ["chmod", "+x", "/testfile"], ["/usr/bin/upx", "--best", "--lzma", "-o", "/compressed", "/testfile"]]
-    command: "/usr/bin/upx"
-    args: ["-t", "/compressed"]
-    exitCode: 0
-  - name: 'Unpack compressed file'
-    setup: [["wget", "-q", "--no-check-certificate", "https://github.com/JonathanSalwan/binary-samples/raw/master/elf-Linux-x86-bash", "-O", "/testfile"], ["chmod", "+x", "/testfile"], ["/usr/bin/upx", "--best", "--lzma", "-o", "/compressed", "/testfile"]]
-    command: "/usr/bin/upx"
-    args: ["-d", "/compressed"]
-    exitCode: 0
