@@ -24,7 +24,7 @@ steps:
       - |
         entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
         --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/pwndrop:busybox-untested-1.0.0 \
-        --push -f ./pwndrop/v1.0.0/busybox/Dockerfile ./pwndrop/v1.0.0/busybox/.
+        --push --pull=true -f ./pwndrop/v1.0.0/busybox/Dockerfile ./pwndrop/v1.0.0/busybox/.
 
   # Test the container pushed in the previous step
   - name: "gcr.io/gcp-runtimes/container-structure-test"
@@ -49,9 +49,9 @@ steps:
         entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
         --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/pwndrop:busybox-1.0.0 \
         -t harshavardhanj/pwndrop:busybox \
-        --platform linux/amd64,linux/arm64,linux/386,linux/ppc64le,linux/s390x,linux/arm/v6,linux/arm/v7 \
+        --platform linux/amd64,linux/arm64,linux/386,linux/ppc64le,linux/arm/v6,linux/arm/v7 \
         --cache-from harshavardhanj/pwndrop:busybox -f ./pwndrop/v1.0.0/busybox/Dockerfile \
-        --push ./pwndrop/v1.0.0/busybox/.
+        --push --pull=true ./pwndrop/v1.0.0/busybox/.
 
   # Get unique URL which is used to prompt MicroBadger to update image metadata.
   # The token, which is a part of the unique URL, is stored with Secrets Manager.

@@ -73,9 +73,9 @@ RUN apk update --no-cache \
     #
     && apk add --no-cache \
       gcc \
-      build-base \
       libc-dev \
       libc6-compat \
+      libgcc \
       make \
     # Download the pinned release of 'pwndrop'
     #
@@ -98,7 +98,8 @@ RUN apk update --no-cache \
 FROM alpine:3.12.0
 
 # Seems to be necessary as per https://github.com/moby/moby/issues/37965
-RUN true
+RUN true \
+    && rm -rf /lib/apk/db/scripts.tar
 
 # Copy required files from build stage
 COPY --from=builder /go/pwndrop/build /pwndrop
@@ -118,7 +119,7 @@ ENV PATH="/pwndrop:${PATH}"
 WORKDIR /pwndrop
 
 # Cleanup
-RUN rm -rf /lib/apk/db/scripts.tar
+#RUN rm -rf /lib/apk/db/scripts.tar
 
 # Expose DNS, HTTP, HTTPS ports
 EXPOSE 53 80 443
