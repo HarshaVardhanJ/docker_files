@@ -71,7 +71,7 @@ RUN apt update && apt install -y git \
     && make -j10 -C /upx/src upx.out CHECK_WHITESPACE= \
     # Compress the executable and save it to the specified location
     #
-    && /upx/src/upx.out --best --ultra-brute -o /usr/bin/upx /upx/src/upx.out
+    && /upx/src/upx.out --lzma --best -o /usr/bin/upx /upx/src/upx.out
 
 # Start with scratch for final base image
 FROM scratch
@@ -80,6 +80,9 @@ FROM scratch
 ARG BUILD_DATE
 ARG VCS_REF
 ARG VERSION=3.96
+
+# Seems necessary as per https://github.com/moby/moby/issues/37965
+RUN true
 
 # Copy the 'upx' binary from the first stage of the build
 COPY --from=intermediate /usr/bin/upx /usr/bin/upx

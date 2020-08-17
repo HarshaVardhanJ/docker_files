@@ -10,7 +10,7 @@
 #                                                                   #
 # This Dockerfile does the following:                               #
 #                                                                   #
-#    1. Starts with a base image of Debian Stretch Slim.            #
+#    1. Starts with a base image of Debian Buster Slim.             #
 #    2. Sets the '-static' build flag as an environment variable    #
 #       which is used to build a statically-linked binary.          #
 #    3. Downloads git and obtains a version-pinned release of UPX.  #
@@ -37,8 +37,8 @@
 #                                                                   #
 #####################################################################
 
-# Start with Debian Stretch Slim as base for first stage
-FROM debian:stretch-slim as intermediate
+# Start with Debian Buster Slim as base for first stage
+FROM debian:buster-slim as intermediate
 
 # ARG values for injecting metadata during build time
 # NOTE: When using ARGS in a multi-stage build, remember to redeclare
@@ -71,7 +71,7 @@ RUN apt update && apt install -y git \
     && make -j10 -C /upx/src upx.out CHECK_WHITESPACE= \
     # Compress the executable and save it to the specified location
     #
-    && /upx/src/upx.out --lzma --best --ultra-brute -o /usr/bin/upx /upx/src/upx.out
+    && /upx/src/upx.out --lzma --best -o /usr/bin/upx /upx/src/upx.out
 
 # Start with scratch for final base image
 FROM scratch
@@ -80,6 +80,9 @@ FROM scratch
 ARG BUILD_DATE
 ARG VCS_REF
 ARG VERSION=3.95
+
+# Seems necessary as per https://github.com/moby/moby/issues/37965
+RUN true
 
 # Copy the 'upx' binary from the first stage of the build
 COPY --from=intermediate /usr/bin/upx /usr/bin/upx
