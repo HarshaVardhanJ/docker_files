@@ -24,7 +24,7 @@ steps:
       - |
         entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
         --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/upx:untested-3.95 \
-        --push -f ./upx/v3.95/scratch/Dockerfile ./upx/v3.95/scratch/.
+        --push --pull=true -f ./upx/v3.95/scratch/Dockerfile ./upx/v3.95/scratch/.
 
   # Test the container pushed in the previous step
   - name: "gcr.io/gcp-runtimes/container-structure-test"
@@ -50,7 +50,7 @@ steps:
         --build-arg VCS_REF=$SHORT_SHA -t harshavardhanj/upx:3.95-scratch \
         --platform linux/amd64,linux/arm64,linux/386,linux/ppc64le,linux/arm/v7,linux/arm/v6 \
         --cache-from harshavardhanj/upx:3.95 -f ./upx/v3.95/scratch/Dockerfile \
-        --push ./upx/v3.95/scratch/.
+        --push --pull=true ./upx/v3.95/scratch/.
 
   # Get unique URL which is used to prompt MicroBadger to update image metadata.
   # The token, which is a part of the unique URL, is stored with Secrets Manager.
@@ -69,3 +69,5 @@ steps:
     args: ["-c", "curl -X POST https://hooks.microbadger.com/images/harshavardhanj/upx/$(cat ./microbadgerWebhook)"]
 
 timeout: "3600s"
+options:
+  machineType: 'N1_HIGHCPU_8'
