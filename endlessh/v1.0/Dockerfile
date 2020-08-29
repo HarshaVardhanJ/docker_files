@@ -17,14 +17,18 @@
 #       compile the source code as statically executable.           #
 #    4. Downloads packages necessary for source code compilation.   #
 #    5. Compiles the source code to generate the executable.        #
-#    6. Starts with Scratch as base in the final build stage.       #
-#    7. Sets some ARG values used for injecting metadata during     #
+#    6. Uses UPX as the second stage in order to compress the       #
+#       binary built in the previous stage.                         #
+#    7. Copies the binary from the first stage.                     #
+#    8. Compresses the binary using UPX.                            #
+#    9. Starts with Scratch as base in the final build stage.       #
+#   10. Sets some ARG values used for injecting metadata during     #
 #       build process of image.                                     #
-#    8. Copies the 'endlessh' executable from the previous build    #
+#   11. Copies the 'endlessh' executable from the previous build    #
 #       stage.                                                      #
-#    9. Exposes port 2222 on the container as this is the port      #
+#   12. Exposes port 2222 on the container as this is the port      #
 #       'endlessh' will listen on by default.                       #
-#   10. Runs the 'endlessh' executable in verbose mode.             #
+#   13. Runs the 'endlessh' executable in verbose mode.             #
 #                                                                   #
 #   NOTE: In step 3, the Makefile is modified in order to compile   #
 #         the source code to a statically-linked executable as      #
@@ -34,8 +38,8 @@
 #                                                                   #
 #####################################################################
 
-# Start with Alpine Linux as intermediate builder image
-FROM alpine:latest as intermediate
+# Start with Alpine Linux as builder image
+FROM alpine:3.12 as builder
 
 # Setting version number for `endlessh` download
 ARG VERSION=1.0
@@ -62,7 +66,21 @@ RUN wget -qc https://github.com/skeeto/endlessh/archive/$VERSION.tar.gz -O endle
       && make \
       # Move the executable to the root directory
       #
-      && mv endlessh ../
+      && mv endlessh ../ \
+      # Creating new user and group for running endlessh
+      && addgroup -S -g 1000 endlessh \
+      && adduser -H -g "User account for running the endlessh executable" -s /bin/nologin -G endlessh -u 1000 -S -D endlessh
+
+
+# Use UPX to compress the binary
+FROM harshavardhanj/upx:3.95 as compressor
+
+# Copy the binary from the first stage
+COPY --from=builder /endlessh /endlessh.orig
+
+# Compress the binary
+RUN /usr/bin/upx --lzma --best -o /endlessh /endlessh.orig
+
 
 # Start from scratch
 FROM scratch
@@ -72,8 +90,14 @@ ARG BUILD_DATE
 ARG VCS_REF
 ARG VERSION=1.0
 
+# Copy passwd and groups file from first stage
+COPY --from=builder --chown=root:root /etc/passwd /etc/group /etc/
+
 # Copy the executable from the intermediate builder stage
-COPY --from=intermediate /endlessh /
+COPY --from=compressor --chown=endlessh:endlessh /endlessh /
+
+# Run as user endlessh
+USER endlessh
 
 # Expose port 2222 on which the executable listens
 EXPOSE 2222/tcp

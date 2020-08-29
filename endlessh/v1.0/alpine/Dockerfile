@@ -33,8 +33,8 @@
 #                                                                   #
 #####################################################################
 
-# Start with Alpine Linux as intermediate builder image
-FROM alpine:latest as intermediate
+# Start with Alpine Linux as builder image
+FROM alpine:3.12 as builder
 
 # Setting version number for `endlessh` download
 ARG VERSION=1.0
@@ -57,7 +57,21 @@ RUN wget -qc https://github.com/skeeto/endlessh/archive/$VERSION.tar.gz -O endle
       && make \
       # Move the executable to the root directory
       #
-      && mv endlessh ../
+      && mv endlessh ../ \
+      # Creating new user and group for running endlessh
+      && addgroup -S -g 1000 endlessh \
+      && adduser -H -g "User account for running the endlessh executable" -s /bin/nologin -G endlessh -u 1000 -S -D endlessh
+
+
+# Use UPX to compress the binary
+FROM harshavardhanj/upx:3.95 as compressor
+
+# Copy the binary from the first stage
+COPY --from=builder /endlessh /endlessh.orig
+
+# Compress the binary
+RUN /usr/bin/upx --best -o /endlessh /endlessh.orig
+
 
 # Start with base image of Alpine Linux (pinned version 3.11.5)
 FROM alpine:3.12.0
@@ -70,16 +84,19 @@ ARG VERSION=1.0
 # Setting working directory
 WORKDIR /
 
+# Copy passwd and groups file from first stage
+COPY --from=builder --chown=root:root /etc/passwd /etc/group /etc/
+
 # Copy the executable from the intermediate builder stage
-COPY --from=intermediate /endlessh /
+COPY --from=compressor --chown=endlessh:endlessh /endlessh /
 
 # Creating new user and group for running endlessh
-RUN addgroup -S -g 1000 endlessh \
-    && adduser -H -g "User account for running the endlessh executable" -s /bin/nologin -G endlessh -u 1000 -S -D endlessh \
-    # Changing permissions on the endlessh executable
-    #
-    && chown endlessh:endlessh /endlessh \
-    && chmod 100 /endlessh
+#RUN addgroup -S -g 1000 endlessh \
+#    && adduser -H -g "User account for running the endlessh executable" -s /bin/nologin -G endlessh -u 1000 -S -D endlessh \
+#    # Changing permissions on the endlessh executable
+#    #
+#    && chown endlessh:endlessh /endlessh \
+#    && chmod 100 /endlessh
 
 # Run as user endlessh
 USER endlessh

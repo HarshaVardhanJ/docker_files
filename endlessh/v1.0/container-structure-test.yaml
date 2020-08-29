@@ -36,3 +36,5 @@ fileExistenceTests:
     shouldExist: true
     isExecutableBy: 'any'
     permissions: '-rwxr-xr-x'
+    uid: 1000
+    gid: 1000

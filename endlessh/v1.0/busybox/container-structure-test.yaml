@@ -38,8 +38,8 @@ fileExistenceTests:
   - name: 'Endlessh executable'
     path: '/endlessh'
     shouldExist: true
-    permissions: '---x------'
-    isExecutableBy: 'owner'
+    permissions: '-rwxr-xr-x'
+    isExecutableBy: 'any'
     uid: 1000
     gid: 1000
 

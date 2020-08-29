@@ -17,21 +17,22 @@
 #       compile the source code as statically executable.           #
 #    4. Downloads packages necessary for source code compilation.   #
 #    5. Compiles the source code to generate the executable.        #
-#    6. Starts with Busybox as base in the final build stage.       #
-#    7. Sets some ARG values used for injecting metadata during     #
+#    6. Creates a non-root user which will be used to run endlessh. #
+#    7. Uses UPX as the second stage in order to compress the       #
+#       binary built in the previous stage.                         #
+#    8. Copies the binary from the first stage.                     #
+#    9. Compresses the binary using UPX.                            #
+#   10. Starts with Busybox as base in the final build stage.       #
+#   11. Sets some ARG values used for injecting metadata during     #
 #       build process of image.                                     #
-#    8. Copies the 'endlessh' executable from the previous build    #
-#       stage.                                                      #
-#    9. Creates an unprivileged user account which will be used     #
-#       as the default user within the container, and to run the    #
-#       the 'endlessh' executable.                                  #
-#   10. Changes permissions and ownership of the 'endlessh'         #
-#       executable.                                                 #
-#   11. Sets the default user as the unprivilged user account       #
+#   12. Copies the 'passwd' and 'group' file from the first stage.  #
+#   13. Copies the 'endlessh' executable from the previous build    #
+#       stage and changes its owner and group to the non-root user. #
+#   14. Sets the default user as the unprivileged user account      #
 #       which was created in the previous step.                     #
-#   12. Exposes port 2222 on the container as this is the port      #
+#   15. Exposes port 2222 on the container as this is the port      #
 #       'endlessh' will listen on by default.                       #
-#   13. Runs the 'endlessh' executable in verbose mode.             #
+#   16. Runs the 'endlessh' executable in verbose mode.             #
 #                                                                   #
 #   NOTE: In step 3, the Makefile is modified in order to compile   #
 #         the source code to a statically-linked executable as      #
@@ -41,8 +42,8 @@
 #                                                                   #
 #####################################################################
 
-# Start with Alpine Linux as intermediate builder image
-FROM alpine:latest as intermediate
+# Start with Alpine Linux as builder image
+FROM alpine:3.12 as builder
 
 # Setting version number for `endlessh` download
 ARG VERSION=1.0
@@ -69,7 +70,21 @@ RUN wget -qc https://github.com/skeeto/endlessh/archive/$VERSION.tar.gz -O endle
       && make \
       # Move the executable to the root directory
       #
-      && mv endlessh ../
+      && mv endlessh ../ \
+      # Creating new user and group for running endlessh
+      && addgroup -S -g 1000 endlessh \
+      && adduser -H -g "User account for running the endlessh executable" -s /bin/nologin -G endlessh -u 1000 -S -D endlessh
+
+
+# Use UPX to compress the binary
+FROM harshavardhanj/upx:3.95 as compressor
+
+# Copy the binary from the first stage
+COPY --from=builder /endlessh /endlessh.orig
+
+# Compress the binary
+RUN /usr/bin/upx --best -o /endlessh /endlessh.orig
+
 
 # Start with base image of Busybox
 FROM busybox:latest
@@ -82,16 +97,11 @@ ARG VERSION=1.0
 # Setting working directory
 WORKDIR /
 
-# Copy the executable from the intermediate builder stage
-COPY --from=intermediate /endlessh /
+# Copy passwd and groups file from first stage
+COPY --from=builder --chown=root:root /etc/passwd /etc/group /etc/
 
-# Creating new user and group for running endlessh
-RUN addgroup -S -g 1000 endlessh \
-    && adduser -H -g "User account for running the endlessh executable" -s /bin/nologin -G endlessh -u 1000 -S -D endlessh \
-    # Changing permissions on the endlessh executable
-    #
-    && chown endlessh:endlessh /endlessh \
-    && chmod 100 /endlessh
+# Copy the executable from the intermediate builder stage
+COPY --from=compressor --chown=endlessh:endlessh /endlessh /
 
 # Run as user endlessh
 USER endlessh
