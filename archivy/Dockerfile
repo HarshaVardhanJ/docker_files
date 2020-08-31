@@ -50,7 +50,7 @@
 FROM python:3.8.5-slim-buster AS builder
 
 # Archivy version
-ARG VERSION=0.0.7
+ARG VERSION=0.0.8
 
 # Installing pinned version of Archivy using pip
 RUN pip3.8 install --prefix=/install archivy==$VERSION
@@ -71,7 +71,7 @@ ARG ARCHIVY_USER=archivy
 ARG ARCHIVY_GROUP=archivy
 
 # Archivy version
-ARG VERSION=0.0.7
+ARG VERSION=0.0.8
 
 # Installing netcat and xdg-utils
 RUN apk update && apk add --no-cache \
