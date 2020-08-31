@@ -3,10 +3,10 @@ name: Building, testing, and pushing Archivy container image
 on:
   push:
     branches:
-      - docker
+      - master
     pull_request:
       branches:
-        - docker
+        - master
 
 jobs:
   untestedBuildPush:
