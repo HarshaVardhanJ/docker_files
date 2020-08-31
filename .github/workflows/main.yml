@@ -1,0 +1,81 @@
+name: Building, testing, and pushing Archivy container image
+
+on:
+  push:
+    branches:
+      - master
+    pull_request:
+      branches:
+        - master
+
+jobs:
+  untestedBuildPush:
+    runs_on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Login to DockerHub
+        run: docker login --username=${{ secrets.DOCKER_USER }} --password=${{ secrets.DOCKER_ACCESS_TOKEN }}
+      - name: Build and push untested image to DockerHub with 'untested' tag
+        uses: docker://harshavardhanj/docker-buildx:stable
+        with:
+          entrypoint: sh
+          args:
+            - '-c'
+            - |
+              -c entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
+              --build-arg VCS_REF=${{ github.sha }} -t harshavardhanj/archivy:untested --pull=true \
+              --push -f ./Dockerfile .
+  containerTestScan:
+    name: Test container image with container-structure-test, Trivy, and Anchore
+    runs_on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Test image with container-structure-test
+        uses: brpaz/structure-tests-action@v1
+        with:
+          image: harshavardhanj/archivy:untested
+          config: container-structure-test.yaml
+      - name: Scan for OS vulnerabilties in image using Trivy
+        uses: aquasecurity/trivy-action@0.0.8
+        with:
+          image-ref: 'harshavardhanj/archivy:untested'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
+      - name: Scan image and code for vulnerabilties using Anchore
+        uses: anchore/scan-action@v1
+        with:
+          image-reference: 'harshavardhanj/archivy:untested'
+          dockerfile-path: "Dockerfile"
+          fail-build: true
+          include-app-packages: true
+          acs-report-enabled: true
+          acs-report-severity-cutoff: HIGH
+      - name: Anchore inline scan JSON results
+        run: for j in `ls ./anchore-reports/*.json`; do echo "---- ${j} ----"; cat ${j}; echo; done
+      - name: Anchore action SARIF report
+        run: cat results.sarif
+      - name: upload Anchore scan SARIF report
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: results.sarif
+  dockerBuildPush:
+    runs_on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Login to DockerHub
+        run: docker login --username=${{ secrets.DOCKER_USER }} --password=${{ secrets.DOCKER_ACCESS_TOKEN }}
+      - name: Build Archivy image for multiple architectures and push to Docker Hub
+        uses: docker://harshavardhanj/docker-buildx:stable
+        with:
+          entrypoint: sh
+          args:
+            - '-c'
+            - |
+              -c entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
+              --build-arg VCS_REF=${{ github.sha }} -t harshavardhanj/archivy:0.0.8 \
+              -t harshavardhanj/archivy:stable -t harshavardhanj/archivy:latest \
+              --platform linux/amd64,linux/arm64,linux/386,linux/s390x,linux/arm/v7,linux/arm/v6 \
+              --cache-from harshavardhanj/archivy:latest -f ./Dockerfile --pull=true \
+              --push .
