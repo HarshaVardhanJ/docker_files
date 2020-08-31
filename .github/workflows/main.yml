@@ -10,7 +10,7 @@ on:
 
 jobs:
   untestedBuildPush:
-    runs_on: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
       - name: Login to DockerHub
@@ -18,16 +18,14 @@ jobs:
       - name: Build and push untested image to DockerHub with 'untested' tag
         uses: docker://harshavardhanj/docker-buildx:stable
         with:
-          entrypoint: sh
-          args:
-            - '-c'
-            - |
-              -c entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
-              --build-arg VCS_REF=${{ github.sha }} -t harshavardhanj/archivy:untested --pull=true \
-              --push -f ./Dockerfile .
+          entrypoint: sh -c
+          args: |
+            -c entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
+            --build-arg VCS_REF=${{ github.sha }} -t harshavardhanj/archivy:untested --pull=true \
+            --push -f ./Dockerfile .
   containerTestScan:
     name: Test container image with container-structure-test, Trivy, and Anchore
-    runs_on: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
       - name: Test image with container-structure-test
@@ -61,7 +59,7 @@ jobs:
         with:
           sarif_file: results.sarif
   dockerBuildPush:
-    runs_on: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
       - name: Login to DockerHub
@@ -69,13 +67,11 @@ jobs:
       - name: Build Archivy image for multiple architectures and push to Docker Hub
         uses: docker://harshavardhanj/docker-buildx:stable
         with:
-          entrypoint: sh
-          args:
-            - '-c'
-            - |
-              -c entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
-              --build-arg VCS_REF=${{ github.sha }} -t harshavardhanj/archivy:0.0.8 \
-              -t harshavardhanj/archivy:stable -t harshavardhanj/archivy:latest \
-              --platform linux/amd64,linux/arm64,linux/386,linux/s390x,linux/arm/v7,linux/arm/v6 \
-              --cache-from harshavardhanj/archivy:latest -f ./Dockerfile --pull=true \
-              --push .
+          entrypoint: sh -c
+          args: |
+            -c entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
+            --build-arg VCS_REF=${{ github.sha }} -t harshavardhanj/archivy:0.0.8 \
+            -t harshavardhanj/archivy:stable -t harshavardhanj/archivy:latest \
+            --platform linux/amd64,linux/arm64,linux/386,linux/s390x,linux/arm/v7,linux/arm/v6 \
+            --cache-from harshavardhanj/archivy:latest -f ./Dockerfile --pull=true \
+            --push .
