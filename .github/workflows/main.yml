@@ -17,9 +17,10 @@ jobs:
         id: date
         run: echo "::set-env name=TIMENOW::$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
       - name: Login to DockerHub
-        uses: docker://harshavardhanj/docker-buildx:stable
+        uses: docker/login-action@v1
         with:
-          args: --help ; docker login --username=${{ secrets.DOCKER_USER }} --password=${{ secrets.DOCKER_ACCESS_TOKEN }}
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
             #run: docker login --username=${{ secrets.DOCKER_USER }} --password=${{ secrets.DOCKER_ACCESS_TOKEN }}
       - name: Build and push untested image to DockerHub with 'untested' tag
         uses: docker://harshavardhanj/docker-buildx:stable
@@ -70,7 +71,10 @@ jobs:
         id: date
         run: echo "::set-env name=TIMENOW::$(date -u '+%Y-%m-%dT%H:%M:%SZ)"
       - name: Login to DockerHub
-        run: docker login --username=${{ secrets.DOCKER_USER }} --password=${{ secrets.DOCKER_ACCESS_TOKEN }}
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
       - name: Build Archivy image for multiple architectures and push to Docker Hub
         uses: docker://harshavardhanj/docker-buildx:stable
         with:
