@@ -52,7 +52,7 @@ jobs:
         uses: brpaz/structure-tests-action@v1.1.2
         with:
           image: harshavardhanj/archivy:untested-${{ github.sha }}
-          config: ./archivy/container-structure-test.yaml
+          configFile: ./archivy/container-structure-test.yaml
       - name: Scan for OS vulnerabilties in image using Trivy
         uses: aquasecurity/trivy-action@0.0.8
         with:
