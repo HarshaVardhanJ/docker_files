@@ -21,19 +21,7 @@ jobs:
       - name: Build and push untested image to DockerHub with 'untested' tag
         uses: docker://harshavardhanj/docker-buildx:stable
         with:
-          entrypoint: entrypoint.sh
-          args:
-            - 'build'
-            - '--build-arg'
-            - 'BUILD_DATE=${{ env.TIMENOW }}' 
-            - '--build-arg'
-            - 'VCS_REF=${{ github.sha }'
-            - '-t'
-            - 'harshavardhanj/archivy:untested'
-            - '--push'
-            - '-f'
-            - './archivy/Dockerfile'
-            - './archivy/.'
+          args: build --build-arg BUILD_DATE=${{ env.TIMENOW }} --build-arg VCS_REF=${{ github.sha } -t harshavardhanj/archivy:untested-${{ github.sha }} --push -f ./archivy/Dockerfile ./archivy/.
   containerTestScan:
     name: Test container image with container-structure-test, Trivy, and Anchore
     runs-on: ubuntu-latest
@@ -43,12 +31,12 @@ jobs:
       - name: Test image with container-structure-test
         uses: brpaz/structure-tests-action@v1
         with:
-          image: harshavardhanj/archivy:untested
-          config: container-structure-test.yaml
+          image: harshavardhanj/archivy:untested-${{ github.sha }}
+          config: ./archivy/container-structure-test.yaml
       - name: Scan for OS vulnerabilties in image using Trivy
         uses: aquasecurity/trivy-action@0.0.8
         with:
-          image-ref: 'harshavardhanj/archivy:untested'
+          image-ref: 'harshavardhanj/archivy:untested-${{ github.sha }}'
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
@@ -56,8 +44,8 @@ jobs:
       - name: Scan image and code for vulnerabilties using Anchore
         uses: anchore/scan-action@v1
         with:
-          image-reference: 'harshavardhanj/archivy:untested'
-          dockerfile-path: "Dockerfile"
+          image-reference: 'harshavardhanj/archivy:untested-${{ github.sha }}'
+          dockerfile-path: "./archivy/Dockerfile"
           fail-build: true
           include-app-packages: true
           acs-report-enabled: true
@@ -83,22 +71,5 @@ jobs:
       - name: Build Archivy image for multiple architectures and push to Docker Hub
         uses: docker://harshavardhanj/docker-buildx:stable
         with:
-          entrypoint: entrypoint.sh
           args:
-            - 'build'
-            - '--build-arg'
-            - 'BUILD_DATE=${{ env.TIMENOW }}' 
-            - '--build-arg'
-            - 'VCS_REF=${{ github.sha }'
-            - '-t'
-            - 'harshavardhanj/archivy:0.0.8'
-            - '-t'
-            - 'harshavardhanj/archivy:stable'
-            - '-t'
-            - 'harshavardhanj/archivy:latest'
-            - '--platform'
-            - 'linux/amd64,linux/arm64,linux/386,linux/s390x,linux/arm/v7,linux/arm/v6'
-            - '--push'
-            - '-f'
-            - './archivy/Dockerfile'
-            - './archivy/.'
+            build --build-arg BUILD_DATE=${{ env.TIMENOW }} --build-arg VCS_REF=${{ github.sha } -t harshavardhanj/archivy:0.0.8 -t harshavardhanj/archivy:stable -t harshavardhanj/archivy:latest --platform linux/amd64,linux/arm64,linux/386,linux/s390x,linux/arm/v7,linux/arm/v6 --push -f ./archivy/Dockerfile ./archivy/.
