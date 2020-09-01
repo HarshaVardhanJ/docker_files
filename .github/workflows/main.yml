@@ -16,15 +16,32 @@ jobs:
       - name: Get current date
         id: date
         run: echo "::set-env name=TIMENOW::$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-      - name: Login to DockerHub
-        env: 
-          DOCKER_ACCESS_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
-          DOCKER_USER: ${{ secrets.DOCKER_USER }}
+      - name: Set up Docker Buildx
+        if: success()
+        id: buildx
+        uses: crazy-max/ghaction-docker-buildx@v1
+        with:
+          version: latest
+      - name: Prepare
+        if: success()
+        id: prepare
         run: |
-          echo "${DOCKER_ACCESS_TOKEN}" | docker login --username "${DOCKER_USER}" --password-stdin docker.io
-      - name: Build and push untested image to DockerHub with 'untested' tag
+          echo ::set-output name=docker_username::harshavardhanj
+          echo ::set-output name=docker_image::docker.io/harshavardhanj/archivy
+          echo ::set-output name=hash::${GITHUB_SHA}
+      - name: Docker Login
+        if: success()
+        env:
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_ACCESS_TOKEN }}
         run: |
-          docker buildx build --build-arg BUILD_DATE=${{ env.TIMENOW }} --build-arg VCS_REF=${{ github.sha }} -t docker.io/harshavardhanj/archivy:untested-${{ github.sha }} --output type=image,name=docker.io/harshavardhanj/archivy,push=true -f ./archivy/Dockerfile ./archivy/.
+          echo "${DOCKER_PASSWORD}" | docker login --username "${{ steps.prepare.outputs.docker_username }}" --password-stdin docker.io
+      - name: Run Buildx (master) to push untested image
+        if: success()
+        run: |
+          docker buildx build \
+            --output type=image,name=${{ steps.prepare.outputs.docker_image }},push=true \
+            --tag "${{ steps.prepare.outputs.docker_image }}:untested-${{ steps.prepare.outputs.hash }}" \
+            --file ./archivy/Dockerfile ./archivy/.
   containerTestScan:
     name: Test container image with container-structure-test, Trivy, and Anchore
     runs-on: ubuntu-latest
@@ -69,12 +86,37 @@ jobs:
       - name: Get current date
         id: date
         run: echo "::set-env name=TIMENOW::$(date -u '+%Y-%m-%dT%H:%M:%SZ)"
-      - name: Login to DockerHub
-        env: 
-          DOCKER_ACCESS_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
-          DOCKER_USER: ${{ secrets.DOCKER_USER }}
+      - name: Set up Docker Buildx
+        if: success()
+        id: buildx
+        uses: crazy-max/ghaction-docker-buildx@v1
+        with:
+          version: latest
+      - name: Available platforms for buildx
+        if: success()
+        run: echo ${{ steps.buildx.outputs.platforms }}
+      - name: Prepare
+        if: success()
+        id: prepare
         run: |
-          echo "${DOCKER_ACCESS_TOKEN}" | docker login --username "${DOCKER_USER}" --password-stdin docker.io
-      - name: Build Archivy image for multiple architectures and push to Docker Hub
+          echo ::set-output name=docker_platforms::linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64,linux/386,linux/s390x
+          echo ::set-output name=docker_username::harshavardhanj
+          echo ::set-output name=docker_image::docker.io/harshavardhanj/archivy
+          echo ::set-output name=hash::${GITHUB_SHA}
+      - name: Docker Login
+        if: success()
+        env:
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_ACCESS_TOKEN }}
         run: |
-          docker buildx build --build-arg BUILD_DATE=${{ env.TIMENOW }} --build-arg VCS_REF=${{ github.sha }} -t docker.io/harshavardhanj/archivy:0.0.8 -t docker.io/harshavardhanj/archivy:stable -t docker.io/harshavardhanj/archivy:latest --platform linux/amd64,linux/arm64,linux/386,linux/s390x,linux/arm/v7,linux/arm/v6 --output type=image,name=docker.io/harshavardhanj/archivy,push=true -f ./archivy/Dockerfile ./archivy/.
+          echo "${DOCKER_PASSWORD}" | docker login --username "${{ steps.prepare.outputs.docker_username }}" --password-stdin docker.io
+      - name: Run Buildx (master)
+        if: success()
+        run: |
+          docker buildx build \
+            --output type=image,name=${{ steps.prepare.outputs.docker_image }},push=true \
+            --platform ${{ steps.prepare.outputs.docker_platforms }} \
+            --build-arg BUILD_DATE=${{ env.TIMENOW }} --build-arg VCS_REF=${{ github.sha }} \
+            --tag "${{ steps.prepare.outputs.docker_image }}:0.0.8" \
+            --tag "${{ steps.prepare.outputs.docker_image }}:stable" \
+            --tag "${{ steps.prepare.outputs.docker_image }}:latest" \
+            --file ./archivy/Dockerfile ./archivy/.
