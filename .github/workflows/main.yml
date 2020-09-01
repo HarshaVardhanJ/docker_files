@@ -23,9 +23,8 @@ jobs:
         run: |
           echo "${DOCKER_ACCESS_TOKEN}" | docker login --username "${DOCKER_USER}" --password-stdin docker.io
       - name: Build and push untested image to DockerHub with 'untested' tag
-        uses: docker://harshavardhanj/docker-buildx:stable
-        with:
-          args: build --build-arg BUILD_DATE=${{ env.TIMENOW }} --build-arg VCS_REF=${{ github.sha }} -t harshavardhanj/archivy:untested-${{ github.sha }} --push -f ./archivy/Dockerfile ./archivy/.
+        run: |
+          docker buildx build --build-arg BUILD_DATE=${{ env.TIMENOW }} --build-arg VCS_REF=${{ github.sha }} -t harshavardhanj/archivy:untested-${{ github.sha }} --push -f ./archivy/Dockerfile ./archivy/.
   containerTestScan:
     name: Test container image with container-structure-test, Trivy, and Anchore
     runs-on: ubuntu-latest
@@ -77,7 +76,5 @@ jobs:
         run: |
           echo "${DOCKER_ACCESS_TOKEN}" | docker login --username "${DOCKER_USER}" --password-stdin docker.io
       - name: Build Archivy image for multiple architectures and push to Docker Hub
-        uses: docker://harshavardhanj/docker-buildx:stable
-        with:
-          args:
-            build --build-arg BUILD_DATE=${{ env.TIMENOW }} --build-arg VCS_REF=${{ github.sha }} -t harshavardhanj/archivy:0.0.8 -t harshavardhanj/archivy:stable -t harshavardhanj/archivy:latest --platform linux/amd64,linux/arm64,linux/386,linux/s390x,linux/arm/v7,linux/arm/v6 --push -f ./archivy/Dockerfile ./archivy/.
+        run: |
+          docker buildx build --build-arg BUILD_DATE=${{ env.TIMENOW }} --build-arg VCS_REF=${{ github.sha }} -t harshavardhanj/archivy:0.0.8 -t harshavardhanj/archivy:stable -t harshavardhanj/archivy:latest --platform linux/amd64,linux/arm64,linux/386,linux/s390x,linux/arm/v7,linux/arm/v6 --push -f ./archivy/Dockerfile ./archivy/.
