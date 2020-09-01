@@ -49,7 +49,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Test image with container-structure-test
-        uses: brpaz/structure-tests-action@v1
+        uses: brpaz/structure-tests-action@v1.1.2
         with:
           image: harshavardhanj/archivy:untested-${{ github.sha }}
           config: ./archivy/container-structure-test.yaml
