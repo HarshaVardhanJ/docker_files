@@ -51,7 +51,7 @@ jobs:
       - name: Test image with container-structure-test
         uses: brpaz/structure-tests-action@v1.1.2
         with:
-          image: harshavardhanj/archivy:untested-${{ github.sha }}
+          image: docker://harshavardhanj/archivy:untested-${{ github.sha }}
           configFile: ./archivy/container-structure-test.yaml
       - name: Scan for OS vulnerabilties in image using Trivy
         uses: aquasecurity/trivy-action@0.0.8
