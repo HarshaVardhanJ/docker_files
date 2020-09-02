@@ -75,7 +75,7 @@ jobs:
           dockerfile-path: "./archivy/Dockerfile"
           fail-build: true
           include-app-packages: true
-          acs-report-enabled: true
+          acs-report-enable: true
           acs-report-severity-cutoff: HIGH
       - name: Anchore inline scan JSON results
         run: for j in `ls ./anchore-reports/*.json`; do echo "---- ${j} ----"; cat ${j}; echo; done
