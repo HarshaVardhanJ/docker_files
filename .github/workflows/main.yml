@@ -28,7 +28,7 @@ jobs:
         run: |
           echo ::set-output name=docker_username::harshavardhanj
           echo ::set-output name=docker_image::docker.io/harshavardhanj/archivy
-          echo ::set-output name=hash::${GITHUB_SHA}
+          echo ::set-output name=hash::$(echo ${GITHUB_SHA} | cut -c1-8)
       - name: Docker Login
         if: success()
         env:
@@ -48,23 +48,30 @@ jobs:
     needs: [untestedBuildPush]
     steps:
       - uses: actions/checkout@v1
+      - name: Prepare
+        if: success()
+        id: prepare
+        run: |
+          echo ::set-output name=docker_username::harshavardhanj
+          echo ::set-output name=docker_image::docker.io/harshavardhanj/archivy
+          echo ::set-output name=hash::$(echo ${GITHUB_SHA} | cut -c1-8)
       - name: Test image with container-structure-test
         uses: brpaz/structure-tests-action@v1.1.2
         with:
-          image: docker.io/harshavardhanj/archivy:untested-${{ github.sha }}
+          image: harshavardhanj/archivy:untested-${{ steps.prepare.outputs.hash }}
           configFile: ./archivy/container-structure-test.yaml
       - name: Scan for OS vulnerabilties in image using Trivy
         uses: aquasecurity/trivy-action@0.0.8
         with:
-          image-ref: 'docker.io/harshavardhanj/archivy:untested-${{ github.sha }}'
+          image-ref: 'docker.io/harshavardhanj/archivy:untested-${{ steps.prepare.outputs.hash }}'
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
           severity: 'CRITICAL,HIGH'
       - name: Scan image and code for vulnerabilties using Anchore
-        uses: anchore/scan-action@v1
+        uses: anchore/scan-action@v1.0.8
         with:
-          image-reference: 'docker.io/harshavardhanj/archivy:untested-${{ github.sha }}'
+          image-reference: 'docker.io/harshavardhanj/archivy:untested-${{ steps.prepare.outputs.hash }}'
           dockerfile-path: "./archivy/Dockerfile"
           fail-build: true
           include-app-packages: true
@@ -102,7 +109,7 @@ jobs:
           echo ::set-output name=docker_platforms::linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64,linux/386,linux/s390x
           echo ::set-output name=docker_username::harshavardhanj
           echo ::set-output name=docker_image::docker.io/harshavardhanj/archivy
-          echo ::set-output name=hash::${GITHUB_SHA}
+          echo ::set-output name=hash::$(echo ${GITHUB_SHA} | cut -c1-8)
       - name: Docker Login
         if: success()
         env:
@@ -115,8 +122,9 @@ jobs:
           docker buildx build \
             --output type=image,name=${{ steps.prepare.outputs.docker_image }},push=true \
             --platform ${{ steps.prepare.outputs.docker_platforms }} \
-            --build-arg BUILD_DATE=${{ env.TIMENOW }} --build-arg VCS_REF=${{ github.sha }} \
+            --build-arg BUILD_DATE=${{ env.TIMENOW }} --build-arg VCS_REF=${{ steps.prepare.outputs.hash }} \
             --tag "${{ steps.prepare.outputs.docker_image }}:0.0.8" \
             --tag "${{ steps.prepare.outputs.docker_image }}:stable" \
             --tag "${{ steps.prepare.outputs.docker_image }}:latest" \
+            --tag "${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.hash }}" \
             --file ./archivy/Dockerfile ./archivy/.
