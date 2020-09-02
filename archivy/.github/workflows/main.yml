@@ -10,72 +10,123 @@ on:
 
 jobs:
   untestedBuildPush:
-    runs_on: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - name: Login to DockerHub
-        run: docker login --username=${{ secrets.DOCKER_USER }} --password=${{ secrets.DOCKER_ACCESS_TOKEN }}
-      - name: Build and push untested image to DockerHub with 'untested' tag
-        uses: docker://harshavardhanj/docker-buildx:stable
+      - name: Get current date
+        id: date
+        run: echo "::set-env name=TIMENOW::$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+      - name: Set up Docker Buildx
+        if: success()
+        id: buildx
+        uses: crazy-max/ghaction-docker-buildx@v1
         with:
-          entrypoint: sh
-          args:
-            - '-c'
-            - |
-              -c entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
-              --build-arg VCS_REF=${{ github.sha }} -t harshavardhanj/archivy:untested --pull=true \
-              --push -f ./Dockerfile .
+          version: latest
+      - name: Prepare
+        if: success()
+        id: prepare
+        run: |
+          echo ::set-output name=docker_username::harshavardhanj
+          echo ::set-output name=docker_image::docker.io/harshavardhanj/archivy
+          echo ::set-output name=hash::$(echo ${GITHUB_SHA} | cut -c1-8)
+      - name: Docker Login
+        if: success()
+        env:
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+        run: |
+          echo "${DOCKER_PASSWORD}" | docker login --username "${{ steps.prepare.outputs.docker_username }}" --password-stdin docker.io
+      - name: Run Buildx (master) to push untested image
+        if: success()
+        run: |
+          docker buildx build \
+            --output type=image,name=${{ steps.prepare.outputs.docker_image }},push=true \
+            --tag "${{ steps.prepare.outputs.docker_image }}:untested-${{ steps.prepare.outputs.hash }}" \
+            --file ./archivy/Dockerfile ./archivy/.
   containerTestScan:
     name: Test container image with container-structure-test, Trivy, and Anchore
-    runs_on: ubuntu-latest
+    runs-on: ubuntu-latest
+    needs: [untestedBuildPush]
     steps:
       - uses: actions/checkout@v1
+      - name: Prepare
+        if: success()
+        id: prepare
+        run: |
+          echo ::set-output name=docker_username::harshavardhanj
+          echo ::set-output name=docker_image::docker.io/harshavardhanj/archivy
+          echo ::set-output name=hash::$(echo ${GITHUB_SHA} | cut -c1-8)
+      - name: Run image
+        run: docker run --rm harshavardhanj/archivy:untested-${{ steps.prepare.outputs.hash }} ls
       - name: Test image with container-structure-test
-        uses: brpaz/structure-tests-action@v1
+        uses: plexsystems/container-structure-test-action@v0.2.0
         with:
-          image: harshavardhanj/archivy:untested
-          config: container-structure-test.yaml
+          image: 'docker.io/harshavardhanj/archivy:untested-${{ steps.prepare.outputs.hash }}'
+          config: './archivy/container-structure-test.yaml'
       - name: Scan for OS vulnerabilties in image using Trivy
         uses: aquasecurity/trivy-action@0.0.8
         with:
-          image-ref: 'harshavardhanj/archivy:untested'
+          image-ref: 'docker.io/harshavardhanj/archivy:untested-${{ steps.prepare.outputs.hash }}'
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
           severity: 'CRITICAL,HIGH'
       - name: Scan image and code for vulnerabilties using Anchore
-        uses: anchore/scan-action@v1
+        uses: anchore/scan-action@v1.0.8
         with:
-          image-reference: 'harshavardhanj/archivy:untested'
-          dockerfile-path: "Dockerfile"
+          image-reference: 'docker.io/harshavardhanj/archivy:untested-${{ steps.prepare.outputs.hash }}'
+          dockerfile-path: './archivy/Dockerfile'
           fail-build: true
           include-app-packages: true
-          acs-report-enabled: true
-          acs-report-severity-cutoff: HIGH
-      - name: Anchore inline scan JSON results
-        run: for j in `ls ./anchore-reports/*.json`; do echo "---- ${j} ----"; cat ${j}; echo; done
-      - name: Anchore action SARIF report
-        run: cat results.sarif
-      - name: upload Anchore scan SARIF report
-        uses: github/codeql-action/upload-sarif@v1
-        with:
-          sarif_file: results.sarif
+            #acs-report-enable: true
+            #acs-report-severity-cutoff: High
+            # - name: Anchore inline scan JSON results
+            #   run: for j in `ls ./anchore-reports/*.json`; do echo "---- ${j} ----"; cat ${j}; echo; done
+            # - name: Anchore action SARIF report
+            #   run: cat results.sarif
+            # - name: upload Anchore scan SARIF report
+            #   uses: github/codeql-action/upload-sarif@v1
+            #   with:
+            #     sarif_file: results.sarif
   dockerBuildPush:
-    runs_on: ubuntu-latest
+    runs-on: ubuntu-latest
+    needs: [containerTestScan]
     steps:
       - uses: actions/checkout@v1
-      - name: Login to DockerHub
-        run: docker login --username=${{ secrets.DOCKER_USER }} --password=${{ secrets.DOCKER_ACCESS_TOKEN }}
-      - name: Build Archivy image for multiple architectures and push to Docker Hub
-        uses: docker://harshavardhanj/docker-buildx:stable
+      - name: Get current date
+        id: date
+        run: echo "::set-env name=TIMENOW::$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+      - name: Set up Docker Buildx
+        if: success()
+        id: buildx
+        uses: crazy-max/ghaction-docker-buildx@v1
         with:
-          entrypoint: sh
-          args:
-            - '-c'
-            - |
-              -c entrypoint.sh build --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
-              --build-arg VCS_REF=${{ github.sha }} -t harshavardhanj/archivy:0.0.8 \
-              -t harshavardhanj/archivy:stable -t harshavardhanj/archivy:latest \
-              --platform linux/amd64,linux/arm64,linux/386,linux/s390x,linux/arm/v7,linux/arm/v6 \
-              --cache-from harshavardhanj/archivy:latest -f ./Dockerfile --pull=true \
-              --push .
+          version: latest
+      - name: Available platforms for buildx
+        if: success()
+        run: echo ${{ steps.buildx.outputs.platforms }}
+      - name: Prepare
+        if: success()
+        id: prepare
+        run: |
+          echo ::set-output name=docker_platforms::linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64,linux/386,linux/s390x
+          echo ::set-output name=docker_username::harshavardhanj
+          echo ::set-output name=docker_image::docker.io/harshavardhanj/archivy
+          echo ::set-output name=hash::$(echo ${GITHUB_SHA} | cut -c1-8)
+      - name: Docker Login
+        if: success()
+        env:
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+        run: |
+          echo "${DOCKER_PASSWORD}" | docker login --username "${{ steps.prepare.outputs.docker_username }}" --password-stdin docker.io
+      - name: Run Buildx (master)
+        if: success()
+        run: |
+          docker buildx build \
+            --output type=image,name=${{ steps.prepare.outputs.docker_image }},push=true \
+            --platform ${{ steps.prepare.outputs.docker_platforms }} \
+            --build-arg BUILD_DATE=${{ env.TIMENOW }} --build-arg VCS_REF=${{ steps.prepare.outputs.hash }} \
+            --tag "${{ steps.prepare.outputs.docker_image }}:0.0.8" \
+            --tag "${{ steps.prepare.outputs.docker_image }}:stable" \
+            --tag "${{ steps.prepare.outputs.docker_image }}:latest" \
+            --tag "${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.hash }}" \
+            --file ./archivy/Dockerfile ./archivy/.
