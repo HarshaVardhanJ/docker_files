@@ -55,11 +55,11 @@ jobs:
             #          echo ::set-output name=docker_username::harshavardhanj
             #          echo ::set-output name=docker_image::docker.io/harshavardhanj/archivy
             #          echo ::set-output name=hash::$(echo ${GITHUB_SHA} | cut -c1-8)
-      - name: Test image with container-structure-test
-        uses: plexsystems/container-structure-test-action@v0.2.0
-        with:
-          image: harshavardhanj/archivy:untested-${{ steps.prepare.outputs.hash }}
-          config: ./archivy/container-structure-test.yaml
+      #- name: Test image with container-structure-test
+      #  uses: plexsystems/container-structure-test-action@v0.2.0
+      #  with:
+      #    image: harshavardhanj/archivy:untested-${{ steps.prepare.outputs.hash }}
+      #    config: ./archivy/container-structure-test.yaml
       - name: Scan for OS vulnerabilties in image using Trivy
         uses: aquasecurity/trivy-action@0.0.8
         with:
