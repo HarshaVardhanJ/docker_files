@@ -56,7 +56,7 @@ jobs:
           echo ::set-output name=docker_image::docker.io/harshavardhanj/archivy
           echo ::set-output name=hash::$(echo ${GITHUB_SHA} | cut -c1-8)
       - name: Run image
-        run: docker run --rm ${{ docker_image }}:untested-${{ steps.prepare.outputs.hash }} ls
+        run: docker run --rm harshavardhanj/archivy:untested-${{ steps.prepare.outputs.hash }} ls
       - name: Test image with container-structure-test
         uses: plexsystems/container-structure-test-action@v0.2.0
         with:
