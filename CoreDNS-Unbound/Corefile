@@ -1,0 +1,104 @@
+# CoreDNS Configuration File
+
+# Snippets defined below this line
+#
+#  SNIPPET DEFINITION FORMAT :
+#     (snippet) {
+#       ...
+#     }
+
+# Sensible default settings
+(defaults) {
+  bind 0.0.0.0
+  chaos CoreDNS-1.7.1 sh@harsha-vardhan.org
+  bufsize 1232
+  reload
+  cancel 6s
+  loadbalance
+  nsid JHV DNS
+  any
+  health 0.0.0.0:8080
+}
+
+# Used for caching responses
+(cache) {
+  cache {
+    success 5000
+    denial 2500
+    prefetch 100
+  }
+}
+
+# Used for tracker and advertisement blocking
+(hosts) {
+  # Load the 'blocked-hosts.txt' file
+  hosts /coredns/blocked-hosts.txt {
+    # Reload the file every 30 minutes
+    reload 0.5h
+    # Fallthrough to the next plugin if no record is found.
+    # It's important that this snippet is imported before the
+    # unbound snippet. Only then will the 'fallthrough' option
+    # work.
+    fallthrough
+  }
+}
+
+# Used for logging
+(log) {
+  log . {combined} {
+    class denial error
+  }
+}
+
+# Used for error handling/printing
+(error) {
+  errors {
+    consolidate 5m ".* i/o timeout$"
+    consolidate 30s "^Failed to .+"
+  }
+}
+
+# Used for DNS over TLS or HTTPS
+(tls) {
+  tls /usr/local/share/ca-certificates/cert.pem /usr/local/share/ca-certificates/key.pem
+}
+
+# Unbound-related snippet
+(unbound) {
+  unbound {
+    option qname-minimisation yes
+    option qname-minimisation-strict yes
+    option val-clean-additional yes
+    option minimal-responses yes
+    option prefetch yes
+    option aggressive-nsec yes
+  }
+}
+
+
+# Main configuration defined below this line
+#
+## This block is for DNS over TLS/HTTPS
+#.:1053 {
+tls://.:1054 {
+#https://.:443 {
+  import defaults
+  import cache
+  import hosts
+  import log
+  import error
+  import tls
+  import unbound
+}
+
+## This block is for ordinary DNS using UDP
+.:1053 {
+  import defaults
+  import cache
+  import hosts
+  import log
+  import error
+  import unbound
+}
+
+# End of configuration file

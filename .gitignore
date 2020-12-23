@@ -1,6 +1,8 @@
+*.DS*
 *.pem
 *.crt
 *.key
+*.pub
 *.ini
 *.ORIG
 *.swp

@@ -1,6 +1,0 @@
-.git
-.github
-docker-compose*
-*.md
-LICENSE
-container-structure-test*
